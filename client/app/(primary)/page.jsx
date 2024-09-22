@@ -1,10 +1,29 @@
-import { Button } from "@/src/components/ui/button";
-import Image from "next/image";
+import {
+  CategorySec,
+  Diver,
+  Hero,
+  InfiniteMarquee,
+  NewArrivals,
+  PlantingCat,
+  TestimonialSwiper,
+  VideoSec,
+  WhyUs,
+} from "@/src/components";
 
 export default function Home() {
   return (
-    <div>
-      Home <Button variant="outline">Hello</Button>
-    </div>
+    <>
+      <Hero />
+      <InfiniteMarquee txt="PLANTOZONE" deg="0" />
+      <PlantingCat />
+      <CategorySec />
+      <NewArrivals />
+      <WhyUs />
+      <VideoSec />
+      <div className="w-full h-[100px]">
+        <Diver />
+      </div>
+      <TestimonialSwiper />
+    </>
   );
 }

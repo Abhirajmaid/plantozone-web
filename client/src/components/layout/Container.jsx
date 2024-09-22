@@ -1,5 +1,7 @@
 import cx from "clsx";
 
 export const Container = ({ children, className }) => {
-  return <div className={cx("container", className)}>{children}</div>;
+  return (
+    <div className={cx("container mx-auto w-[90%]", className)}>{children}</div>
+  );
 };

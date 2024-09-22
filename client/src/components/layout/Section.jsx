@@ -2,7 +2,7 @@ import cx from "clsx";
 
 export const Section = ({ children, className }) => {
   return (
-    <section className={cx("overflow-hidden py-16 sm:py-24", className)}>
+    <section className={cx("overflow-hidden py-10 sm:py-14", className)}>
       {children}
     </section>
   );

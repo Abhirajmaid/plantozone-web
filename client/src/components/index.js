@@ -1,2 +1,17 @@
 export { default as Navbar } from "./layout/Navbar"
 export { default as Footer } from "./layout/Footer"
+
+export { default as ProductCard } from "./common/ProductCard"
+export { default as SectionTitle } from "./common/SectionTitle"
+export { default as Logo } from "./common/Logo"
+export { default as Diver } from "./common/Diver"
+export { default as TestimonialCard } from "./common/TestimonialCard"
+
+export { default as Hero } from "./section/Hero"
+export { default as InfiniteMarquee } from "./section/InfiniteMarquee"
+export { default as PlantingCat } from "./section/PlantingCat"
+export { default as NewArrivals } from "./section/NewArrivals"
+export { default as CategorySec } from "./section/CategorySec"
+export { default as WhyUs } from "./section/WhyUs"
+export { default as VideoSec } from "./section/VideoSec"
+export { default as TestimonialSwiper } from "./section/TestimonialSwiper"

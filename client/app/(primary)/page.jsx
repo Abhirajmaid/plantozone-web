@@ -1,4 +1,5 @@
 import {
+  BlogSection,
   CategorySec,
   Diver,
   Hero,
@@ -9,6 +10,7 @@ import {
   VideoSec,
   WhyUs,
 } from "@/src/components";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -24,6 +26,15 @@ export default function Home() {
         <Diver />
       </div>
       <TestimonialSwiper />
+      <BlogSection />
+      <Image
+        src="/images/plantozone.svg"
+        alt="platozone"
+        width={1000}
+        height={1000}
+        className="w-full h-auto"
+      />
+      <InfiniteMarquee txt="PLANTOZONE" deg="0" />
     </>
   );
 }

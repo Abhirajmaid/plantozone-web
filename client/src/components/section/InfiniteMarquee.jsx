@@ -9,7 +9,7 @@ const InfiniteMarquee = ({ txt, deg }) => {
         <div className={`md:w-[120%] w-[100%] ${deg} bg-primary text-white`}>
           <Marquee>
             <div
-              className=" flex gap-x-[115px] text-transparent justify-between md:text-[85px] font-black text-[40px] items-center tracking-widest"
+              className=" flex gap-x-[115px] justify-between md:text-[85px] font-black text-[40px] items-center tracking-widest"
               style={{ WebkitTextStroke: "2px white" }}
             >
               <span>{txt}</span>

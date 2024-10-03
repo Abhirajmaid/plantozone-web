@@ -8,7 +8,7 @@ import Link from "next/link";
 const ProductCard = ({ data }) => {
   return (
     <div className="w-full h-[500px] bg-white rounded-lg space-y-1">
-      <Link href={`/product/1`}>
+      <Link href={`/product/${data.id}`}>
         <Image
           width={500}
           height={500}

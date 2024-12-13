@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { ProductCard } from "..";
-import { products } from "@/src/lib/data/data";
-import { Button } from "../ui/button";
+import { ProductCard } from "../..";
+// import { products } from "@/src/lib/data/data";
+import { Button } from "../../ui/button";
 
-const ItemList = () => {
+const ItemList = ({ data }) => {
   const [visibleCount, setVisibleCount] = useState(9);
 
   const handleLoadMore = () => {
@@ -12,17 +12,17 @@ const ItemList = () => {
   };
 
   return (
-    <div className="w-full md:w-[75%]">
-      <div className="flex flex-wrap gap-6 items-center justify-between md:px-4 px-4 ">
-        {products?.slice(0, visibleCount).map((item, id) => {
+    <div className="w-full md:w-[80%]">
+      <div className="flex flex-wrap gap-4 items-center justify-between md:px-4 px-4 ">
+        {data?.slice(0, visibleCount).map((item, id) => {
           return (
-            <div key={id} className="w-[330px]">
+            <div key={id} className="w-[32%]">
               <ProductCard data={item} />
             </div>
           );
         })}
       </div>
-      {visibleCount < products.length && (
+      {visibleCount < data?.length && (
         <div className="w-full flex justify-center mt-6">
           <Button onClick={handleLoadMore} className="w-[25%] text-base">
             Load More

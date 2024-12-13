@@ -8,8 +8,8 @@ import "swiper/css/free-mode";
 
 // Import required modules
 import { FreeMode, Keyboard, Mousewheel, Autoplay } from "swiper/modules";
-import { SectionTitle, TestimonialCard } from "..";
-import { Section } from "../layout/Section";
+import { SectionTitle, TestimonialCard } from "../..";
+import { Section } from "../../layout/Section";
 
 const data = [
   {

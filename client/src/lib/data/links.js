@@ -4,7 +4,7 @@ export const header = [
     href: "/shop"
   },
   {
-    label: "Abou Us",
+    label: "About Us",
     href: "/about-us"
   },
   {

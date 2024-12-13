@@ -1,8 +1,8 @@
 import React from "react";
-import { Section } from "../layout/Section";
+import { Section } from "../../layout/Section";
 import { Icon } from "@iconify/react";
-import { SectionTitle } from "..";
-import { Container } from "../layout/Container";
+import { SectionTitle } from "../..";
+import { Container } from "../../layout/Container";
 
 const whyUs = [
   {

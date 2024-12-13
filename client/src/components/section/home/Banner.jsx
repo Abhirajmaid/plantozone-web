@@ -1,5 +1,5 @@
-import { Container } from "../layout/Container";
-import { Section } from "../layout/Section";
+import { Container } from "../../layout/Container";
+import { Section } from "../../layout/Section";
 
 const PageBanner = () => {
   return (

@@ -21,7 +21,7 @@ export default function Filters() {
   const toggleFilters = () => setIsOpen(!isOpen);
 
   return (
-    <div className="bg-background border rounded-lg p-4 w-full md:w-[28%]">
+    <div className="bg-background border rounded-lg p-4 w-full md:w-[25%]">
       <div className="md:hidden">
         <Button
           onClick={toggleFilters}

@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { Container } from "../layout/Container";
-import { Section } from "../layout/Section";
-import { Button } from "../ui/button";
+import { Container } from "../../layout/Container";
+import { Section } from "../../layout/Section";
+import { Button } from "../../ui/button";
 
 const Hero = () => {
   return (
@@ -29,7 +29,7 @@ const Hero = () => {
           </p>
           <Button
             size="lg"
-            className="  font-semibold text-lg transition duration-300 ease-in-out transform hover:scale-105"
+            className="font-semibold text-lg transition duration-300 ease-in-out transform hover:scale-105"
           >
             Shop Now
           </Button>

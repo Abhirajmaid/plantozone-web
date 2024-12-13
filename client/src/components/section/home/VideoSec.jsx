@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState } from "react";
 import { Icon } from "@iconify/react";
-import { Section } from "../layout/Section";
+import { Section } from "../../layout/Section";
 
 const VideoSec = () => {
   const [isPlaying, setIsPlaying] = useState(false);

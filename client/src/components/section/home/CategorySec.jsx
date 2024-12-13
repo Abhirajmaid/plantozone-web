@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { Container } from "../layout/Container";
-import { Section } from "../layout/Section";
-import { SectionTitle } from "..";
+import { Container } from "../../layout/Container";
+import { Section } from "../../layout/Section";
+import { SectionTitle } from "../..";
 import Link from "next/link";
 
 // Sample data for category images (you can replace these with real image paths)

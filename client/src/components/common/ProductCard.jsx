@@ -7,28 +7,29 @@ import Link from "next/link";
 
 const ProductCard = ({ data }) => {
   return (
-    <div className="w-full h-[500px] bg-white rounded-lg space-y-1">
-      <Link href={`/product/${data.id}`}>
+    <div className="w-full h-auto mb-5 bg-white rounded-lg space-y-1">
+      <Link href={`/product/${data?.id}`}>
         <Image
           width={500}
           height={500}
-          src={data?.img}
+          src={data?.attributes?.images?.data[0]?.attributes?.url}
           alt="plantozone"
-          className="w-full h-auto rounded-lg overflow-hidden object-cover"
+          className="w-full h-[450px] rounded-lg overflow-hidden object-cover"
         />
       </Link>
       <div className="p-2 flex justify-between items-center">
         <Link href={`/product/1`}>
           <h3 className="text-base font-semibold text-gray-800">
-            {data?.name}
+            {data?.attributes?.title}
           </h3>
         </Link>
-        <p className="text-gray-500 text-sm">↕ {data?.height} cm</p>
+        <p className="text-gray-500 text-sm">↕ 20-24cm</p>
       </div>
 
       <div className="  p-2 border-2 border-mediumGray rounded-md flex items-center justify-between">
         <span className="text-base font-semibold text-gray-800">
-          ₹ {data?.price}
+          <span className="font-normal text-sm">From</span> ₹{" "}
+          {data?.attributes?.price}
         </span>
         <span className="flex items-center gap-3">
           <Button>

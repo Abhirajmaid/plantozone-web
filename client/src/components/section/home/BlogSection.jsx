@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { SectionTitle } from "..";
-import { Container } from "../layout/Container";
-import { Section } from "../layout/Section";
+import { SectionTitle } from "../..";
+import { Container } from "../../layout/Container";
+import { Section } from "../../layout/Section";
 
 const BlogSection = () => {
   return (

@@ -7,6 +7,7 @@ export { default as Logo } from "./common/Logo"
 export { default as Diver } from "./common/Diver"
 export { default as TestimonialCard } from "./common/TestimonialCard"
 export { default as Filters } from "./common/Filters"
+export { default as Loader } from "./common/Loader"
 
 export { default as Hero } from "./section/home/Hero"
 export { default as InfiniteMarquee } from "./section/home/InfiniteMarquee"
@@ -21,3 +22,5 @@ export { default as PageBanner } from "./section/home/Banner"
 export { default as Itemlist } from "./section/home/Itemlist"
 
 export { default as Checkout } from "./section/checkout/Checkout"
+
+export { default as BlogCard } from "./section/blogs/BlogCard"

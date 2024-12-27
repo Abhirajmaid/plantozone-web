@@ -268,11 +268,11 @@ export default function ProductPage() {
         </div>
 
         {/* About the Product */}
-        <section className="py-16 border-y-2 my-[80px]">
-          <h2 className="text-3xl font-semibold text-center text-green-800 mb-6">
+        <section className="py-16 border-y-2 my-[40px]">
+          <h2 className="text-4xl font-semibold text-center text-green-800 mb-6">
             About the Product
           </h2>
-          <p className="max-w-3xl mx-auto text-center text-gray-600 leading-relaxed">
+          <p className="max-w-3xl mx-auto text-center text-base text-gray-600 leading-relaxed">
             {data?.attributes?.description}
           </p>
         </section>

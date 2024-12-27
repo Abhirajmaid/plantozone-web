@@ -1,7 +1,6 @@
 "use client";
-import { Itemlist } from "@/src/components";
+import { Itemlist, Loader } from "@/src/components";
 import plantsAction from "@/src/lib/action/plants.action";
-import { Loader } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 const page = () => {

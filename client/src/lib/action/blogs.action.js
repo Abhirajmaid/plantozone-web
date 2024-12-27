@@ -7,12 +7,9 @@ const axiosClient = axios.create({
     }
 })
 
-const getPlants = () => axiosClient.get('/plants?populate=*')
-
-const getPlantById = (id) => axiosClient.get(`/plants/${id}?populate=*`)
+const getBlogs = () => axiosClient.get('/blogs?populate=*')
 
 
 export default {
-    getPlants,
-    getPlantById
+    getBlogs,
 }

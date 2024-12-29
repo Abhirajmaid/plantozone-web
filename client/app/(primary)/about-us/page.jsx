@@ -1,10 +1,14 @@
-import { Hero } from "@/src/components";
+import { Features, Hero, HeroAbout, Stats, Timeline } from "@/src/components";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <Hero />
+      <HeroAbout />
+      <Stats />
+      <Features />
+      <Timeline />
+      {/* <Team /> */}
     </div>
   );
 };

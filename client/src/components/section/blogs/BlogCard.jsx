@@ -19,7 +19,7 @@ const BlogCard = ({ title, description, image, author, date, slug }) => {
               alt={title || "Blog post image"}
               width={600}
               height={400}
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover -translate-y-1/4 transition-transform duration-300 group-hover:scale-105"
             />
           )}
         </div>
@@ -37,11 +37,20 @@ const BlogCard = ({ title, description, image, author, date, slug }) => {
               {author?.image && (
                 <AvatarImage src={author.image} alt={author.name || "Author"} />
               )}
-              <AvatarFallback>{author?.initials || "A"}</AvatarFallback>
+              <AvatarFallback>
+                <div>
+                  <Image
+                    src="/images/logo_color.png"
+                    width={300}
+                    height={300}
+                    className="w-full h-full rounded-full bg-white border border-lightGray"
+                  />
+                </div>
+              </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
               <span className="text-sm font-medium">
-                {author?.name || "Anonymous"}
+                {author?.name || "Plantozone"}
               </span>
               <span className="text-xs text-muted-foreground">
                 {date || "No date"}

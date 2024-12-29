@@ -26,17 +26,16 @@ export default function BlogPage() {
       .getBlogs()
       .then((resp) => {
         setPosts(resp.data.data);
-        setFeaturedPost(resp.data.data.slice(0, 1));
+        setFeaturedPost(resp.data.data[0]);
       })
       .catch((error) => {
         console.log(error);
-        warn(error);
       });
   };
 
   if (!featuredPost)
     return (
-      <div>
+      <div className="min-h-[70vh] flex justify-center items-center pt-[100px]">
         <Loader />
       </div>
     );
@@ -46,13 +45,13 @@ export default function BlogPage() {
       <Container className="pt-[100px]">
         {/* Featured Post */}
         <Link
-          href={`/blog/${featuredPost.attributes.slug}`}
+          href={`/blog/${featuredPost?.attributes?.slug}`}
           className="group relative mb-16 block overflow-hidden rounded-xl"
         >
           <div className="relative aspect-[21/9] w-full">
             <Image
-              src={featuredPost.attributes.image.data.attributes.url}
-              alt={featuredPost.attributes.title}
+              src={featuredPost?.attributes?.image?.data?.attributes?.url}
+              alt={featuredPost?.attributes?.title}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
@@ -62,31 +61,40 @@ export default function BlogPage() {
             <span className="mb-2 inline-block rounded bg-[#0B9C09] px-2 py-1 text-sm font-medium">
               Featured
             </span>
-            <h1 className="mb-2 text-3xl font-bold md:text-4xl lg:text-5xl">
-              {featuredPost.attributes.title}
+            <h1 className="mb-2 text-3xl font-bold md:text-4xl lg:text-title">
+              {featuredPost?.attributes?.title}
             </h1>
-            <p className="mb-4 max-w-2xl text-lg text-gray-200">
-              {featuredPost.attributes.description}
+            <p className="mb-4 max-w-2xl text-base text-gray-200">
+              {featuredPost?.attributes?.description}
             </p>
             <div className="flex items-center gap-2">
               <Avatar className="h-10 w-10">
                 <AvatarImage
                   src={
-                    featuredPost.attributes.author.data.attributes.image.data
-                      .attributes.url
+                    featuredPost?.attributes?.author?.data?.attributes?.image
+                      ?.data?.attributes?.url
                   }
-                  alt={featuredPost.attributes.author.data.attributes.name}
+                  alt={featuredPost?.attributes?.author?.data?.attributes?.name}
                 />
                 <AvatarFallback>
-                  {featuredPost.attributes.author.data.attributes.initials}
+                  <div>
+                    <Image
+                      src="/images/logo_color.png"
+                      width={300}
+                      height={300}
+                      className="w-full h-full rounded-full bg-white border border-lightGray"
+                    />
+                  </div>
                 </AvatarFallback>
               </Avatar>
               <div>
                 <div className="font-medium">
-                  {featuredPost.attributes.author.data.attributes.name}
+                  {featuredPost?.attributes?.author?.data?.attributes?.name}
                 </div>
                 <div className="text-sm text-gray-300">
-                  {new Date(featuredPost.attributes.date).toLocaleDateString()}
+                  {new Date(
+                    featuredPost?.attributes?.date
+                  ).toLocaleDateString()}
                 </div>
               </div>
             </div>
@@ -97,7 +105,7 @@ export default function BlogPage() {
         <section>
           <SectionTitle title="Blogs" />
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-[30px]">
-            {recentPosts.map((post) => (
+            {posts?.map((post) => (
               <BlogCard
                 key={post?.id}
                 title={post?.attributes?.title}
@@ -108,8 +116,6 @@ export default function BlogPage() {
                   image:
                     post?.attributes?.author?.data?.attributes?.image?.data
                       ?.attributes?.url,
-                  initials:
-                    post?.attributes?.author?.data?.attributes?.initials,
                 }}
                 date={new Date(post?.attributes?.date)?.toLocaleDateString()}
                 slug={post?.attributes?.slug}

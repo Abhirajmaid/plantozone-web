@@ -24,3 +24,8 @@ export { default as Itemlist } from "./section/home/Itemlist"
 export { default as Checkout } from "./section/checkout/Checkout"
 
 export { default as BlogCard } from "./section/blogs/BlogCard"
+
+export { default as HeroAbout } from "./section/about/HeroAbout"
+export { default as Stats } from "./section/about/Stats"
+export { default as Features } from "./section/about/Features"
+export { default as Timeline } from "./section/about/Timeline"

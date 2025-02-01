@@ -39,9 +39,8 @@ export const mobileTabs = [
     icon: "lucide:heart"
   },
   {
-    label: "Profile",
-    href: "/profile",
-    icon: "proicons:person"
+    label: "Contact",
+    href: "/contact-us",
+    icon: "mi:call"
   },
-
 ]

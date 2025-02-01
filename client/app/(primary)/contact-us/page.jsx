@@ -56,7 +56,10 @@ export default function page() {
                 <p className="text-gray-600">
                   We are available 24/7, 7 days a week.
                 </p>
-                <p className="font-medium">Phone: +880161112222</p>
+                <p className="font-medium">
+                  Phone: <br />
+                  +91 9059152555 <br /> +91 9059152666
+                </p>
               </div>
             </div>
 
@@ -72,8 +75,8 @@ export default function page() {
                 <p className="text-gray-600">
                   Fill out our form and we will contact you within 24 hours.
                 </p>
-                <p className="font-medium">Emails: customer@exclusive.com</p>
-                <p className="font-medium">Emails: support@exclusive.com</p>
+                <p className="font-medium">Emails: info@plantozone.com</p>
+                <p className="font-medium">Emails: sales@plantozone.com</p>
               </div>
             </div>
           </div>

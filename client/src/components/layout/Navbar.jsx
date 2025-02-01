@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -29,7 +30,10 @@ export default function CustomNavbar() {
   const [isSigningIn, setIsSigningIn] = useState(true); // toggle between sign-in and sign-up
   const [isMenuOpen, setIsMenuOpen] = useState(false); // toggle for mobile menu
   const [activeTab, setActiveTab] = useState("/shop"); // Track active tab for bottom nav
+  const [isSignedIn, setIsSignedIn] = useState(false); // Track if the user is signed in
   const menuRef = useRef(null); // Reference to the menu container for outside click detection
+
+  const router = useRouter(); // Correctly using the useRouter hook inside the functional component
 
   const openAuthModal = () => {
     setIsAuthModalOpen(true);
@@ -55,6 +59,17 @@ export default function CustomNavbar() {
     setActiveTab(href); // Update active tab
   };
 
+  // Handle profile click logic
+  const handleProfileClick = () => {
+    if (isSignedIn) {
+      // Redirect to profile page if signed in
+      router.push("/profile");
+    } else {
+      // Show the sign-in modal if not signed in
+      openAuthModal();
+    }
+  };
+
   // Close the menu if clicked outside of it
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -66,6 +81,14 @@ export default function CustomNavbar() {
 
     // Cleanup listener on component unmount
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Handle login state persistence on page load
+  useEffect(() => {
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      setIsSignedIn(true);
+    }
   }, []);
 
   return (
@@ -103,7 +126,7 @@ export default function CustomNavbar() {
                 <HeartIcon className="h-7 w-7" />
                 <span className="sr-only">Wishlist</span>
               </Button>
-              <Button variant="ghost" size="icon" onClick={openAuthModal}>
+              <Button variant="ghost" size="icon" onClick={handleProfileClick}>
                 <UserIcon className="h-7 w-7" />
                 <span className="sr-only">User Profile</span>
               </Button>
@@ -168,9 +191,21 @@ export default function CustomNavbar() {
               onClick={() => handleTabClick(link.href)} // Change active tab
             >
               <Icon icon={link.icon} width="30" height="30" />
-              <span className="text-xs">{link.label}</span>
+              <span className="text-sm">{link.label}</span>
             </Link>
           ))}
+          <button
+            key="profile"
+            className={`flex flex-col items-center text-sm transition-colors duration-200 ${
+              activeTab === "/profile"
+                ? "text-[#0b9c09] bg-gray-100 rounded-md"
+                : "text-gray-600 hover:text-[#0b9c09]"
+            }`}
+            onClick={() => handleProfileClick()} // Change active tab
+          >
+            <Icon icon="proicons:person" width="32" height="32" />
+            <span className="text-sm">Profile</span>
+          </button>
         </div>
       </div>
 
@@ -180,7 +215,7 @@ export default function CustomNavbar() {
         onOpenChange={setIsAuthModalOpen}
         className="mt-[80px]"
       >
-        <DialogContent className="bg-white w-[500px]">
+        <DialogContent className="bg-white w-[90%] sm:w-[500px] mx-auto">
           <DialogHeader>
             <div className="w-[120px] mx-auto mb-5">
               <Logo />

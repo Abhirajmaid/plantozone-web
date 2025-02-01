@@ -160,9 +160,9 @@ export default function CustomNavbar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`flex flex-col items-center text-sm transition-colors duration-200 ${
+              className={`flex flex-col items-center text-sm transition-colors duration-200 p-2 ${
                 activeTab === link.href
-                  ? "text-[#0b9c09] bg-gray-100 p-2 rounded-md"
+                  ? "text-[#0b9c09] bg-gray-100 rounded-md"
                   : "text-gray-600 hover:text-[#0b9c09]"
               }`}
               onClick={() => handleTabClick(link.href)} // Change active tab

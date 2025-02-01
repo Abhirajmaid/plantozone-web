@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { ProductCard } from "../..";
-// import { products } from "@/src/lib/data/data";
 import { Button } from "../../ui/button";
 
 const ItemList = ({ data }) => {
@@ -13,18 +12,20 @@ const ItemList = ({ data }) => {
 
   return (
     <div className="w-full md:w-[80%]">
-      <div className="flex flex-wrap gap-4 items-center justify-between md:px-4 px-4 ">
-        {data?.slice(0, visibleCount).map((item, id) => {
-          return (
-            <div key={id} className="w-[32%]">
-              <ProductCard data={item} />
-            </div>
-          );
-        })}
+      {/* Grid Layout for Better Responsiveness */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4 md:px-6">
+        {data?.slice(0, visibleCount).map((item, id) => (
+          <ProductCard key={id} data={item} />
+        ))}
       </div>
+
+      {/* Load More Button */}
       {visibleCount < data?.length && (
         <div className="w-full flex justify-center mt-6">
-          <Button onClick={handleLoadMore} className="w-[25%] text-base">
+          <Button
+            onClick={handleLoadMore}
+            className="w-[50%] sm:w-[40%] md:w-[25%] text-base"
+          >
             Load More
           </Button>
         </div>

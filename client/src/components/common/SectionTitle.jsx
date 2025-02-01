@@ -1,7 +1,11 @@
 import React from "react";
 
 const SectionTitle = ({ title }) => {
-  return <div className="text-section font-playfair font-heading">{title}</div>;
+  return (
+    <div className="md:text-section text-title font-playfair font-heading">
+      {title}
+    </div>
+  );
 };
 
 export default SectionTitle;

@@ -5,9 +5,16 @@ import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/free-mode";
+import "swiper/css/pagination";
 
 // Import required modules
-import { FreeMode, Keyboard, Mousewheel, Autoplay } from "swiper/modules";
+import {
+  FreeMode,
+  Keyboard,
+  Mousewheel,
+  Autoplay,
+  Pagination,
+} from "swiper/modules";
 import { SectionTitle, TestimonialCard } from "../..";
 import { Section } from "../../layout/Section";
 
@@ -19,33 +26,27 @@ const data = [
     image: "/images/plant.png",
   },
   {
-    name: "Emily R.",
+    name: "John D.",
     quote:
-      "I’ve bought several plants from this site, and each one has arrived in perfect condition! The packaging is superb, and the plants are thriving in my living room. I especially love the variety of air-purifying plants they offer. Will definitely be ordering more!",
+      "Absolutely love the plants I received! They were well-packaged, and the delivery was fast. Highly recommend this store for plant lovers.",
     image: "/images/plant.png",
   },
   {
-    name: "Emily R.",
+    name: "Sophia M.",
     quote:
-      "I’ve bought several plants from this site, and each one has arrived in perfect condition! The packaging is superb, and the plants are thriving in my living room. I especially love the variety of air-purifying plants they offer. Will definitely be ordering more!",
+      "Fantastic customer service and high-quality plants! I was worried about shipping, but the plants arrived healthy and beautiful.",
     image: "/images/plant.png",
   },
   {
-    name: "Emily R.",
+    name: "Michael B.",
     quote:
-      "I’ve bought several plants from this site, and each one has arrived in perfect condition! The packaging is superb, and the plants are thriving in my living room. I especially love the variety of air-purifying plants they offer. Will definitely be ordering more!",
+      "I've bought from many online plant shops, but this one stands out. The quality, packaging, and variety are excellent!",
     image: "/images/plant.png",
   },
   {
-    name: "Emily R.",
+    name: "Olivia W.",
     quote:
-      "I’ve bought several plants from this site, and each one has arrived in perfect condition! The packaging is superb, and the plants are thriving in my living room. I especially love the variety of air-purifying plants they offer. Will definitely be ordering more!",
-    image: "/images/plant.png",
-  },
-  {
-    name: "Emily R.",
-    quote:
-      "I’ve bought several plants from this site, and each one has arrived in perfect condition! The packaging is superb, and the plants are thriving in my living room. I especially love the variety of air-purifying plants they offer. Will definitely be ordering more!",
+      "Such a wonderful experience! My plants are thriving, and I appreciate the self-watering pots included. Will definitely buy again!",
     image: "/images/plant.png",
   },
 ];
@@ -53,30 +54,35 @@ const data = [
 const TestimonialSwiper = () => {
   return (
     <Section>
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center px-5 ">
         <SectionTitle title="We Care About Our Customers" />
       </div>
-      <div className="w-full max-w-6xl mx-auto py-12 overflow-hidden mt-[50px]">
+
+      <div className="w-full max-w-6xl mx-auto py-12 md:mt-[50px] mt-[0]">
         <Swiper
-          slidesPerView={3} // Default for mobile
+          slidesPerView={1} // Mobile default
           spaceBetween={15}
-          freeMode={false}
-          modules={[FreeMode, Keyboard, Mousewheel, Autoplay]}
+          freeMode={true}
+          pagination={{
+            clickable: true,
+          }}
+          breakpoints={{
+            640: { slidesPerView: 1 }, // Mobile
+            768: { slidesPerView: 2 }, // Tablet
+            1024: { slidesPerView: 3 }, // Desktop
+          }}
+          modules={[FreeMode, Keyboard, Mousewheel, Autoplay, Pagination]}
           autoplay={{
             delay: 3000, // Adjust delay as needed (3000ms = 3 seconds)
             disableOnInteraction: false, // Continue autoplay after interaction
           }}
-          keyboard={false}
-          mousewheel={false}
-          className="mySwiper h-auto w-full !overflow-visible "
+          className="mySwiper h-auto w-full"
         >
-          {data?.map((item, id) => {
-            return (
-              <SwiperSlide className="min-w-[370px]" key={id}>
-                <TestimonialCard data={item} />
-              </SwiperSlide>
-            );
-          })}
+          {data?.map((item, id) => (
+            <SwiperSlide key={id} className="px-3">
+              <TestimonialCard data={item} />
+            </SwiperSlide>
+          ))}
         </Swiper>
       </div>
     </Section>

@@ -24,23 +24,24 @@ const WhyUs = () => {
     <Section>
       <div className="bg-secondary p-8 pb-14 bg-[url('/images/why-us-bg.png')] bg-cover bg-center">
         <Container>
-          <div className="w-full flex justify-center mb-14">
+          <div className="w-full flex justify-center mb-10">
             <SectionTitle title="Why Us" />
           </div>
-          <div className="flex w-full justify-between mx-auto">
-            {whyUs.map((item, id) => {
-              return (
-                <div
-                  className="flex flex-col gap-5 w-[30%] justify-center items-center"
-                  key={id}
-                >
-                  <Icon icon={item.icon} className="w-16 h-16" />
-                  <p className="text-3xl font-medium text-center">
-                    {item.title}
-                  </p>
-                </div>
-              );
-            })}
+
+          {/* Grid for better responsiveness */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-10 w-full mx-auto text-center">
+            {whyUs.map((item, id) => (
+              <div
+                key={id}
+                className="flex flex-col gap-4 items-center text-white"
+              >
+                <Icon
+                  icon={item.icon}
+                  className="w-14 h-14 md:w-16 md:h-16 text-lightGreen"
+                />
+                <p className="text-lg md:text-2xl font-medium">{item.title}</p>
+              </div>
+            ))}
           </div>
         </Container>
       </div>

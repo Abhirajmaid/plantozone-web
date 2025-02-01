@@ -88,7 +88,7 @@ export default function ProductPage() {
               <img
                 src={data?.attributes?.images?.data[0]?.attributes?.url}
                 alt="Ficus Lyrata Bambino XL"
-                className="w-full h-full object-cover rounded-lg"
+                className="w-full h-full object-cover rounded-lg border-2 border-secondary"
               />
             </div>
           </div>

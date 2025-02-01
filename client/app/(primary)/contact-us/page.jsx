@@ -2,6 +2,41 @@ import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import { Mail, Phone } from "lucide-react";
 
+export const metadata = {
+  title: "Contact Us",
+  description:
+    "Get in touch with Plantozone for inquiries, customer support, and questions about our plant offerings.",
+  keywords:
+    "contact plantozone, customer support, plant inquiries, contact page, garden questions, plant care support",
+  author: "Plantozone",
+  publisher: "Plantozone",
+  robots: "index, follow",
+  openGraph: {
+    title: "Contact Us | Plantozone",
+    description:
+      "Reach out to Plantozone for customer support, inquiries about our plants, or to learn more about our services.",
+    url: "https://www.plantozone.com/contact-us",
+    site_name: "Plantozone",
+    type: "website",
+    images: [
+      {
+        url: "/images/contact-us-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Contact Us - Plantozone",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@plantozone",
+    title: "Contact Us | Plantozone",
+    description:
+      "Have questions? Contact Plantozone for support, plant care help, and more.",
+    image: "/images/contact-us-twitter-card.jpg",
+  },
+};
+
 export default function page() {
   return (
     <Section>

@@ -48,7 +48,7 @@ export default function BlogPage() {
           href={`/blog/${featuredPost?.attributes?.slug}`}
           className="group relative mb-16 block overflow-hidden rounded-xl"
         >
-          <div className="relative aspect-[21/9] w-full">
+          <div className="relative aspect-[21/9] w-full md:aspect-[21/9]">
             <Image
               src={featuredPost?.attributes?.image?.data?.attributes?.url}
               alt={featuredPost?.attributes?.title}
@@ -61,10 +61,10 @@ export default function BlogPage() {
             <span className="mb-2 inline-block rounded bg-[#0B9C09] px-2 py-1 text-sm font-medium">
               Featured
             </span>
-            <h1 className="mb-2 text-3xl font-bold md:text-4xl lg:text-title">
+            <h1 className="mb-2 text-2xl sm:text-3xl md:text-4xl font-bold lg:text-title">
               {featuredPost?.attributes?.title}
             </h1>
-            <p className="mb-4 max-w-2xl text-base text-gray-200">
+            <p className="mb-4 max-w-2xl text-base sm:text-lg text-gray-200">
               {featuredPost?.attributes?.description}
             </p>
             <div className="flex items-center gap-2">
@@ -104,7 +104,7 @@ export default function BlogPage() {
         {/* Recent Posts */}
         <section>
           <SectionTitle title="Blogs" />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-[30px]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-[30px]">
             {posts?.map((post) => (
               <BlogCard
                 key={post?.id}

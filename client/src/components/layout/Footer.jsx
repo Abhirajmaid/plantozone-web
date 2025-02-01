@@ -6,8 +6,9 @@ export default function Footer() {
   return (
     <footer className="bg-white py-10">
       <Container>
-        <hr className="bg-black w-[80%] mx-auto h-[2px] mb-[80px]" />
-        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-7 gap-0">
+        <hr className="bg-black w-[80%] mx-auto h-[2px] mb-[50px]" />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-8 px-4 sm:px-0 text-center md:text-left">
           {/* About Us */}
           <div>
             <h2 className="text-[16px] font-semibold text-gray-800">
@@ -57,10 +58,10 @@ export default function Footer() {
               Get In Touch
             </h2>
             <p className="mt-4 text-[14px] text-gray-600">
-              Call : +91 7390xxxxxx
+              Call : +91 89994 92523
             </p>
-            <p className="text-gray-600">Email : plantozone@gmail.com</p>
-            <div className="mt-4 flex space-x-4 text-gray-600">
+            <p className="text-gray-600">Email : info@plantozone.com</p>
+            <div className="mt-4 flex justify-center md:justify-start space-x-4 text-gray-600">
               <a href="#">
                 <Icon icon="uiw:facebook" width="28" height="28" />
               </a>
@@ -78,15 +79,15 @@ export default function Footer() {
           </div>
 
           {/* Newsletter Signup */}
-          <div className="flex col-span-3 justify-center">
+          <div className="lg:col-span-3 flex flex-col items-center lg:flex-row lg:items-start gap-6">
             <Image
               width={300}
               height={400}
-              className="w-auto h-[300px]"
+              className="w-auto h-[250px] sm:h-[300px] object-cover"
               alt="plantozone"
               src="/images/footer.png"
             />
-            <div>
+            <div className="w-full max-w-sm">
               <h2 className="text-[18px] tracking-widest font-semibold text-gray-800">
                 Sign up for our newsletter
               </h2>

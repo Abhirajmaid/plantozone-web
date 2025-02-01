@@ -1,10 +1,17 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
-import { ShoppingCartIcon, HeartIcon, UserIcon } from "lucide-react";
+import {
+  ShoppingCartIcon,
+  HeartIcon,
+  UserIcon,
+  MenuIcon,
+  XIcon,
+} from "lucide-react";
 import { Logo } from "..";
-import { header } from "@/src/lib/data/links";
+import { header, mobileTabs } from "@/src/lib/data/links";
 import { Container } from "./Container";
 import {
   Dialog,
@@ -15,11 +22,14 @@ import {
 } from "@/src/components/ui/dialog";
 import SignInForm from "../common/SignInForm";
 import SignUpForm from "../common/SignUpForm";
+import { Icon } from "@iconify/react";
 
 export default function CustomNavbar() {
-  // State to control modal visibility and form toggle
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(true); // toggle between sign-in and sign-up
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // toggle for mobile menu
+  const [activeTab, setActiveTab] = useState("/shop"); // Track active tab for bottom nav
+  const menuRef = useRef(null); // Reference to the menu container for outside click detection
 
   const openAuthModal = () => {
     setIsAuthModalOpen(true);
@@ -37,30 +47,54 @@ export default function CustomNavbar() {
     setIsSigningIn(true);
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleTabClick = (href) => {
+    setActiveTab(href); // Update active tab
+  };
+
+  // Close the menu if clicked outside of it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup listener on component unmount
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <header className="fixed w-full bg-white z-[99] border-b">
-      <div className="bg-primary h-5"></div>
-      <Container>
-        <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
-          {/* Left: Logo */}
-          <div className="w-[80px]">
-            <Logo />
-          </div>
-          <div className="flex gap-10 items-center">
-            {/* Center: Navigation Links */}
-            <nav className="hidden md:flex space-x-8 text-[16px] font-medium">
-              {header.map((link, id) => (
-                <Link
-                  key={id}
-                  href={link.href}
-                  className="hover:text-[#0b9c09] transition-colors capitalize"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
+    <>
+      <header className="fixed w-full bg-white z-[99] border-b">
+        <div className="bg-primary h-5"></div>
+        <Container>
+          <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
+            {/* Left: Logo */}
+            <div className="w-[80px]">
+              <Logo />
+            </div>
+            {/* Center: Navigation Links (Visible on desktop) */}
+            <div className="hidden md:flex gap-10 items-center">
+              <nav className="space-x-8 text-[16px] font-medium">
+                {header.map((link, id) => (
+                  <Link
+                    key={id}
+                    href={link.href}
+                    className="hover:text-[#0b9c09] transition-colors capitalize"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+
             {/* Right: Icons */}
-            <div className="flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-4">
               <Button variant="ghost" size="icon">
                 <ShoppingCartIcon className="h-7 w-7" />
                 <span className="sr-only">Shopping Cart</span>
@@ -74,9 +108,71 @@ export default function CustomNavbar() {
                 <span className="sr-only">User Profile</span>
               </Button>
             </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleMenu}
+                className="transition-all transform duration-300"
+              >
+                <MenuIcon className="h-7 w-7" />
+                <span className="sr-only">Menu</span>
+              </Button>
+            </div>
           </div>
+        </Container>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div
+            ref={menuRef}
+            className="absolute top-0 left-0 right-0 bg-white shadow-md z-50 md:hidden transform transition-all duration-300 ease-in-out translate-x-0"
+          >
+            <div className="flex justify-between items-center p-4">
+              <Logo />
+              <Button variant="ghost" size="icon" onClick={toggleMenu}>
+                <XIcon className="h-7 w-7" />
+                <span className="sr-only">Close Menu</span>
+              </Button>
+            </div>
+            <div className="flex flex-col items-center space-y-4 py-4">
+              {header.map((link, id) => (
+                <Link
+                  key={id}
+                  href={link.href}
+                  className="hover:text-[#0b9c09] transition-colors capitalize text-lg"
+                  onClick={toggleMenu}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* Bottom Navigation Tabs Bar for Mobile with Icons */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-md z-[100]">
+        <div className="flex justify-between items-center p-4">
+          {mobileTabs.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`flex flex-col items-center text-sm transition-colors duration-200 ${
+                activeTab === link.href
+                  ? "text-[#0b9c09] bg-gray-100 p-2 rounded-md"
+                  : "text-gray-600 hover:text-[#0b9c09]"
+              }`}
+              onClick={() => handleTabClick(link.href)} // Change active tab
+            >
+              <Icon icon={link.icon} width="30" height="30" />
+              <span className="text-xs">{link.label}</span>
+            </Link>
+          ))}
         </div>
-      </Container>
+      </div>
 
       {/* Authentication Modal */}
       <Dialog
@@ -112,6 +208,6 @@ export default function CustomNavbar() {
           </DialogClose>
         </DialogContent>
       </Dialog>
-    </header>
+    </>
   );
 }

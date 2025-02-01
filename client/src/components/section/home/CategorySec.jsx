@@ -4,41 +4,41 @@ import { Container } from "../../layout/Container";
 import { Section } from "../../layout/Section";
 import { SectionTitle } from "../..";
 import Link from "next/link";
+import Image from "next/image";
 
-// Sample data for category images (you can replace these with real image paths)
 const categories = [
   {
     top: "top-0",
     name: "Air-Purifying Plants",
     url: "air-purifying-plants",
-    image2: "/images/plant.png", // Replace with actual image URL
-    image1: "/images/plant.png", // Replace with actual image URL
+    image2: "/images/plant.png",
+    image1: "/images/plant.png",
   },
   {
     top: "top-5",
     name: "Bonsai & Miniatures",
     url: "bonsai-miniature",
-    image2: "/images/plant.png", // Replace with actual image URL
-    image1: "/images/plant.png", // Replace with actual image URL
+    image2: "/images/plant.png",
+    image1: "/images/plant.png",
   },
   {
     top: "top-10",
     name: "Rare & Exotic Plants",
     url: "rare-exotic-plants",
-    image2: "/images/plant.png", // Replace with actual image URL
-    image1: "/images/plant.png", // Replace with actual image URL
+    image2: "/images/plant.png",
+    image1: "/images/plant.png",
   },
   {
     top: "top-14",
     name: "Flowering Plants",
     url: "flowering-plants",
-    image2: "/images/plant.png", // Replace with actual image URL
-    image1: "/images/plant.png", // Replace with actual image URL
+    image2: "/images/plant.png",
+    image1: "/images/plant.png",
   },
 ];
 
 const CategorySec = () => {
-  const [hoveredCategory, setHoveredCategory] = useState(null); // State to track hovered category
+  const [hoveredCategory, setHoveredCategory] = useState(null);
 
   return (
     <Section>
@@ -46,39 +46,41 @@ const CategorySec = () => {
         <div className="w-full flex justify-center">
           <SectionTitle title="Shop by categories" />
         </div>
-        <div className="mt-[50px] w-full gap-10 relative">
-          {/* Categories list */}
-          <div>
-            {categories.map((item, id) => {
-              return (
-                <Link key={id} href={`/shop/${item.url}`}>
-                  <div
-                    onMouseEnter={() => setHoveredCategory(item)}
-                    onMouseLeave={() => setHoveredCategory(null)}
-                    className="text-title p-10 border-b border-mediumGray font-medium cursor-pointer hover:text-lightGreen"
-                  >
-                    {item.name}
-                  </div>
-                </Link>
-              );
-            })}
+
+        <div className="mt-10 w-full flex flex-col md:flex-row gap-10 relative">
+          {/* Categories List */}
+          <div className="w-full md:w-1/2">
+            {categories.map((item, id) => (
+              <Link key={id} href={`/shop/${item.url}`} passHref>
+                <div
+                  onMouseEnter={() => setHoveredCategory(item)}
+                  onMouseLeave={() => setHoveredCategory(null)}
+                  className="md:text-title p-6 md:p-10 border-b border-mediumGray font-medium cursor-pointer text-primary hover:text-lightGreen text-[28px] "
+                >
+                  {item.name}
+                </div>
+              </Link>
+            ))}
           </div>
 
-          {/* Conditionally render image card */}
+          {/* Image Display - Shown on Hover for Larger Screens */}
           {hoveredCategory && (
             <div
-              className={`absolute ${hoveredCategory?.top} right-0 flex justify-center items-center`}
+              className={`hidden md:flex absolute ${hoveredCategory?.top} right-0 justify-center items-center`}
             >
-              <img
+              <Image
                 src={hoveredCategory.image1}
                 alt={hoveredCategory.name}
-                className="md:w-[470px] scale-[0.85] md:h-[550px] object-cover border-2 border-mediumGray -translate-y-[100px] origin-bottom-left rotate-[20deg] rounded-lg"
+                width={350}
+                height={450}
+                className="w-full h-full object-cover border-2 border-mediumGray -translate-y-[80px] origin-bottom-left rotate-[15deg] rounded-lg"
               />
-
-              <img
+              <Image
                 src={hoveredCategory.image2}
                 alt={hoveredCategory.name}
-                className="absolute w-[470px] scale-[0.85] border-mediumGray border-2 -left-[230px] h-[550px] object-cover rounded-lg"
+                width={350}
+                height={450}
+                className="absolute w-full h-full border-mediumGray border-2 -left-[180px] object-cover rounded-lg"
               />
             </div>
           )}

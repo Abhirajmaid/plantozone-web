@@ -21,3 +21,27 @@ export const header = [
   },
 
 ]
+
+export const mobileTabs = [
+  {
+    label: "shop",
+    href: "/shop",
+    icon: "lucide:shopping-bag"
+  },
+  {
+    label: "Blog",
+    href: "/blog",
+    icon: "lucide:newspaper"
+  },
+  {
+    label: "Whishlist",
+    href: "/profile/whishlist",
+    icon: "lucide:heart"
+  },
+  {
+    label: "Profile",
+    href: "/profile",
+    icon: "proicons:person"
+  },
+
+]

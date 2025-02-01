@@ -3,13 +3,7 @@ import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import React from "react";
 
-export const metadata = {
-  title: "Plants | Plantozone",
-  description:
-    "Explore our extensive range of jewellery at Mukund Maid Jewellers, including rings, necklaces, and bracelets.",
-};
-
-const layout = ({ children }) => {
+const Layout = ({ children }) => {
   return (
     <>
       <PageBanner />
@@ -17,13 +11,20 @@ const layout = ({ children }) => {
         <Diver />
       </div>
       <Section>
-        <Container className="flex justify-between items-start relative">
-          <Filters />
-          {children}
+        <Container className="flex flex-col md:flex-row justify-between items-start gap-6">
+          {/* Filters (Sticky on Desktop) */}
+          <div className="w-full md:w-1/4">
+            <div className="sticky top-[100px] max-h-[80vh] overflow-y-auto">
+              <Filters />
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="w-full md:w-3/4">{children}</div>
         </Container>
       </Section>
     </>
   );
 };
 
-export default layout;
+export default Layout;

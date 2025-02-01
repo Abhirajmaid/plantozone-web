@@ -4,15 +4,19 @@ import { Button } from "@/src/components/ui/button";
 import userAction from "@/src/lib/action/user.action";
 import { setCookie } from "cookies-next";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
 
 export default function SignUpForm({ onSwitchToSignIn }) {
   const { register, handleSubmit, setError } = useForm();
+  const [loader, setLoader] = useState(false);
   const [isChecked, setIsChecked] = useState(false); // To track if the checkbox is checked
+  const router = useRouter();
 
   useEffect(() => {
     const jwt = sessionStorage.getItem("jwt");
     if (jwt) {
-      // router.push("/"); // Use your router if needed
+      router.push("/"); // Use your router if needed
     }
   }, []);
 
@@ -20,20 +24,23 @@ export default function SignUpForm({ onSwitchToSignIn }) {
     console.log(data);
 
     if (isChecked) {
+      setLoader(true);
       userAction
         .registerUser(data)
         .then((resp) => {
           sessionStorage.setItem("user", JSON.stringify(resp.data.user));
           sessionStorage.setItem("jwt", JSON.stringify(resp.data.jwt));
+          setLoader(false);
           setCookie("jwt", resp.data.jwt, { maxAge: 60 * 60 * 24 });
-          // router.push("/store"); // Redirect after success if needed
+          router.push("/profile"); // Redirect after success if needed
         })
         .catch((e) => {
           console.log(e);
-          // Handle error if needed
+          setLoader(false);
+          alert(e?.response?.data?.error?.message);
         });
     } else {
-      // Warn: Agree to Terms and Conditions!
+      alert("Agree to Terms and Conditions!");
     }
   };
 
@@ -84,8 +91,18 @@ export default function SignUpForm({ onSwitchToSignIn }) {
         <label className="text-sm">Agree to Terms and Conditions</label>
       </div>
 
-      <Button type="submit" className="w-full bg-primary">
-        Sign Up
+      <Button
+        type="submit"
+        className="w-full bg-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={loader}
+      >
+        {loader ? (
+          <div className="flex justify-center items-center">
+            <Loader className="animate-spin" />
+          </div>
+        ) : (
+          "Sign Up"
+        )}
       </Button>
 
       <p className="text-center text-sm">

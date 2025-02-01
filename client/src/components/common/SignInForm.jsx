@@ -1,12 +1,43 @@
 import { useForm } from "react-hook-form";
 import { Button } from "@/src/components/ui/button";
+import { useRouter } from "next/navigation";
+import { setCookie } from "cookies-next";
+import userAction from "@/src/lib/action/user.action";
+import { useEffect, useState } from "react";
+import { Loader } from "lucide-react";
 
 export default function SignInForm({ onSwitchToSignUp }) {
   const { register, handleSubmit } = useForm();
+  const [loader, setLoader] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const jwt = sessionStorage.getItem("jwt");
+    if (jwt) {
+      router.push("/profile");
+    }
+  }, []);
 
   const onSubmit = (data) => {
-    console.log("Sign In Data:", data);
-    // Add Axios call or API request here
+    setLoader(true);
+    userAction
+      .signIn(data)
+      .then((resp) => {
+        sessionStorage.setItem("user", JSON.stringify(resp.data.user));
+        sessionStorage.setItem("jwt", JSON.stringify(resp.data.jwt));
+        // success("You are Successfully Logged In");
+        alert("You are Successfully Logged In");
+        setLoader(false);
+        setCookie("jwt", resp.data.jwt, { maxAge: 60 * 60 * 24 });
+        router.push("/profile");
+      })
+      .catch((e) => {
+        console.log(e);
+        // warn("Server Error");
+        // error(e?.response?.data?.error?.message);
+        alert(e?.response?.data?.error?.message);
+        setLoader(false);
+      });
   };
 
   return (
@@ -27,8 +58,18 @@ export default function SignInForm({ onSwitchToSignUp }) {
           className="w-full px-4 py-3 border rounded-md"
         />
       </div>
-      <Button type="submit" className="w-full bg-primary">
-        Sign In
+      <Button
+        type="submit"
+        className="w-full bg-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={loader}
+      >
+        {loader ? (
+          <div className="flex justify-center items-center">
+            <Loader className="animate-spin" />
+          </div>
+        ) : (
+          "Sign In"
+        )}
       </Button>
       <p className="text-center text-sm">
         Don’t have an account?{" "}

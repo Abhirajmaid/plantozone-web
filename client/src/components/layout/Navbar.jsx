@@ -10,6 +10,9 @@ import {
   UserIcon,
   MenuIcon,
   XIcon,
+  PackageIcon,
+  LogOutIcon,
+  UserCircleIcon,
 } from "lucide-react";
 import { Logo } from "..";
 import { header, mobileTabs } from "@/src/lib/data/links";
@@ -27,13 +30,16 @@ import { Icon } from "@iconify/react";
 
 export default function CustomNavbar() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isSigningIn, setIsSigningIn] = useState(true); // toggle between sign-in and sign-up
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // toggle for mobile menu
-  const [activeTab, setActiveTab] = useState("/shop"); // Track active tab for bottom nav
-  const [isSignedIn, setIsSignedIn] = useState(false); // Track if the user is signed in
-  const menuRef = useRef(null); // Reference to the menu container for outside click detection
+  const [isSigningIn, setIsSigningIn] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("/shop");
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const menuRef = useRef(null);
+  const dropdownRef = useRef(null);
+  const dropdownTimerRef = useRef(null);
 
-  const router = useRouter(); // Correctly using the useRouter hook inside the functional component
+  const router = useRouter();
 
   const openAuthModal = () => {
     setIsAuthModalOpen(true);
@@ -56,36 +62,56 @@ export default function CustomNavbar() {
   };
 
   const handleTabClick = (href) => {
-    setActiveTab(href); // Update active tab
+    setActiveTab(href);
   };
 
-  // Handle profile click logic
   const handleProfileClick = () => {
-    if (isSignedIn) {
-      // Redirect to profile page if signed in
-      router.push("/profile");
-    } else {
-      // Show the sign-in modal if not signed in
+    if (!isSignedIn) {
       openAuthModal();
     }
   };
 
-  // Close the menu if clicked outside of it
+  const handleLogout = () => {
+    sessionStorage.removeItem("jwt");
+    setIsSignedIn(false);
+    setShowDropdown(false);
+    router.push("/");
+  };
+
+  const handleDropdownEnter = () => {
+    if (dropdownTimerRef.current) {
+      clearTimeout(dropdownTimerRef.current);
+    }
+    setShowDropdown(true);
+  };
+
+  const handleDropdownLeave = () => {
+    dropdownTimerRef.current = setTimeout(() => {
+      setShowDropdown(false);
+    }, 200);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsMenuOpen(false);
       }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
 
-    // Cleanup listener on component unmount
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      if (dropdownTimerRef.current) {
+        clearTimeout(dropdownTimerRef.current);
+      }
+    };
   }, []);
 
-  // Handle login state persistence on page load
   useEffect(() => {
-    const jwt = localStorage.getItem("jwt");
+    const jwt = sessionStorage.getItem("jwt");
     if (jwt) {
       setIsSignedIn(true);
     }
@@ -101,7 +127,7 @@ export default function CustomNavbar() {
             <div className="w-[80px]">
               <Logo />
             </div>
-            {/* Center: Navigation Links (Visible on desktop) */}
+            {/* Center: Navigation Links */}
             <div className="hidden md:flex gap-10 items-center">
               <nav className="space-x-8 text-[16px] font-medium">
                 {header.map((link, id) => (
@@ -126,10 +152,49 @@ export default function CustomNavbar() {
                 <HeartIcon className="h-7 w-7" />
                 <span className="sr-only">Wishlist</span>
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleProfileClick}>
-                <UserIcon className="h-7 w-7" />
-                <span className="sr-only">User Profile</span>
-              </Button>
+              {isSignedIn ? (
+                <div
+                  className="relative"
+                  onMouseEnter={handleDropdownEnter}
+                  onMouseLeave={handleDropdownLeave}
+                  ref={dropdownRef}
+                >
+                  <Button variant="ghost" size="icon" className="relative">
+                    <UserIcon className="h-7 w-7" />
+                  </Button>
+
+                  {/* Dropdown Menu */}
+                  {showDropdown && (
+                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                      <div className="py-1" role="menu">
+                        <Link
+                          href="/orders"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <PackageIcon className="mr-2 h-4 w-4" />
+                          Orders
+                        </Link>
+                        <Link
+                          href="/account"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <UserCircleIcon className="mr-2 h-4 w-4" />
+                          Account
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <LogOutIcon className="mr-2 h-4 w-4" />
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Button onClick={openAuthModal}>Login</Button>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -147,11 +212,11 @@ export default function CustomNavbar() {
           </div>
         </Container>
 
-        {/* Mobile Menu */}
+        {/* Rest of the existing mobile menu code... */}
         {isMenuOpen && (
           <div
             ref={menuRef}
-            className="absolute top-0 left-0 right-0 bg-white shadow-md z-50 md:hidden transform transition-all duration-300 ease-in-out translate-x-0"
+            className="absolute top-0 left-0 right-0 bg-white shadow-md z-50 md:hidden transform transition-all duration-300 ease-in-out translate-x-0 min-h-screen"
           >
             <div className="flex justify-between items-center p-4">
               <Logo />
@@ -171,12 +236,46 @@ export default function CustomNavbar() {
                   {link.label}
                 </Link>
               ))}
+
+              {isSignedIn && (
+                <>
+                  {/* Account Related Links */}
+                  <div className="w-full border-t pt-4 mt-4">
+                    <Link
+                      href="/orders"
+                      className="flex items-center justify-center gap-2 text-lg hover:text-[#0b9c09] transition-colors capitalize"
+                      onClick={toggleMenu}
+                    >
+                      <PackageIcon className="h-5 w-5" />
+                      Orders
+                    </Link>
+                  </div>
+                  <Link
+                    href="/account"
+                    className="flex items-center justify-center gap-2 text-lg hover:text-[#0b9c09] transition-colors capitalize"
+                    onClick={toggleMenu}
+                  >
+                    <UserCircleIcon className="h-5 w-5" />
+                    Account
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      toggleMenu();
+                    }}
+                    className="flex items-center justify-center gap-2 text-lg text-red-600 hover:text-red-700 transition-colors capitalize mt-4"
+                  >
+                    <LogOutIcon className="h-5 w-5" />
+                    Logout
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}
       </header>
 
-      {/* Bottom Navigation Tabs Bar for Mobile with Icons */}
+      {/* Bottom Navigation Tabs */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-md z-[100]">
         <div className="flex justify-between items-center p-4">
           {mobileTabs.map((link) => (
@@ -188,7 +287,7 @@ export default function CustomNavbar() {
                   ? "text-[#0b9c09] bg-gray-100 rounded-md"
                   : "text-gray-600 hover:text-[#0b9c09]"
               }`}
-              onClick={() => handleTabClick(link.href)} // Change active tab
+              onClick={() => handleTabClick(link.href)}
             >
               <Icon icon={link.icon} width="30" height="30" />
               <span className="text-sm">{link.label}</span>
@@ -201,7 +300,7 @@ export default function CustomNavbar() {
                 ? "text-[#0b9c09] bg-gray-100 rounded-md"
                 : "text-gray-600 hover:text-[#0b9c09]"
             }`}
-            onClick={() => handleProfileClick()} // Change active tab
+            onClick={handleProfileClick}
           >
             <Icon icon="proicons:person" width="32" height="32" />
             <span className="text-sm">Profile</span>
@@ -209,12 +308,8 @@ export default function CustomNavbar() {
         </div>
       </div>
 
-      {/* Authentication Modal */}
-      <Dialog
-        open={isAuthModalOpen}
-        onOpenChange={setIsAuthModalOpen}
-        className="mt-[80px]"
-      >
+      {/* Auth Modal */}
+      <Dialog open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen}>
         <DialogContent className="bg-white w-[90%] sm:w-[500px] mx-auto">
           <DialogHeader>
             <div className="w-[120px] mx-auto mb-5">

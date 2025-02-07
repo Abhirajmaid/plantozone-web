@@ -2,22 +2,22 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { Badge } from "@/src/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-} from "@/components/ui/breadcrumb";
-import { Section } from "@/components/layout/Section";
-import { Container } from "@/components/layout/Container";
-import { Diver, NewArrivals, TestimonialSwiper } from "@/components";
+} from "@/src/components/ui/breadcrumb";
+import { Section } from "@/src/components/layout/Section";
+import { Container } from "@/src/components/layout/Container";
+import { Diver, NewArrivals, TestimonialSwiper } from "@/src/components";
 import { useAuth } from "@/hooks/useAuth";
-import plantsAction from "@/lib/action/plants.action";
-import cartAction from "@/lib/action/cart.action";
-import { CartDrawer } from "@/components/section/checkout/CartDrawer";
-import { toast } from "@/components/ui/use-toast";
+import plantsAction from "@/src/lib/components/action/plants.action";
+import cartAction from "@/src/lib/components/action/cart.action";
+import { CartDrawer } from "@/src/components/section/checkout/CartDrawer";
+import { toast } from "@/src/components/ui/use-toast";
 
 export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);

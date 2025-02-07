@@ -6,6 +6,7 @@ const shopLayout = ({ children }) => {
     <>
       <Navbar />
       {children}
+
       <Footer />
     </>
   );

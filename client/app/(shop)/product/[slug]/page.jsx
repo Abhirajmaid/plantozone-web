@@ -13,11 +13,11 @@ import {
 import { Section } from "@/src/components/layout/Section";
 import { Container } from "@/src/components/layout/Container";
 import { Diver, NewArrivals, TestimonialSwiper } from "@/src/components";
-import { useAuth } from "@/hooks/useAuth";
-import plantsAction from "@/src/lib/components/action/plants.action";
-import cartAction from "@/src/lib/components/action/cart.action";
+import { useAuth } from "@/src/hooks/useAuth";
+import plantsAction from "@/src/lib/action/plants.action";
+import cartAction from "@/src/lib/action/cart.action";
 import { CartDrawer } from "@/src/components/section/checkout/CartDrawer";
-import { toast } from "@/src/components/ui/use-toast";
+import { toast } from "@/src/hooks/use-toast";
 
 export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);

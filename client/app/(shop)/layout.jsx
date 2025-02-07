@@ -1,5 +1,6 @@
 import React from "react";
 import { Footer, Navbar } from "@/src/components";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata = {
   title: "Shop Plants",
@@ -41,6 +42,7 @@ const shopLayout = ({ children }) => {
     <>
       <Navbar />
       {children}
+      <Toaster />
       <Footer />
     </>
   );

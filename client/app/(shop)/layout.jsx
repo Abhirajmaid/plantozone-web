@@ -1,6 +1,6 @@
 import React from "react";
 import { Footer, Navbar } from "@/src/components";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/src/components/ui/toaster";
 
 export const metadata = {
   title: "Shop Plants",

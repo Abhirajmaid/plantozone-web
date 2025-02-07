@@ -41,6 +41,12 @@
     },
     "price": {
       "type": "biginteger"
+    },
+    "cart": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::cart.cart",
+      "mappedBy": "plant"
     }
   }
 }

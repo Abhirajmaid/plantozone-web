@@ -1,129 +1,164 @@
 "use client";
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Star } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/src/components/ui/accordion";
-import { Badge } from "@/src/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-} from "@/src/components/ui/breadcrumb";
-import { Section } from "@/src/components/layout/Section";
-import { Container } from "@/src/components/layout/Container";
-import { Diver, NewArrivals, TestimonialSwiper } from "@/src/components";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import plantsAction from "@/src/lib/action/plants.action";
-import { CartDrawer } from "@/src/components/section/checkout/CartDrawer";
+} from "@/components/ui/breadcrumb";
+import { Section } from "@/components/layout/Section";
+import { Container } from "@/components/layout/Container";
+import { Diver, NewArrivals, TestimonialSwiper } from "@/components";
+import { useAuth } from "@/hooks/useAuth";
+import plantsAction from "@/lib/action/plants.action";
+import cartAction from "@/lib/action/cart.action";
+import { CartDrawer } from "@/components/section/checkout/CartDrawer";
+import { toast } from "@/components/ui/use-toast";
 
 export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("");
-  const [data, setData] = useState();
-  const param = useParams();
-  const id = param.slug;
-
+  const [product, setProduct] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const addToCart = () => {
-    if (!selectedSize) {
-      alert("Please select a size");
+  const { user, isAuthenticated } = useAuth();
+  const params = useParams();
+  const router = useRouter();
+  const productId = params.slug;
+
+  // Fetch product and cart data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch product details
+        const productResponse = await plantsAction.getPlantById(productId);
+        setProduct(productResponse.data.data);
+
+        // Fetch user cart if authenticated
+        if (isAuthenticated) {
+          const userCart = await cartAction.getUserCart();
+          setCartItems(userCart);
+        }
+      } catch (error) {
+        console.error("Failed to fetch data", error);
+        toast({
+          title: "Error",
+          description: "Failed to load product details",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchData();
+  }, [productId, isAuthenticated]);
+
+  // Cart Management Functions
+  const addToCart = async () => {
+    // Validate login and size selection
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to add items to cart",
+        variant: "warning",
+      });
+      router.push("/login");
       return;
     }
 
+    if (!selectedSize) {
+      toast({
+        title: "Size Selection",
+        description: "Please select a plant size",
+        variant: "warning",
+      });
+      return;
+    }
+
+    // Determine price based on size
     const price = selectedSize === "Small" ? 550 : 750;
-    const newItem = {
-      id: data?.id + selectedSize, // Unique ID based on product and size
-      title: data?.attributes?.title,
+
+    const newCartItem = {
+      product: product.id,
+      title: product.attributes.title,
       price: price,
       size: selectedSize,
       quantity: quantity,
-      image: data?.attributes?.images?.data[0]?.attributes?.url,
+      userId: user.id,
+      image: product.attributes.images.data[0]?.attributes.url || "",
     };
 
-    setCartItems((prevItems) => {
-      const existingItemIndex = prevItems.findIndex(
-        (item) => item.id === newItem.id
-      );
+    try {
+      // Add to cart in Strapi
+      const addedItem = await cartAction.addToCart(newCartItem);
 
-      if (existingItemIndex > -1) {
-        // Update quantity if item exists
-        const updatedItems = [...prevItems];
-        updatedItems[existingItemIndex].quantity += quantity;
-        return updatedItems;
-      }
+      // Update local cart state
+      setCartItems((prevItems) => {
+        // Check if item exists to update quantity
+        const existingItemIndex = prevItems.findIndex(
+          (item) => item.productId === product.id && item.size === selectedSize
+        );
 
-      // Add new item if it doesn't exist
-      return [...prevItems, newItem];
-    });
+        if (existingItemIndex > -1) {
+          const updatedItems = [...prevItems];
+          updatedItems[existingItemIndex].quantity += quantity;
+          return updatedItems;
+        }
 
-    setIsCartOpen(true);
-  };
-
-  const updateQuantity = (itemId, newQuantity) => {
-    if (newQuantity < 1) return;
-
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-
-  const removeFromCart = (itemId) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
-  };
-
-  const handleIncrease = () => {
-    setQuantity((prev) => prev + 1);
-  };
-
-  const handleDecrease = () => {
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  };
-
-  const handleClick = (size) => {
-    setSelectedSize(size);
-  };
-
-  useEffect(() => {
-    getSinglePlant();
-  }, []);
-
-  const getSinglePlant = () => {
-    plantsAction
-      .getPlantById(id)
-      .then((resp) => {
-        setData(resp.data.data);
-      })
-      .catch((error) => {
-        console.log(error);
-        warn(error);
+        return [...prevItems, addedItem];
       });
+
+      // Open cart drawer
+      setIsCartOpen(true);
+
+      toast({
+        title: "Added to Cart",
+        description: `${product.attributes.title} added to your cart`,
+        variant: "success",
+      });
+    } catch (error) {
+      console.error("Failed to add to cart", error);
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart",
+        variant: "destructive",
+      });
+    }
   };
+
+  // Quantity management
+  const handleIncrease = () => setQuantity((prev) => prev + 1);
+  const handleDecrease = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+
+  // Size selection
+  const handleSizeSelect = (size) => setSelectedSize(size);
+
+  // Render loading state
+  if (!product) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>Loading product details...</p>
+      </div>
+    );
+  }
 
   return (
     <Section className="min-h-screen">
       <Container className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-[100px] py-4 sm:py-6 lg:py-8 pt-16 lg:pt-[100px]">
-        {/* Responsive Breadcrumb */}
-        <Breadcrumb className="mb-4 lg:mb-8 flex gap-1 text-xs sm:text-sm lg:text-base overflow-x-auto whitespace-nowrap">
+        {/* Breadcrumb */}
+        <Breadcrumb className="mb-4 lg:mb-8 flex gap-1 text-xs sm:text-sm lg:text-base">
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/plants">/ Plants</BreadcrumbLink>
+            <BreadcrumbLink href="/plants">Plants</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbItem>
-            <BreadcrumbLink className="truncate">
-              / {data?.attributes?.title}
-            </BreadcrumbLink>
+            <BreadcrumbLink>{product.attributes.title}</BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
 
@@ -133,8 +168,8 @@ export default function ProductPage() {
           <div className="w-full">
             <div className="aspect-square w-full sm:w-[80%] lg:w-full mx-auto bg-gray-100 rounded-lg mb-4">
               <img
-                src={data?.attributes?.images?.data[0]?.attributes?.url}
-                alt={data?.attributes?.title}
+                src={product.attributes.images.data[0]?.attributes.url}
+                alt={product.attributes.title}
                 className="w-full h-full object-cover rounded-lg border-2 border-secondary"
               />
             </div>
@@ -143,7 +178,7 @@ export default function ProductPage() {
           {/* Product Details */}
           <div className="space-y-4 sm:space-y-6">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold">
-              {data?.attributes?.title}
+              {product.attributes.title}
             </h1>
 
             {/* Rating */}
@@ -160,10 +195,10 @@ export default function ProductPage() {
             {/* Price */}
             <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">
-                {selectedSize == "Small" ? "₹550" : "₹750"}
+                {selectedSize === "Small" ? "₹550" : "₹750"}
               </span>
               <span className="text-sm sm:text-base text-gray-500 line-through">
-                {selectedSize == "Small" ? "₹1,099" : "₹1,499"}
+                {selectedSize === "Small" ? "₹1,099" : "₹1,499"}
               </span>
               <Badge
                 variant="secondary"
@@ -180,7 +215,7 @@ export default function ProductPage() {
               </label>
               <div className="flex flex-wrap gap-2 sm:gap-4">
                 <button
-                  onClick={() => handleClick("Small")}
+                  onClick={() => handleSizeSelect("Small")}
                   className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base border-2 rounded-md ${
                     selectedSize === "Small"
                       ? "bg-green-600 text-white"
@@ -190,7 +225,7 @@ export default function ProductPage() {
                   4 Inch
                 </button>
                 <button
-                  onClick={() => handleClick("Medium")}
+                  onClick={() => handleSizeSelect("Medium")}
                   className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base border-2 rounded-md ${
                     selectedSize === "Medium"
                       ? "bg-green-600 text-white"
@@ -202,7 +237,7 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Add to Cart Section */}
+            {/* Quantity and Add to Cart */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <div className="flex items-center border rounded-md">
                 <button
@@ -225,94 +260,69 @@ export default function ProductPage() {
                 </button>
               </div>
               <Button
-                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 py-4 sm:py-5 text-sm sm:text-base"
                 onClick={addToCart}
+                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 py-4 sm:py-5 text-sm sm:text-base"
+                disabled={!selectedSize}
               >
-                ADD TO CART
+                {isAuthenticated ? "ADD TO CART" : "LOGIN TO ADD"}
               </Button>
             </div>
 
+            {/* Cart Drawer */}
             <CartDrawer
               isOpen={isCartOpen}
               setIsOpen={setIsCartOpen}
               cartItems={cartItems}
-              updateQuantity={updateQuantity}
-              removeFromCart={removeFromCart}
+              updateQuantity={async (itemId, newQuantity) => {
+                try {
+                  await cartAction.updateCartItemQuantity(itemId, newQuantity);
+                  setCartItems((prevItems) =>
+                    prevItems.map((item) =>
+                      item.id === itemId
+                        ? { ...item, quantity: newQuantity }
+                        : item
+                    )
+                  );
+                } catch (error) {
+                  console.error("Failed to update quantity", error);
+                }
+              }}
+              removeFromCart={async (itemId) => {
+                try {
+                  await cartAction.removeFromCart(itemId);
+                  setCartItems((prevItems) =>
+                    prevItems.filter((item) => item.id !== itemId)
+                  );
+                } catch (error) {
+                  console.error("Failed to remove item", error);
+                }
+              }}
             />
-
-            {/* Buy Now Button */}
-            <Button
-              variant="secondary"
-              size="lg"
-              className="w-full font-semibold py-4 sm:py-5 text-sm sm:text-base"
-            >
-              BUY IT NOW
-            </Button>
 
             {/* Promo Box */}
             <div className="border rounded-lg p-3 sm:p-4 text-center text-xs sm:text-sm">
-              🌱Get ₹100 OFF On Order Above ₹899 | USE CODE ECO100 🎁
+              🌱 Get ₹100 OFF On Order Above ₹899 | USE CODE ECO100 🎁
             </div>
-
-            {/* Delivery Check */}
-            <div className="space-y-2">
-              <h3 className="text-xs sm:text-sm font-medium">CHECK DELIVERY</h3>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Input
-                  placeholder="Enter PIN code"
-                  className="flex-1 text-sm"
-                />
-                <Button className="w-full sm:w-auto text-sm">CHECK</Button>
-              </div>
-            </div>
-
-            {/* Care Instructions Accordion */}
-            <Accordion type="single" collapsible className="w-full">
-              {/* ... [Accordion items remain the same] */}
-            </Accordion>
           </div>
         </div>
 
-        {/* About Section */}
+        {/* Additional Sections */}
         <section className="py-6 sm:py-8 lg:py-16 border-y-2 my-6 lg:my-[40px]">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-center text-green-800 mb-4 lg:mb-6">
             About the Product
           </h2>
           <p className="max-w-3xl mx-auto text-center text-xs sm:text-sm lg:text-base text-gray-600 leading-relaxed px-4">
-            {data?.attributes?.description}
+            {product.attributes.description}
           </p>
         </section>
-      </Container>
 
-      {/* What's in the Box Section */}
-      <section className="py-6 sm:py-8 lg:py-16 bg-gray-50 mb-6 sm:mb-8 lg:mb-[80px]">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center">
-            <div className="bg-yellow-300 p-4 sm:p-6 lg:p-8 rounded-lg">
-              <img
-                src="/images/pakage.png"
-                alt="Product package illustration"
-                className="w-full"
-              />
-            </div>
-            <div className="space-y-4 lg:space-y-8">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-green-800">
-                What's in the Box
-              </h2>
-              <ul className="space-y-2 sm:space-y-3 lg:space-y-4 text-xs sm:text-sm lg:text-base text-gray-600">
-                {/* ... [List items remain the same] */}
-              </ul>
-            </div>
-          </div>
+        {/* Additional Components */}
+        <NewArrivals />
+        <div className="w-full lg:w-[50%] mx-auto px-4 lg:px-0">
+          <Diver />
         </div>
-      </section>
-
-      {/* Additional Sections */}
-      <NewArrivals />
-      <div className="w-full lg:w-[50%] mx-auto px-4 lg:px-0">
-        <Diver />
-      </div>
-      <TestimonialSwiper />
+        <TestimonialSwiper />
+      </Container>
     </Section>
   );
 }

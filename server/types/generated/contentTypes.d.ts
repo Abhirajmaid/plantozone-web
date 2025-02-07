@@ -389,6 +389,36 @@ export interface ApiBlogBlog extends Schema.CollectionType {
   };
 }
 
+export interface ApiCartCart extends Schema.CollectionType {
+  collectionName: 'carts';
+  info: {
+    singularName: 'cart';
+    pluralName: 'carts';
+    displayName: 'Cart';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    plant: Attribute.Relation<'api::cart.cart', 'oneToOne', 'api::plant.plant'>;
+    users_permissions_user: Attribute.Relation<
+      'api::cart.cart',
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+    quantity: Attribute.BigInteger;
+    price: Attribute.Decimal;
+    size: Attribute.Enumeration<['small', 'large']>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::cart.cart', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<'api::cart.cart', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+  };
+}
+
 export interface ApiCategoryCategory extends Schema.CollectionType {
   collectionName: 'categories';
   info: {
@@ -446,6 +476,7 @@ export interface ApiPlantPlant extends Schema.CollectionType {
       'api::category.category'
     >;
     price: Attribute.BigInteger;
+    cart: Attribute.Relation<'api::plant.plant', 'oneToOne', 'api::cart.cart'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -901,6 +932,7 @@ declare module '@strapi/types' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'api::blog.blog': ApiBlogBlog;
+      'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
       'api::plant.plant': ApiPlantPlant;
       'plugin::upload.file': PluginUploadFile;

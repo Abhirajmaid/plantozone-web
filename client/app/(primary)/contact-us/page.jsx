@@ -1,27 +1,76 @@
 "use client";
-import { useForm } from "react-hook-form";
-import axios from "axios";
+
 import { useState } from "react";
 import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import { Mail, Phone } from "lucide-react";
 
-export default function ContactPage() {
-  const { register, handleSubmit, reset } = useForm();
-  const [message, setMessage] = useState("");
+export default function Page() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+    _autoresponse:
+      "Thank you for contacting us! We have received your message and will get back to you within 24 hours. \n\nBest regards,\nPlantozone Team",
+    _template: "table",
+    _subject: "Thank you for contacting Plantozone!",
+  });
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const onSubmit = async (data) => {
+  const handleChange = (e) => {
+    // Only update user-editable fields
+    if (!e.target.name.startsWith("_")) {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
     try {
-      const response = await axios.post("/api/contact", data);
-      if (response.data.success) {
-        setMessage("Your message has been sent successfully!");
-        reset();
+      const response = await fetch(
+        "https://formsubmit.co/ajax/plantozonegreenindia@gmail.com",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSubmitted(true);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+          _autoresponse:
+            "Thank you for contacting us! We have received your message and will get back to you within 24 hours. \n\nBest regards,\nPlantozone Team",
+          _template: "table",
+          _subject: "Thank you for contacting Plantozone!",
+        });
       } else {
-        setMessage("Failed to send message. Try again later.");
+        throw new Error("Form submission failed");
       }
     } catch (error) {
-      console.error("Error:", error);
-      setMessage("Error sending message. Please try again.");
+      console.error("Error sending message:", error);
+      setError("Failed to send message. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -29,8 +78,9 @@ export default function ContactPage() {
     <Section>
       <Container className="pt-[100px]">
         <div className="container mx-auto px-4 py-12 grid md:grid-cols-2 gap-12">
-          {/* Contact Information */}
+          {/* Left Column - Contact Information */}
           <div className="space-y-8">
+            {/* Call To Us Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="bg-[#0B9C09] p-3 rounded-full">
@@ -49,6 +99,7 @@ export default function ContactPage() {
               </div>
             </div>
 
+            {/* Write To Us Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="bg-[#0B9C09] p-3 rounded-full">
@@ -66,52 +117,71 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Contact Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid md:grid-cols-3 gap-4">
-              <input
-                {...register("name", { required: true })}
-                type="text"
-                placeholder="Your Name *"
-                className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
-                required
-              />
-              <input
-                {...register("email", { required: true })}
-                type="email"
-                placeholder="Your Email *"
-                className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
-                required
-              />
-              <input
-                {...register("phone", { required: true })}
-                type="tel"
-                placeholder="Your Phone *"
-                className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
-                required
-              />
-            </div>
-            <textarea
-              {...register("message", { required: true })}
-              placeholder="Your Message"
-              rows={6}
-              className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
-              required
-            ></textarea>
-            <button
-              type="submit"
-              className="px-8 py-3 bg-[#0B9C09] text-white rounded-md hover:bg-[#098008] transition-colors"
-            >
-              Send Message
-            </button>
-          </form>
-
-          {/* Success Message */}
-          {message && (
-            <p className="text-green-600 font-medium text-center mt-4">
-              {message}
-            </p>
-          )}
+          {/* Right Column - Contact Form */}
+          <div className="w-full">
+            {submitted ? (
+              <div className="bg-green-100 text-green-800 p-6 rounded-md text-center">
+                <h2 className="text-2xl font-semibold">Thank You!</h2>
+                <p>
+                  We have received your message and will get back to you
+                  shortly. Please check your email for a confirmation message.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <div className="bg-red-100 text-red-800 p-4 rounded-md">
+                    {error}
+                  </div>
+                )}
+                <div className="grid md:grid-cols-3 gap-4">
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Your Name *"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
+                    required
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Your Email *"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
+                    required
+                  />
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Your Phone *"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
+                    required
+                  />
+                </div>
+                <textarea
+                  name="message"
+                  placeholder="Your Message"
+                  rows={6}
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
+                  required
+                ></textarea>
+                <button
+                  type="submit"
+                  className="px-8 py-3 bg-[#0B9C09] text-white rounded-md hover:bg-[#098008] transition-colors disabled:opacity-50"
+                  disabled={loading}
+                >
+                  {loading ? "Sending..." : "Send Message"}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
       </Container>
     </Section>

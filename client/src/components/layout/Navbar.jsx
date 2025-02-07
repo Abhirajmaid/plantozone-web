@@ -289,8 +289,8 @@ export default function CustomNavbar() {
               }`}
               onClick={() => handleTabClick(link.href)}
             >
-              <Icon icon={link.icon} width="30" height="30" />
-              <span className="text-sm">{link.label}</span>
+              <Icon icon={link.icon} width="25" height="25" />
+              <span className="text-xs">{link.label}</span>
             </Link>
           ))}
           <button
@@ -302,8 +302,8 @@ export default function CustomNavbar() {
             }`}
             onClick={handleProfileClick}
           >
-            <Icon icon="proicons:person" width="32" height="32" />
-            <span className="text-sm">Profile</span>
+            <Icon icon="proicons:person" width="26" height="26" />
+            <span className="text-xs">Profile</span>
           </button>
         </div>
       </div>

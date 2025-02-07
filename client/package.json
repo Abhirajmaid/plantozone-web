@@ -38,6 +38,7 @@
     "react-fast-marquee": "^1.6.5",
     "react-hook-form": "^7.54.0",
     "react-horizontal-scrolling-menu": "^8.2.0",
+    "resend": "^4.1.1",
     "swiper": "^11.1.14",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",

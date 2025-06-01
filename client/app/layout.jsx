@@ -2,6 +2,7 @@
 
 import "./globals.css"; // Import global styles (Tailwind CSS)
 import { Playfair, Montserrat } from "next/font/google"; // Import Google Fonts
+import { Providers } from "./provider";
 
 // Import the common components
 
@@ -48,10 +49,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${playfair.className} ${montserrat.className}`}>
-        <main>{children}</main>
-      </body>
-    </html>
+    <>
+      <Providers>
+        <html lang="en">
+          <body className={`${playfair.className} ${montserrat.className}`}>
+            <main>{children}</main>
+          </body>
+        </html>
+      </Providers>
+    </>
   );
 }

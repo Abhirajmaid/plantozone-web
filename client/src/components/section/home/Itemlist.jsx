@@ -11,7 +11,7 @@ const ItemList = ({ data }) => {
   };
 
   return (
-    <div className="w-full md:w-[80%]">
+    <div className="w-full md:w-[95%]">
       {/* Grid Layout for Better Responsiveness */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4 md:px-6">
         {data?.slice(0, visibleCount).map((item, id) => (

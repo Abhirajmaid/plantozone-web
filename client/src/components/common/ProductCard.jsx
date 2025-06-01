@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const ProductCard = ({ data }) => {
   return (
-    <div className="w-full h-auto mb-5 bg-white rounded-lg space-y-1">
+    <div className="w-full h-auto mb-5 bg-white rounded-lg space-y-1 flex flex-col justify-between">
       <Link href={`/product/${data?.id}`}>
         {data?.attributes?.images?.data != null ? (
           <Image

@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Star } from "lucide-react";
@@ -17,7 +18,6 @@ import { useAuth } from "@/src/hooks/useAuth";
 import plantsAction from "@/src/lib/action/plants.action";
 import cartAction from "@/src/lib/action/cart.action";
 import { CartDrawer } from "@/src/components/section/checkout/CartDrawer";
-import { toast } from "@/src/hooks/use-toast";
 
 export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
@@ -31,113 +31,74 @@ export default function ProductPage() {
   const router = useRouter();
   const productId = params.slug;
 
-  // Fetch product and cart data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch product details
         const productResponse = await plantsAction.getPlantById(productId);
-        setProduct(productResponse.data.data);
+        setProduct(productResponse?.data?.data);
 
-        // Fetch user cart if authenticated
         if (isAuthenticated) {
           const userCart = await cartAction.getUserCart();
           setCartItems(userCart);
         }
       } catch (error) {
         console.error("Failed to fetch data", error);
-        toast({
-          title: "Error",
-          description: "Failed to load product details",
-          variant: "destructive",
-        });
       }
     };
 
     fetchData();
-  }, [productId, isAuthenticated]);
+  }, []);
 
-  // Cart Management Functions
   const addToCart = async () => {
-    // Validate login and size selection
     if (!isAuthenticated) {
-      toast({
-        title: "Login Required",
-        description: "Please log in to add items to cart",
-        variant: "warning",
-      });
+      alert("Please log in to add items to cart");
       router.push("/login");
       return;
     }
 
     if (!selectedSize) {
-      toast({
-        title: "Size Selection",
-        description: "Please select a plant size",
-        variant: "warning",
-      });
+      alert("Please select a plant size");
       return;
     }
 
-    // Determine price based on size
     const price = selectedSize === "Small" ? 550 : 750;
 
     const newCartItem = {
       product: product.id,
-      title: product.attributes.title,
+      title: product?.attributes?.title,
       price: price,
       size: selectedSize,
       quantity: quantity,
-      userId: user.id,
-      image: product.attributes.images.data[0]?.attributes.url || "",
+      userId: user?.id,
+      image: product?.attributes?.images?.data[0]?.attributes?.url || "",
     };
 
     try {
-      // Add to cart in Strapi
       const addedItem = await cartAction.addToCart(newCartItem);
-
-      // Update local cart state
       setCartItems((prevItems) => {
-        // Check if item exists to update quantity
-        const existingItemIndex = prevItems.findIndex(
+        const existingIndex = prevItems.findIndex(
           (item) => item.productId === product.id && item.size === selectedSize
         );
 
-        if (existingItemIndex > -1) {
-          const updatedItems = [...prevItems];
-          updatedItems[existingItemIndex].quantity += quantity;
-          return updatedItems;
+        if (existingIndex > -1) {
+          const updated = [...prevItems];
+          updated[existingIndex].quantity += quantity;
+          return updated;
         }
 
         return [...prevItems, addedItem];
       });
 
-      // Open cart drawer
       setIsCartOpen(true);
-
-      toast({
-        title: "Added to Cart",
-        description: `${product.attributes.title} added to your cart`,
-        variant: "success",
-      });
     } catch (error) {
       console.error("Failed to add to cart", error);
-      toast({
-        title: "Error",
-        description: "Failed to add item to cart",
-        variant: "destructive",
-      });
     }
   };
 
-  // Quantity management
   const handleIncrease = () => setQuantity((prev) => prev + 1);
   const handleDecrease = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-
-  // Size selection
   const handleSizeSelect = (size) => setSelectedSize(size);
 
-  // Render loading state
   if (!product) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -181,7 +142,6 @@ export default function ProductPage() {
               {product.attributes.title}
             </h1>
 
-            {/* Rating */}
             <div className="flex items-center">
               {[1, 2, 3, 4, 5].map((i) => (
                 <Star
@@ -192,7 +152,6 @@ export default function ProductPage() {
               <span className="ml-2 text-xs sm:text-sm text-gray-600">5.0</span>
             </div>
 
-            {/* Price */}
             <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">
                 {selectedSize === "Small" ? "₹550" : "₹750"}
@@ -220,7 +179,7 @@ export default function ProductPage() {
                     selectedSize === "Small"
                       ? "bg-green-600 text-white"
                       : "border-green-600 text-green-600"
-                  } hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2`}
+                  } hover:bg-green-100`}
                 >
                   4 Inch
                 </button>
@@ -230,14 +189,14 @@ export default function ProductPage() {
                     selectedSize === "Medium"
                       ? "bg-green-600 text-white"
                       : "border-green-600 text-green-600"
-                  } hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2`}
+                  } hover:bg-green-100`}
                 >
                   6 Inch
                 </button>
               </div>
             </div>
 
-            {/* Quantity and Add to Cart */}
+            {/* Quantity & Add to Cart */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <div className="flex items-center border rounded-md">
                 <button
@@ -262,7 +221,6 @@ export default function ProductPage() {
               <Button
                 onClick={addToCart}
                 className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 py-4 sm:py-5 text-sm sm:text-base"
-                disabled={!selectedSize}
               >
                 {isAuthenticated ? "ADD TO CART" : "LOGIN TO ADD"}
               </Button>
@@ -298,29 +256,12 @@ export default function ProductPage() {
                 }
               }}
             />
-
-            {/* Promo Box */}
-            <div className="border rounded-lg p-3 sm:p-4 text-center text-xs sm:text-sm">
-              🌱 Get ₹100 OFF On Order Above ₹899 | USE CODE ECO100 🎁
-            </div>
           </div>
         </div>
 
-        {/* Additional Sections */}
-        <section className="py-6 sm:py-8 lg:py-16 border-y-2 my-6 lg:my-[40px]">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-center text-green-800 mb-4 lg:mb-6">
-            About the Product
-          </h2>
-          <p className="max-w-3xl mx-auto text-center text-xs sm:text-sm lg:text-base text-gray-600 leading-relaxed px-4">
-            {product.attributes.description}
-          </p>
-        </section>
-
-        {/* Additional Components */}
+        {/* More Sections */}
+        <Diver className="my-10 sm:my-16 lg:my-20" />
         <NewArrivals />
-        <div className="w-full lg:w-[50%] mx-auto px-4 lg:px-0">
-          <Diver />
-        </div>
         <TestimonialSwiper />
       </Container>
     </Section>

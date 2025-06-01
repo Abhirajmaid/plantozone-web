@@ -47,7 +47,7 @@ const NewArrivals = () => {
         </div>
 
         {/* Desktop Grid Layout */}
-        <div className="hidden md:grid grid-cols-4 gap-x-10 gap-y-5 mt-[50px]">
+        <div className="hidden md:grid grid-cols-3 gap-x-10 gap-y-5 mt-[50px]">
           {data?.slice(0, 8)?.map((item, id) => (
             <div key={id}>
               <ProductCard data={item} />

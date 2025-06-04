@@ -1,0 +1,58 @@
+{
+  "collectionName": "orders",
+  "info": {
+    "singularName": "order",
+    "pluralName": "orders",
+    "displayName": "Order",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "orderId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "userName": {
+      "type": "string"
+    },
+    "userEmail": {
+      "type": "email"
+    },
+    "userPhone": {
+      "type": "string"
+    },
+    "address": {
+      "type": "text"
+    },
+    "pincode": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "items": {
+      "type": "json"
+    },
+    "total": {
+      "type": "decimal"
+    },
+    "paymentId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "paid",
+        "failed"
+      ],
+      "default": "pending"
+    }
+  }
+}

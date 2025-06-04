@@ -3,6 +3,8 @@
 import "./globals.css"; // Import global styles (Tailwind CSS)
 import { Playfair, Montserrat } from "next/font/google"; // Import Google Fonts
 import { Providers } from "./provider";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Import the common components
 
@@ -54,6 +56,7 @@ export default function RootLayout({ children }) {
         <html lang="en">
           <body className={`${playfair.className} ${montserrat.className}`}>
             <main>{children}</main>
+            <ToastContainer position="top-right" />
           </body>
         </html>
       </Providers>

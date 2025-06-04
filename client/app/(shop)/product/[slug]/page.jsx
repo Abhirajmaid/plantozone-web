@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Star } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
 import { Badge } from "@/src/components/ui/badge";
 import {
   Breadcrumb,
@@ -14,21 +13,19 @@ import {
 import { Section } from "@/src/components/layout/Section";
 import { Container } from "@/src/components/layout/Container";
 import { Diver, NewArrivals, TestimonialSwiper } from "@/src/components";
-import { useAuth } from "@/src/hooks/useAuth";
 import plantsAction from "@/src/lib/action/plants.action";
-import cartAction from "@/src/lib/action/cart.action";
-import { CartDrawer } from "@/src/components/section/checkout/CartDrawer";
+import { addToCart as addToCartUtil } from "@/src/lib/utils/cartUtils";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("");
+  const [selectedShape, setSelectedShape] = useState("");
   const [product, setProduct] = useState(null);
-  const [cartItems, setCartItems] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const { user, isAuthenticated } = useAuth();
   const params = useParams();
-  const router = useRouter();
   const productId = params.slug;
 
   useEffect(() => {
@@ -36,11 +33,6 @@ export default function ProductPage() {
       try {
         const productResponse = await plantsAction.getPlantById(productId);
         setProduct(productResponse?.data?.data);
-
-        if (isAuthenticated) {
-          const userCart = await cartAction.getUserCart();
-          setCartItems(userCart);
-        }
       } catch (error) {
         console.error("Failed to fetch data", error);
       }
@@ -49,55 +41,55 @@ export default function ProductPage() {
     fetchData();
   }, []);
 
-  const addToCart = async () => {
-    if (!isAuthenticated) {
-      alert("Please log in to add items to cart");
-      router.push("/login");
-      return;
-    }
-
+  const addToCart = () => {
     if (!selectedSize) {
       alert("Please select a plant size");
       return;
     }
+    if (!selectedShape) {
+      alert("Please select a plant shape");
+      return;
+    }
 
-    const price = selectedSize === "Small" ? 550 : 750;
-
-    const newCartItem = {
+    const price = selectedSize === "6 Inch" ? 550 : 750;
+    const newItem = {
       product: product.id,
       title: product?.attributes?.title,
       price: price,
       size: selectedSize,
+      shape: selectedShape,
       quantity: quantity,
-      userId: user?.id,
       image: product?.attributes?.images?.data[0]?.attributes?.url || "",
     };
 
-    try {
-      const addedItem = await cartAction.addToCart(newCartItem);
-      setCartItems((prevItems) => {
-        const existingIndex = prevItems.findIndex(
-          (item) => item.productId === product.id && item.size === selectedSize
-        );
-
-        if (existingIndex > -1) {
-          const updated = [...prevItems];
-          updated[existingIndex].quantity += quantity;
-          return updated;
-        }
-
-        return [...prevItems, addedItem];
-      });
-
-      setIsCartOpen(true);
-    } catch (error) {
-      console.error("Failed to add to cart", error);
-    }
+    addToCartUtil(newItem);
+    setShowSuccess(true);
+    toast.success("Successfully added to cart!", {
+      position: "top-right",
+      autoClose: 2000,
+      icon: (
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+      ),
+    });
+    setTimeout(() => setShowSuccess(false), 2000);
   };
 
   const handleIncrease = () => setQuantity((prev) => prev + 1);
   const handleDecrease = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   const handleSizeSelect = (size) => setSelectedSize(size);
+  const handleShapeSelect = (shape) => setSelectedShape(shape);
 
   if (!product) {
     return (
@@ -108,7 +100,27 @@ export default function ProductPage() {
   }
 
   return (
-    <Section className="min-h-screen">
+    <Section className="min-h-screen relative">
+      {showSuccess && (
+        <div className="fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce">
+          <div className="flex items-center gap-2">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <span>Successfully added to cart!</span>
+          </div>
+        </div>
+      )}
       <Container className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-[100px] py-4 sm:py-6 lg:py-8 pt-16 lg:pt-[100px]">
         {/* Breadcrumb */}
         <Breadcrumb className="mb-4 lg:mb-8 flex gap-1 text-xs sm:text-sm lg:text-base">
@@ -174,24 +186,53 @@ export default function ProductPage() {
               </label>
               <div className="flex flex-wrap gap-2 sm:gap-4">
                 <button
-                  onClick={() => handleSizeSelect("Small")}
+                  onClick={() => handleSizeSelect("6 Inch")}
                   className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base border-2 rounded-md ${
-                    selectedSize === "Small"
-                      ? "bg-green-600 text-white"
-                      : "border-green-600 text-green-600"
-                  } hover:bg-green-100`}
-                >
-                  4 Inch
-                </button>
-                <button
-                  onClick={() => handleSizeSelect("Medium")}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base border-2 rounded-md ${
-                    selectedSize === "Medium"
+                    selectedSize === "6 Inch"
                       ? "bg-green-600 text-white"
                       : "border-green-600 text-green-600"
                   } hover:bg-green-100`}
                 >
                   6 Inch
+                </button>
+                <button
+                  onClick={() => handleSizeSelect("8 Inch")}
+                  className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base border-2 rounded-md ${
+                    selectedSize === "8 Inch"
+                      ? "bg-green-600 text-white"
+                      : "border-green-600 text-green-600"
+                  } hover:bg-green-100`}
+                >
+                  8 Inch
+                </button>
+              </div>
+            </div>
+
+            {/* Shape Selection */}
+            <div className="flex flex-col items-start mt-4">
+              <label className="mb-2 text-xs sm:text-sm font-medium text-gray-700">
+                SELECT PLANT SHAPE
+              </label>
+              <div className="flex flex-wrap gap-2 sm:gap-4">
+                <button
+                  onClick={() => handleShapeSelect("Hexagonal")}
+                  className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base border-2 rounded-md ${
+                    selectedShape === "Hexagonal"
+                      ? "bg-green-600 text-white"
+                      : "border-green-600 text-green-600"
+                  } hover:bg-green-100`}
+                >
+                  Hexagonal
+                </button>
+                <button
+                  onClick={() => handleShapeSelect("Round")}
+                  className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base border-2 rounded-md ${
+                    selectedShape === "Round"
+                      ? "bg-green-600 text-white"
+                      : "border-green-600 text-green-600"
+                  } hover:bg-green-100`}
+                >
+                  Round
                 </button>
               </div>
             </div>
@@ -222,40 +263,9 @@ export default function ProductPage() {
                 onClick={addToCart}
                 className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 py-4 sm:py-5 text-sm sm:text-base"
               >
-                {isAuthenticated ? "ADD TO CART" : "LOGIN TO ADD"}
+                ADD TO CART
               </Button>
             </div>
-
-            {/* Cart Drawer */}
-            <CartDrawer
-              isOpen={isCartOpen}
-              setIsOpen={setIsCartOpen}
-              cartItems={cartItems}
-              updateQuantity={async (itemId, newQuantity) => {
-                try {
-                  await cartAction.updateCartItemQuantity(itemId, newQuantity);
-                  setCartItems((prevItems) =>
-                    prevItems.map((item) =>
-                      item.id === itemId
-                        ? { ...item, quantity: newQuantity }
-                        : item
-                    )
-                  );
-                } catch (error) {
-                  console.error("Failed to update quantity", error);
-                }
-              }}
-              removeFromCart={async (itemId) => {
-                try {
-                  await cartAction.removeFromCart(itemId);
-                  setCartItems((prevItems) =>
-                    prevItems.filter((item) => item.id !== itemId)
-                  );
-                } catch (error) {
-                  console.error("Failed to remove item", error);
-                }
-              }}
-            />
           </div>
         </div>
 

@@ -880,6 +880,48 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
   };
 }
 
+export interface ApiOrderOrder extends Schema.CollectionType {
+  collectionName: 'orders';
+  info: {
+    singularName: 'order';
+    pluralName: 'orders';
+    displayName: 'Order';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    orderId: Attribute.String & Attribute.Required & Attribute.Unique;
+    userName: Attribute.String;
+    userEmail: Attribute.Email;
+    userPhone: Attribute.String;
+    address: Attribute.Text;
+    pincode: Attribute.String;
+    city: Attribute.String;
+    state: Attribute.String;
+    items: Attribute.JSON;
+    total: Attribute.Decimal;
+    paymentId: Attribute.String;
+    status: Attribute.Enumeration<['pending', 'paid', 'failed']> &
+      Attribute.DefaultTo<'pending'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::order.order',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::order.order',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiPlantPlant extends Schema.CollectionType {
   collectionName: 'plants';
   info: {
@@ -942,6 +984,7 @@ declare module '@strapi/types' {
       'api::blog.blog': ApiBlogBlog;
       'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
+      'api::order.order': ApiOrderOrder;
       'api::plant.plant': ApiPlantPlant;
     }
   }

@@ -28,6 +28,19 @@ import SignInForm from "../common/SignInForm";
 import SignUpForm from "../common/SignUpForm";
 import { Icon } from "@iconify/react";
 
+// --- Cart count utility ---
+function getCartCount() {
+  if (typeof window !== "undefined") {
+    try {
+      const cart = JSON.parse(sessionStorage.getItem("cart") || "[]");
+      return cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    } catch {
+      return 0;
+    }
+  }
+  return 0;
+}
+
 export default function CustomNavbar() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(true);
@@ -35,6 +48,7 @@ export default function CustomNavbar() {
   const [activeTab, setActiveTab] = useState("/shop");
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const menuRef = useRef(null);
   const dropdownRef = useRef(null);
   const dropdownTimerRef = useRef(null);
@@ -117,6 +131,22 @@ export default function CustomNavbar() {
     }
   }, []);
 
+  useEffect(() => {
+    setCartCount(getCartCount());
+    // Listen for cart changes (optional: use a custom event or polling)
+    const handleStorage = () => setCartCount(getCartCount());
+    window.addEventListener("storage", handleStorage);
+    // Optionally, poll for cart changes if cart is updated in sessionStorage
+    const interval = setInterval(() => setCartCount(getCartCount()), 1000);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      clearInterval(interval);
+      if (dropdownTimerRef.current) {
+        clearTimeout(dropdownTimerRef.current);
+      }
+    };
+  }, []);
+
   return (
     <>
       <header className="fixed w-full bg-white z-[99] border-b">
@@ -144,14 +174,21 @@ export default function CustomNavbar() {
 
             {/* Right: Icons */}
             <div className="hidden md:flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
-                <ShoppingCartIcon className="h-7 w-7" />
-                <span className="sr-only">Shopping Cart</span>
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link href="/cart">
+                  <ShoppingCartIcon className="h-7 w-7" />
+                  <span className="sr-only">Shopping Cart</span>
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
               </Button>
-              <Button variant="ghost" size="icon">
+              {/* <Button variant="ghost" size="icon">
                 <HeartIcon className="h-7 w-7" />
                 <span className="sr-only">Wishlist</span>
-              </Button>
+              </Button> */}
               {isSignedIn ? (
                 <div
                   className="relative"
@@ -212,7 +249,7 @@ export default function CustomNavbar() {
           </div>
         </Container>
 
-        {/* Rest of the existing mobile menu code... */}
+        {/* Mobile Hamburger Menu for pages not on tabs */}
         {isMenuOpen && (
           <div
             ref={menuRef}
@@ -226,17 +263,20 @@ export default function CustomNavbar() {
               </Button>
             </div>
             <div className="flex flex-col items-center space-y-4 py-4">
-              {header.map((link, id) => (
-                <Link
-                  key={id}
-                  href={link.href}
-                  className="hover:text-[#0b9c09] transition-colors capitalize text-lg"
-                  onClick={toggleMenu}
-                >
-                  {link.label}
-                </Link>
-              ))}
-
+              {header
+                .filter(
+                  (link) => !mobileTabs.some((tab) => tab.href === link.href)
+                )
+                .map((link, id) => (
+                  <Link
+                    key={id}
+                    href={link.href}
+                    className="hover:text-[#0b9c09] transition-colors capitalize text-lg"
+                    onClick={toggleMenu}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
               {isSignedIn && (
                 <>
                   {/* Account Related Links */}
@@ -278,21 +318,28 @@ export default function CustomNavbar() {
       {/* Bottom Navigation Tabs */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-md z-[100]">
         <div className="flex justify-between items-center p-4">
-          {mobileTabs.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex flex-col items-center text-sm transition-colors duration-200 p-2 ${
-                activeTab === link.href
-                  ? "text-[#0b9c09] bg-gray-100 rounded-md"
-                  : "text-gray-600 hover:text-[#0b9c09]"
-              }`}
-              onClick={() => handleTabClick(link.href)}
-            >
-              <Icon icon={link.icon} width="25" height="25" />
-              <span className="text-xs">{link.label}</span>
-            </Link>
-          ))}
+          {mobileTabs
+            .filter((link) => link.href !== "/wishlist")
+            .map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex flex-col items-center text-sm transition-colors duration-200 p-2 ${
+                  activeTab === link.href
+                    ? "text-[#0b9c09] bg-gray-100 rounded-md"
+                    : "text-gray-600 hover:text-[#0b9c09]"
+                }`}
+                onClick={() => handleTabClick(link.href)}
+              >
+                <Icon icon={link.icon} width="25" height="25" />
+                <span className="text-xs">{link.label}</span>
+                {link.href === "/cart" && cartCount > 0 && (
+                  <span className="absolute top-1 right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            ))}
           <button
             key="profile"
             className={`flex flex-col items-center text-sm transition-colors duration-200 ${

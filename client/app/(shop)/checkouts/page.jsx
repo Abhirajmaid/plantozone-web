@@ -1,667 +1,442 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import {
-  Package,
-  Leaf,
-  Truck,
-  Sprout,
-  CreditCard,
-  Banknote,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-
-import { Button } from "@/src/components/ui/button";
-import { Card, CardContent } from "@/src/components/ui/card";
-import { Checkbox } from "@/src/components/ui/checkbox";
-import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/src/components/ui/radio-group";
-import { Separator } from "@/src/components/ui/separator";
-import { Section } from "@/src/components/layout/Section";
+import { useEffect, useState } from "react";
+import { getCartItems } from "@/src/lib/utils/cartUtils";
 import { Container } from "@/src/components/layout/Container";
-import { useAuth } from "@/src/hooks/useAuth";
-import cartAction from "@/src/lib/action/cart.action";
-
-// Form validation schema
-const checkoutSchema = z.object({
-  email: z.string().email("Invalid email format"),
-  country: z.string().min(1, "Country is required"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  address: z.string().min(1, "Address is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  pinCode: z
-    .string()
-    .regex(/^\d{6}$/, "PIN code must be 6 digits")
-    .min(1, "PIN code is required"),
-  phone: z
-    .string()
-    .regex(/^\d{10}$/, "Phone number must be 10 digits")
-    .min(1, "Phone number is required"),
-  saveInfo: z.boolean().optional(),
-  newsletter: z.boolean().optional(),
-  paymentMethod: z.enum(["razorpay", "cod"], {
-    required_error: "Please select a payment method",
-  }),
-  sameAsBilling: z.boolean().optional(),
-});
+import { Section } from "@/src/components/layout/Section";
+import { Button } from "@/src/components/ui/button";
 
 export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(false);
-  const [couponCode, setCouponCode] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const [couponApplied, setCouponApplied] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const { user, isAuthenticated } = useAuth();
-  const router = useRouter();
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(checkoutSchema),
-    defaultValues: {
-      email: user?.email || "",
-      country: "india",
-      state: "maharashtra",
-      paymentMethod: "razorpay",
-      sameAsBilling: true,
-    },
+  // User details state
+  const [userDetails, setUserDetails] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    pincode: "",
+    city: "",
+    state: "",
   });
+  const [touched, setTouched] = useState({});
+  const [formError, setFormError] = useState("");
 
-  const paymentMethod = watch("paymentMethod");
-
-  // Fetch cart items
   useEffect(() => {
-    const fetchCartItems = async () => {
-      if (!isAuthenticated) {
-        router.push("/login");
-        return;
-      }
+    setCartItems(getCartItems());
+  }, []);
 
-      try {
-        setLoading(true);
-        const userCart = await cartAction.getUserCart();
-        if (!userCart || userCart.length === 0) {
-          router.push("/cart");
-          return;
-        }
-        setCartItems(userCart);
-      } catch (error) {
-        console.error("Failed to fetch cart items", error);
-        router.push("/cart");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCartItems();
-  }, [isAuthenticated, router]);
-
-  // Calculate totals
-  const subtotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
+  const total = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
     0
   );
 
-  const shippingCost = subtotal > 899 ? 0 : 100;
-  const discountAmount = couponApplied ? discount : 0;
-  const total = subtotal + shippingCost - discountAmount;
+  // Validation
+  const isValid =
+    userDetails.name.trim() &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userDetails.email) &&
+    /^[6-9]\d{9}$/.test(userDetails.phone) &&
+    userDetails.address.trim() &&
+    userDetails.pincode.trim().length === 6 &&
+    userDetails.city.trim() &&
+    userDetails.state.trim();
 
-  // Apply coupon
-  const applyCoupon = () => {
-    if (couponCode.toUpperCase() === "ECO100" && subtotal >= 899) {
-      setDiscount(100);
-      setCouponApplied(true);
-    } else if (couponCode.toUpperCase() === "PLANT50" && subtotal >= 500) {
-      setDiscount(50);
-      setCouponApplied(true);
-    } else {
-      alert("Invalid coupon code or minimum order not met");
+  // Razorpay handler
+  const handleRazorpay = async () => {
+    if (!isValid) {
+      setFormError("Please fill all required fields correctly.");
+      setTouched({
+        name: true,
+        email: true,
+        phone: true,
+        address: true,
+        pincode: true,
+        city: true,
+        state: true,
+      });
+      return;
     }
-  };
-
-  // Remove coupon
-  const removeCoupon = () => {
-    setCouponCode("");
-    setDiscount(0);
-    setCouponApplied(false);
-  };
-
-  // Handle form submission
-  const onSubmit = async (data) => {
-    setProcessing(true);
-
-    try {
-      const orderData = {
-        ...data,
-        cartItems,
-        subtotal,
-        shippingCost,
-        discount: discountAmount,
-        total,
-        couponCode: couponApplied ? couponCode : null,
-      };
-
-      if (data.paymentMethod === "razorpay") {
-        // Create Razorpay order
-        const response = await fetch("/api/create-razorpay-order", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(orderData),
-        });
-
-        const order = await response.json();
-
-        if (!response.ok) {
-          throw new Error(order.error || "Failed to create order");
-        }
-
-        // Initialize Razorpay
-        const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-          amount: order.amount,
-          currency: order.currency,
-          name: "Plantozone",
-          description: "Plant Purchase",
-          order_id: order.id,
-          handler: async (response) => {
-            // Verify payment
-            const verifyResponse = await fetch("/api/verify-payment", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
+    setFormError("");
+    setLoading(true);
+    const options = {
+      key: "rzp_test_oypcbnwC2SClPu", // Replace with your Razorpay key
+      amount: total * 100, // in paise
+      currency: "INR",
+      name: "Plantozone",
+      description: "Order Payment",
+      image: "/images/logo_color.png",
+      handler: async function (response) {
+        // Add order to Strapi Orders API
+        try {
+          await fetch("https://dashboard.plantozone.com/api/orders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              data: {
+                orderId: response.razorpay_payment_id,
+                userName: userDetails.name,
+                userEmail: userDetails.email,
+                userPhone: userDetails.phone,
+                address: `${userDetails.address}${
+                  userDetails.address2 ? ", " + userDetails.address2 : ""
+                }`,
+                pincode: userDetails.pincode,
+                city: userDetails.city,
+                state: userDetails.state,
+                items: cartItems,
+                total: total,
+                paymentId: response.razorpay_payment_id,
+                status: "paid",
               },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                orderData,
-              }),
-            });
+            }),
+          });
+          alert(
+            "Payment successful! Order placed. Payment ID: " +
+              response.razorpay_payment_id
+          );
+        } catch (err) {
+          alert(
+            "Payment succeeded but failed to save order. Please contact support."
+          );
+        }
+      },
+      prefill: {
+        name: userDetails.name,
+        email: userDetails.email,
+        contact: userDetails.phone,
+      },
+      theme: {
+        color: "#16a34a",
+      },
+    };
 
-            const verifyResult = await verifyResponse.json();
-
-            if (verifyResponse.ok) {
-              // Clear cart and redirect to success
-              router.push(`/order-success?orderId=${verifyResult.orderId}`);
-            } else {
-              alert("Payment verification failed. Please contact support.");
-            }
-          },
-          prefill: {
-            name: `${data.firstName} ${data.lastName}`,
-            email: data.email,
-            contact: data.phone,
-          },
-          theme: {
-            color: "#16a34a",
-          },
-        };
-
+    if (typeof window !== "undefined") {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = () => {
+        setLoading(false);
         const rzp = new window.Razorpay(options);
         rzp.open();
-      } else {
-        // COD Order
-        const response = await fetch("/api/create-cod-order", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(orderData),
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          router.push(`/order-success?orderId=${result.orderId}`);
-        } else {
-          throw new Error(result.error || "Failed to create order");
-        }
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setProcessing(false);
+      };
+      document.body.appendChild(script);
     }
   };
 
-  if (loading) {
-    return (
-      <Section className="min-h-screen">
-        <Container className="pt-20">
-          <div className="flex justify-center items-center min-h-64">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-              <p>Loading checkout...</p>
-            </div>
-          </div>
-        </Container>
-      </Section>
-    );
-  }
+  const handleChange = (e) => {
+    setUserDetails((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleBlur = (e) => {
+    setTouched((prev) => ({
+      ...prev,
+      [e.target.name]: true,
+    }));
+  };
 
   return (
-    <Section>
-      <Container className="min-h-screen pt-20">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid gap-8 md:grid-cols-2">
-            {/* Left Column - Forms */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <Image
-                  src="/images/logo_color.png"
-                  alt="Plantozone Logo"
-                  width={120}
-                  height={40}
-                  className="h-10 w-auto"
-                />
-                <Link
-                  href="/cart"
-                  className="text-sm text-green-600 hover:text-green-700"
-                >
-                  Return to cart
-                </Link>
-              </div>
-
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {/* Contact Section */}
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold">Contact</h2>
-                  <div>
-                    <Input
-                      {...register("email")}
-                      type="email"
-                      placeholder="Email"
-                      className="w-full"
-                    />
-                    {errors.email && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {errors.email.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="newsletter" {...register("newsletter")} />
-                    <Label htmlFor="newsletter">
-                      Email me with news and offers
-                    </Label>
-                  </div>
-                </div>
-
-                {/* Delivery Section */}
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold">Delivery</h2>
-
-                  {/* Country */}
-                  <div>
-                    <select
-                      {...register("country")}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:outline-none"
-                    >
-                      <option value="india">India</option>
-                    </select>
-                    {errors.country && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {errors.country.message}
-                      </p>
-                    )}
-                  </div>
-
+    <Section className="min-h-screen bg-gray-50">
+      <Container className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-[100px] py-8 sm:py-10 lg:py-16 pt-20 lg:pt-[120px]">
+        <div className="max-w-5xl mx-auto">
+          <h1 className="text-3xl font-bold mb-8 text-center text-green-700">
+            Checkout
+          </h1>
+          {cartItems.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-lg shadow">
+              <p className="mb-4 text-lg text-gray-500">Your cart is empty</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 bg-transparent">
+              {/* Left: Shipping Form */}
+              <form
+                className="space-y-6 bg-white rounded-xl p-6 border border-gray-200 shadow-sm flex flex-col h-fit"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleRazorpay();
+                }}
+              >
+                <h3 className="text-lg font-semibold text-green-700 mb-4">
+                  Shipping Details
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Name */}
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div>
-                      <Input
-                        {...register("firstName")}
-                        placeholder="First name"
-                      />
-                      {errors.firstName && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {errors.firstName.message}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Input
-                        {...register("lastName")}
-                        placeholder="Last name"
-                      />
-                      {errors.lastName && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {errors.lastName.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Address */}
                   <div>
-                    <Input {...register("address")} placeholder="Address" />
-                    {errors.address && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {errors.address.message}
-                      </p>
-                    )}
+                    <label className="block text-sm font-medium mb-1 text-gray-700">
+                      Name<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={userDetails.name}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                        touched.name && !userDetails.name
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      required
+                      placeholder="Full Name"
+                    />
                   </div>
-
-                  {/* City, State, PIN */}
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <div>
-                      <Input {...register("city")} placeholder="City" />
-                      {errors.city && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {errors.city.message}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <select
-                        {...register("state")}
-                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:outline-none"
-                      >
-                        <option value="maharashtra">Maharashtra</option>
-                        <option value="delhi">Delhi</option>
-                        <option value="karnataka">Karnataka</option>
-                        <option value="gujarat">Gujarat</option>
-                        <option value="rajasthan">Rajasthan</option>
-                        <option value="tamilnadu">Tamil Nadu</option>
-                        <option value="westbengal">West Bengal</option>
-                        <option value="telangana">Telangana</option>
-                        <option value="andhra-pradesh">Andhra Pradesh</option>
-                        <option value="uttar-pradesh">Uttar Pradesh</option>
-                      </select>
-                      {errors.state && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {errors.state.message}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Input {...register("pinCode")} placeholder="PIN code" />
-                      {errors.pinCode && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {errors.pinCode.message}
-                        </p>
-                      )}
-                    </div>
+                  {/* Email */}
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-700">
+                      Email<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={userDetails.email}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                        touched.email &&
+                        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userDetails.email)
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      required
+                      placeholder="you@email.com"
+                    />
                   </div>
-
                   {/* Phone */}
                   <div>
-                    <Input {...register("phone")} placeholder="Phone" />
-                    {errors.phone && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {errors.phone.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Save Info */}
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="save-info" {...register("saveInfo")} />
-                    <Label htmlFor="save-info">
-                      Save this information for next time
-                    </Label>
-                  </div>
-                </div>
-
-                {/* Payment Section */}
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold">Payment</h2>
-                  <Card>
-                    <CardContent className="p-4">
-                      <p className="text-sm text-gray-600 mb-4">
-                        All transactions are secure and encrypted.
-                      </p>
-                      <RadioGroup
-                        value={paymentMethod}
-                        onValueChange={(value) =>
-                          setValue("paymentMethod", value)
-                        }
-                        className="space-y-3"
-                      >
-                        <div className="flex items-center space-x-2 p-3 border rounded-lg">
-                          <RadioGroupItem value="cod" id="cod" />
-                          <Label
-                            htmlFor="cod"
-                            className="flex items-center gap-2"
-                          >
-                            <Banknote className="w-4 h-4" />
-                            Cash On Delivery (COD)
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                      {errors.paymentMethod && (
-                        <p className="text-sm text-red-500 mt-2">
-                          {errors.paymentMethod.message}
-                        </p>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Billing Address */}
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold">Billing address</h2>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="same-address"
-                      {...register("sameAsBilling")}
-                      defaultChecked
+                    <label className="block text-sm font-medium mb-1 text-gray-700">
+                      Phone<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={userDetails.phone}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                        touched.phone && !/^[6-9]\d{9}$/.test(userDetails.phone)
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      required
+                      placeholder="10-digit mobile number"
                     />
-                    <Label htmlFor="same-address">
-                      Same as shipping address
-                    </Label>
+                  </div>
+                  {/* Pincode */}
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-700">
+                      Pincode<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={userDetails.pincode}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      maxLength={6}
+                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                        touched.pincode && userDetails.pincode.length !== 6
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      required
+                      placeholder="6-digit pincode"
+                    />
+                  </div>
+                  {/* City */}
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-700">
+                      City<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="city"
+                      value={userDetails.city}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                        touched.city && !userDetails.city
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      required
+                      placeholder="City"
+                    />
+                  </div>
+                  {/* State */}
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-700">
+                      State<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="state"
+                      value={userDetails.state}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                        touched.state && !userDetails.state
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      required
+                      placeholder="State"
+                    />
                   </div>
                 </div>
-
+                {/* Address */}
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-700">
+                    Address<span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    name="address"
+                    value={userDetails.address}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                      touched.address && !userDetails.address
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                    rows={2}
+                    required
+                    placeholder="Flat, House no., Building, Company, Apartment"
+                  />
+                  <textarea
+                    name="address2"
+                    value={userDetails.address2 || ""}
+                    onChange={(e) =>
+                      setUserDetails((prev) => ({
+                        ...prev,
+                        address2: e.target.value,
+                      }))
+                    }
+                    className="w-full border rounded-lg px-3 py-2 bg-white mt-2 focus:outline-none focus:ring-2 focus:ring-green-200 border-gray-300"
+                    rows={2}
+                    placeholder="Area, Colony, Street, Sector, Village (optional)"
+                  />
+                </div>
+                {formError && (
+                  <div className="text-red-600 text-sm font-medium">
+                    {formError}
+                  </div>
+                )}
                 <Button
+                  className="w-full py-5 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white text-base font-bold rounded-xl shadow-md border-0 transition-all duration-200 flex items-center justify-center gap-2"
                   type="submit"
-                  disabled={processing}
-                  className="w-full bg-green-600 hover:bg-green-700 py-3"
+                  disabled={loading}
                 >
-                  {processing
-                    ? "Processing..."
-                    : paymentMethod === "cod"
-                    ? "Place Order"
-                    : "Pay Now"}
+                  {loading ? "Processing..." : "Pay Now"}
                 </Button>
               </form>
-
-              <div className="flex justify-center space-x-4 text-sm text-gray-500">
-                <Link href="/refund">Refund policy</Link>
-                <Link href="/privacy">Privacy policy</Link>
-                <Link href="/terms">Terms of service</Link>
-              </div>
-            </div>
-
-            {/* Right Column - Order Summary */}
-            <div className="space-y-6 bg-gray-50 p-6 rounded-lg">
-              {/* Cart Items */}
-              <div className="space-y-4">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="flex items-start space-x-4">
-                    <div className="relative h-16 w-16 overflow-hidden rounded-lg border bg-white">
-                      <img
-                        src={item.image || "/api/placeholder/64/64"}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gray-500 text-xs text-white">
-                        {item.quantity}
+              {/* Right: Order Summary */}
+              <div className="bg-white rounded-2xl shadow-xl p-0 h-fit flex flex-col items-center">
+                <div className="w-full max-w-md mx-auto bg-gradient-to-br from-green-50 to-white rounded-2xl border border-green-200 shadow p-0 mt-0">
+                  <div className="flex flex-col items-center py-6 border-b border-dashed border-green-300">
+                    <img
+                      src="/logo.png"
+                      alt="Plantozone"
+                      className="w-16 h-16 mb-2"
+                    />
+                    <h2 className="text-2xl font-bold text-green-700 tracking-wider mb-1">
+                      Plantozone
+                    </h2>
+                    <span className="text-xs text-gray-400">Order Bill</span>
+                  </div>
+                  <ul className="divide-y divide-dashed divide-green-200 mb-0">
+                    {cartItems.map((item, idx) => (
+                      <li
+                        key={idx}
+                        className="py-4 flex items-center gap-3 px-6"
+                      >
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-12 h-12 object-cover rounded border"
+                        />
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-800 text-sm line-clamp-1">
+                            {item.title}
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            <span className="mr-2">
+                              Size:{" "}
+                              <span className="font-semibold">{item.size}</span>
+                            </span>
+                            <span>
+                              Shape:{" "}
+                              <span className="font-semibold">
+                                {item.shape}
+                              </span>
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Qty:{" "}
+                            <span className="font-semibold">
+                              {item.quantity}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="font-semibold text-green-700 text-base min-w-[60px] text-right">
+                          ₹{item.price * item.quantity}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="px-6 py-4 border-t border-dashed border-green-300">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-gray-600">Subtotal</span>
+                      <span className="font-semibold text-gray-800">
+                        ₹{total}
                       </span>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium text-sm">{item.title}</h3>
-                      <p className="text-xs text-gray-500">Size: {item.size}</p>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-gray-600">Delivery</span>
+                      <span className="font-semibold text-gray-800">Free</span>
                     </div>
-                    <p className="font-medium text-sm">
-                      ₹{(item.price * item.quantity).toFixed(2)}
-                    </p>
+                    <div className="flex justify-between items-center font-bold text-lg border-t border-dashed border-green-200 pt-3">
+                      <span>Total</span>
+                      <span className="text-green-700">₹{total}</span>
+                    </div>
                   </div>
-                ))}
-              </div>
-
-              <Separator />
-
-              {/* Coupon Section */}
-              <div className="space-y-4">
-                <div className="flex">
-                  <Input
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="Discount code or gift card"
-                    className="rounded-r-none"
-                    disabled={couponApplied}
-                  />
-                  {couponApplied ? (
+                  <div className="px-6 pb-6">
                     <Button
+                      className="w-full py-5 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white text-base font-bold rounded-xl shadow-md border-0 transition-all duration-200 flex items-center justify-center gap-2"
                       type="button"
-                      onClick={removeCoupon}
-                      variant="outline"
-                      className="rounded-l-none text-red-600 border-red-600"
+                      disabled={loading || !isValid}
+                      onClick={handleRazorpay}
                     >
-                      Remove
+                      <svg
+                        className="w-6 h-6 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M17 9V7a5 5 0 00-10 0v2M5 12h14l-1.38 8.29A2 2 0 0115.64 22H8.36a2 2 0 01-1.98-1.71L5 12zm2 0V7a3 3 0 016 0v5"
+                        />
+                      </svg>
+                      {loading ? "Processing..." : "Pay with Razorpay"}
                     </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      onClick={applyCoupon}
-                      variant="outline"
-                      className="rounded-l-none"
-                    >
-                      Apply
-                    </Button>
-                  )}
-                </div>
-
-                {!couponApplied && (
-                  <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center space-x-2 text-green-800">
-                        <span className="font-medium text-sm">ECO100</span>
-                        <span className="text-xs">
-                          ₹100 off on ₹899+ Orders!
-                        </span>
+                    {!isValid && (
+                      <div className="text-red-600 text-sm font-medium mt-2 text-center">
+                        Please fill all required details to proceed.
                       </div>
-                      <div className="flex items-center space-x-2 text-green-800">
-                        <span className="font-medium text-sm">PLANT50</span>
-                        <span className="text-xs">
-                          ₹50 off on ₹500+ Orders!
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {couponApplied && (
-                  <div className="rounded-lg border border-green-200 bg-green-50 p-3">
-                    <p className="text-sm text-green-800 font-medium">
-                      Coupon "{couponCode}" applied successfully!
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <Separator />
-
-              {/* Price Summary */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Subtotal</span>
-                  <span>₹{subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Shipping</span>
-                  <span className={shippingCost === 0 ? "text-green-600" : ""}>
-                    {shippingCost === 0 ? "FREE" : `₹${shippingCost}`}
-                  </span>
-                </div>
-                {discountAmount > 0 && (
-                  <div className="flex justify-between text-sm text-green-600">
-                    <span>Discount</span>
-                    <span>-₹{discountAmount}</span>
-                  </div>
-                )}
-                <Separator />
-                <div className="flex justify-between font-medium text-lg">
-                  <span>Total</span>
-                  <span>₹{total.toFixed(2)}</span>
-                </div>
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="space-y-4 pt-4">
-                <h3 className="text-lg font-semibold">
-                  1 Million+ Happy Customers Trust Us!
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <Package className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
-                    <div>
-                      <p className="font-medium text-sm">Guaranteed Returns</p>
-                      <p className="text-xs text-gray-600">
-                        Assured replacements if your plant arrives damaged or
-                        dies within the first 15 days
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <Leaf className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
-                    <div>
-                      <p className="font-medium text-sm">
-                        Healthy & Premium Looking Plants
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        We grow & nurture all our plants with love for 6 months
-                        before sending them to you
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <Truck className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
-                    <div>
-                      <p className="font-medium text-sm">
-                        Our Plants Grow Everywhere
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        We deliver all over the country
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <Sprout className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
-                    <div>
-                      <p className="font-medium text-sm">Growing the Grower</p>
-                      <p className="text-xs text-gray-600">
-                        We have been growing plants for over 30 years and
-                        understand the science behind it
-                      </p>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
-
-        {/* Razorpay Script */}
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </Container>
     </Section>
   );

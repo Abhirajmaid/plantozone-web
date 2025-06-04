@@ -1,14 +1,14 @@
 {
   "kind": "collectionType",
-  "collectionName": "orders",
+  "collectionName": "order_details",
   "info": {
-    "singularName": "order",
-    "pluralName": "orders",
-    "displayName": "Order",
+    "singularName": "order-detail",
+    "pluralName": "order-details",
+    "displayName": "OrderDetail",
     "description": ""
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
@@ -55,9 +55,6 @@
         "failed"
       ],
       "default": "pending"
-    },
-    "name": {
-      "type": "string"
     }
   }
 }

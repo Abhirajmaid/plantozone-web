@@ -69,7 +69,7 @@ export default function CheckoutPage() {
       handler: async function (response) {
         // Add order to Strapi Orders API
         try {
-          await fetch("https://dashboard.plantozone.com/api/orders", {
+          await fetch("https://dashboard.plantozone.com/api/order-details", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

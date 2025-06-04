@@ -905,6 +905,7 @@ export interface ApiOrderOrder extends Schema.CollectionType {
     paymentId: Attribute.String;
     status: Attribute.Enumeration<['pending', 'paid', 'failed']> &
       Attribute.DefaultTo<'pending'>;
+    name: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -915,6 +916,49 @@ export interface ApiOrderOrder extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::order.order',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiOrderDetailOrderDetail extends Schema.CollectionType {
+  collectionName: 'order_details';
+  info: {
+    singularName: 'order-detail';
+    pluralName: 'order-details';
+    displayName: 'OrderDetail';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    orderId: Attribute.String & Attribute.Required & Attribute.Unique;
+    userName: Attribute.String;
+    userEmail: Attribute.Email;
+    userPhone: Attribute.String;
+    address: Attribute.Text;
+    pincode: Attribute.String;
+    city: Attribute.String;
+    state: Attribute.String;
+    items: Attribute.JSON;
+    total: Attribute.Decimal;
+    paymentId: Attribute.String;
+    status: Attribute.Enumeration<['pending', 'paid', 'failed']> &
+      Attribute.DefaultTo<'pending'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::order-detail.order-detail',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::order-detail.order-detail',
       'oneToOne',
       'admin::user'
     > &
@@ -985,6 +1029,7 @@ declare module '@strapi/types' {
       'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
       'api::order.order': ApiOrderOrder;
+      'api::order-detail.order-detail': ApiOrderDetailOrderDetail;
       'api::plant.plant': ApiPlantPlant;
     }
   }

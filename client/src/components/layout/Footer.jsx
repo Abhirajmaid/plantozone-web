@@ -1,6 +1,26 @@
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import { Container } from "./Container";
+import Link from "next/link";
+
+const aboutLinks = [
+  { label: "Our Story", href: "/about" },
+  { label: "Updates", href: "/updates" },
+  { label: "Locate Stores", href: "/stores" },
+];
+
+const customerCareLinks = [
+  { label: "Track Order", href: "/track-order" },
+  { label: "Shipping Policy", href: "/shipping-policy" },
+  { label: "Terms and Conditions", href: "/terms" },
+  { label: "Privacy Policy", href: "/privacy" },
+];
+
+const navLinks = [
+  { label: "Shop", href: "/shop" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
+];
 
 export default function Footer() {
   return (
@@ -8,18 +28,18 @@ export default function Footer() {
       <Container>
         <hr className="bg-black w-[80%] mx-auto h-[2px] mb-[50px]" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-8 px-4 sm:px-0 text-center md:text-left">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 px-4 sm:px-0 text-center md:text-left">
           {/* About Us */}
           <div>
             <h2 className="text-[16px] font-semibold text-gray-800">
               About Us
             </h2>
             <ul className="mt-4 text-[14px] space-y-3 text-gray-600">
-              <li>Our Story</li>
-              <li>Updates</li>
-              <li>Locate Stores</li>
-              <li>Newsletter</li>
-              <li>Garden Services</li>
+              {aboutLinks.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -29,26 +49,25 @@ export default function Footer() {
               Customer Care
             </h2>
             <ul className="mt-4 text-[14px] space-y-3 text-gray-600">
-              <li>Take The Plant Quiz</li>
-              <li>Track Order</li>
-              <li>Shipping Policy</li>
-              <li>Terms and Conditions</li>
-              <li>Privacy Policy</li>
+              {customerCareLinks.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Categories */}
+          {/* Nav Links */}
           <div>
             <h2 className="text-[16px] font-semibold text-gray-800">
-              Categories
+              Navigation
             </h2>
             <ul className="mt-4 text-[14px] space-y-3 text-gray-600">
-              <li>Bonsai & Miniature</li>
-              <li>Rare & Exotic</li>
-              <li>Indoor</li>
-              <li>Outdoor</li>
-              <li>Air Purifying</li>
-              <li>Flowering</li>
+              {navLinks.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -62,24 +81,24 @@ export default function Footer() {
             </p>
             <p className="text-gray-600">Email : info@plantozone.com</p>
             <div className="mt-4 flex justify-center md:justify-start space-x-4 text-gray-600">
-              <a href="#">
+              <a href="#" aria-label="Facebook">
                 <Icon icon="uiw:facebook" width="28" height="28" />
               </a>
-              <a href="#">
+              <a href="#" aria-label="Instagram">
                 <Icon
                   icon="streamline:instagram-solid"
                   width="28"
                   height="28"
                 />
               </a>
-              <a href="#">
+              <a href="#" aria-label="LinkedIn">
                 <Icon icon="bi:linkedin" width="28" height="28" />
               </a>
             </div>
           </div>
 
           {/* Newsletter Signup */}
-          <div className="lg:col-span-3 flex flex-col items-center lg:flex-row lg:items-start gap-6">
+          <div className="lg:col-span-2 flex flex-col items-center lg:flex-row lg:items-start gap-6">
             <Image
               width={300}
               height={400}

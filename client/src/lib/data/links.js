@@ -34,11 +34,6 @@ export const mobileTabs = [
     icon: "lucide:newspaper"
   },
   {
-    label: "About Us",
-    href: "/about-us",
-    icon: "lucide:info"
-  },
-  {
     label: "Contact",
     href: "/contact-us",
     icon: "mi:call"
@@ -46,6 +41,6 @@ export const mobileTabs = [
   {
     label: "Cart",
     href: "/cart",
-    icon: "lucide:cart"
+    icon: "lucide:shopping-cart"
   }
 ]

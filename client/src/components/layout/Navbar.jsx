@@ -340,18 +340,6 @@ export default function CustomNavbar() {
                 )}
               </Link>
             ))}
-          <button
-            key="profile"
-            className={`flex flex-col items-center text-sm transition-colors duration-200 ${
-              activeTab === "/profile"
-                ? "text-[#0b9c09] bg-gray-100 rounded-md"
-                : "text-gray-600 hover:text-[#0b9c09]"
-            }`}
-            onClick={handleProfileClick}
-          >
-            <Icon icon="proicons:person" width="26" height="26" />
-            <span className="text-xs">Profile</span>
-          </button>
         </div>
       </div>
 

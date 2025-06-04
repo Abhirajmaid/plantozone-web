@@ -34,13 +34,18 @@ export const mobileTabs = [
     icon: "lucide:newspaper"
   },
   {
-    label: "Whishlist",
-    href: "/profile/whishlist",
-    icon: "lucide:heart"
+    label: "About Us",
+    href: "/about-us",
+    icon: "lucide:info"
   },
   {
     label: "Contact",
     href: "/contact-us",
     icon: "mi:call"
   },
+  {
+    label: "Cart",
+    href: "/cart",
+    icon: "lucide:cart"
+  }
 ]

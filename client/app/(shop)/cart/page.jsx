@@ -42,10 +42,15 @@ export default function CartPage() {
     setCartItems(updated);
   };
 
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  // Updated total calculation to use correct price per item
+  const total = cartItems.reduce((sum, item) => {
+    // Use item.price if present, fallback to 650/850 based on size
+    let price = item.price;
+    if (!price) {
+      price = item.size === "8 Inch" ? 850 : 650;
+    }
+    return sum + price * item.quantity;
+  }, 0);
 
   return (
     <Section className="min-h-screen">
@@ -62,75 +67,84 @@ export default function CartPage() {
         ) : (
           <div className="grid md:grid-cols-3 gap-8">
             <div className="md:col-span-2 space-y-4">
-              {cartItems.map((item) => (
-                <div
-                  key={`${item.product}-${item.size}-${item.shape || ""}`}
-                  className="flex gap-4 p-4 border rounded-lg"
-                >
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-24 h-24 object-cover rounded"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{item.title}</h3>
-                    <div className="text-sm text-gray-600 flex flex-wrap gap-4">
-                      <span>
-                        Size:{" "}
-                        {item.size === "6 Inch" || item.size === "8 Inch"
-                          ? item.size
-                          : "N/A"}
-                      </span>
-                      <span>
-                        Shape:{" "}
-                        {item.shape || (
-                          <span className="italic text-gray-400">N/A</span>
-                        )}
-                      </span>
-                    </div>
-                    <p className="text-green-600 font-semibold">
-                      ₹{item.price}
-                    </p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <button
-                        onClick={() =>
-                          handleQuantityChange(
-                            item.product,
-                            item.size,
-                            item.shape,
-                            item.quantity - 1
-                          )
-                        }
-                        className="px-2 border rounded"
-                      >
-                        -
-                      </button>
-                      <span>{item.quantity}</span>
-                      <button
-                        onClick={() =>
-                          handleQuantityChange(
-                            item.product,
-                            item.size,
-                            item.shape,
-                            item.quantity + 1
-                          )
-                        }
-                        className="px-2 border rounded"
-                      >
-                        +
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleRemoveItem(item.product, item.size, item.shape)
-                        }
-                        className="ml-4 text-red-500 text-sm"
-                      >
-                        Remove
-                      </button>
+              {cartItems.map((item) => {
+                // Ensure price is correct for display
+                const displayPrice =
+                  item.price || (item.size === "8 Inch" ? 850 : 650);
+                return (
+                  <div
+                    key={`${item.product}-${item.size}-${item.shape || ""}`}
+                    className="flex gap-4 p-4 border rounded-lg"
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-24 h-24 object-cover rounded"
+                    />
+                    <div className="flex-1">
+                      <h3 className="font-semibold">{item.title}</h3>
+                      <div className="text-sm text-gray-600 flex flex-wrap gap-4">
+                        <span>
+                          Size:{" "}
+                          {item.size === "6 Inch" || item.size === "8 Inch"
+                            ? item.size
+                            : "N/A"}
+                        </span>
+                        <span>
+                          Shape:{" "}
+                          {item.shape || (
+                            <span className="italic text-gray-400">N/A</span>
+                          )}
+                        </span>
+                      </div>
+                      <p className="text-green-600 font-semibold">
+                        ₹{displayPrice}
+                      </p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <button
+                          onClick={() =>
+                            handleQuantityChange(
+                              item.product,
+                              item.size,
+                              item.shape,
+                              item.quantity - 1
+                            )
+                          }
+                          className="px-2 border rounded"
+                        >
+                          -
+                        </button>
+                        <span>{item.quantity}</span>
+                        <button
+                          onClick={() =>
+                            handleQuantityChange(
+                              item.product,
+                              item.size,
+                              item.shape,
+                              item.quantity + 1
+                            )
+                          }
+                          className="px-2 border rounded"
+                        >
+                          +
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleRemoveItem(
+                              item.product,
+                              item.size,
+                              item.shape
+                            )
+                          }
+                          className="ml-4 text-red-500 text-sm"
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="bg-gray-50 p-6 rounded-lg h-fit">
@@ -163,13 +177,13 @@ export default function CartPage() {
               <ProductCard
                 key={plant.id}
                 data={plant}
-                onAddToCart={({ size, shape }) => {
+                onAddToCart={({ size, shape, price }) => {
                   const attrs = plant.attributes;
                   const img = attrs?.images?.data?.[0]?.attributes?.url || "";
                   addToCartUtil({
                     product: plant.id,
                     title: attrs.title,
-                    price: 750,
+                    price: price,
                     size: size, // use selected size
                     shape: shape, // use selected shape
                     quantity: 1,

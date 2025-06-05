@@ -42,6 +42,73 @@ export default function CheckoutPage() {
     userDetails.city.trim() &&
     userDetails.state.trim();
 
+  // Helper to create Shiprocket order after payment
+  const createShiprocketOrder = async (orderData) => {
+    try {
+      // 1. Authenticate with Shiprocket API to get token
+      const authRes = await fetch(
+        "https://apiv2.shiprocket.in/v1/external/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: "YOUR_SHIPROCKET_EMAIL",
+            password: "YOUR_SHIPROCKET_PASSWORD",
+          }),
+        }
+      );
+      const authJson = await authRes.json();
+      const token = authJson.token;
+
+      // 2. Prepare Shiprocket order payload
+      const firstItem = orderData.items[0];
+      const shiprocketOrder = {
+        order_id: orderData.orderId,
+        order_date: new Date().toISOString().slice(0, 10),
+        pickup_location: "Primary", // Change as per your Shiprocket settings
+        billing_customer_name: orderData.userName,
+        billing_last_name: "",
+        billing_address: orderData.address,
+        billing_address_2: orderData.address2 || "",
+        billing_city: orderData.city,
+        billing_pincode: orderData.pincode,
+        billing_state: orderData.state,
+        billing_country: "India",
+        billing_email: orderData.userEmail,
+        billing_phone: orderData.userPhone,
+        shipping_is_billing: true,
+        order_items: orderData.items.map((item) => ({
+          name: item.title,
+          sku: item.product?.toString() || "",
+          units: item.quantity,
+          selling_price: item.price,
+        })),
+        payment_method: "Prepaid",
+        sub_total: orderData.total,
+        length: 10,
+        breadth: 10,
+        height: 10,
+        weight: 0.5,
+      };
+
+      // 3. Create order in Shiprocket
+      await fetch(
+        "https://apiv2.shiprocket.in/v1/external/orders/create/adhoc",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(shiprocketOrder),
+        }
+      );
+    } catch (err) {
+      // Optionally handle Shiprocket errors
+      // console.error("Shiprocket order error", err);
+    }
+  };
+
   // Razorpay handler
   const handleRazorpay = async () => {
     if (!isValid) {
@@ -69,29 +136,47 @@ export default function CheckoutPage() {
       handler: async function (response) {
         // Add order to Strapi Orders API
         try {
-          await fetch("https://dashboard.plantozone.com/api/order-details", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              data: {
-                orderId: response.razorpay_payment_id,
-                userName: userDetails.name,
-                userEmail: userDetails.email,
-                userPhone: userDetails.phone,
-                address: `${userDetails.address}${
-                  userDetails.address2 ? ", " + userDetails.address2 : ""
-                }`,
-                pincode: userDetails.pincode,
-                city: userDetails.city,
-                state: userDetails.state,
-                items: cartItems,
-                total: total,
-                paymentId: response.razorpay_payment_id,
-                status: "paid",
+          const orderRes = await fetch(
+            "https://dashboard.plantozone.com/api/order-details",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
               },
-            }),
+              body: JSON.stringify({
+                data: {
+                  orderId: response.razorpay_payment_id,
+                  userName: userDetails.name,
+                  userEmail: userDetails.email,
+                  userPhone: userDetails.phone,
+                  address: `${userDetails.address}${
+                    userDetails.address2 ? ", " + userDetails.address2 : ""
+                  }`,
+                  address2: userDetails.address2 || "",
+                  pincode: userDetails.pincode,
+                  city: userDetails.city,
+                  state: userDetails.state,
+                  items: cartItems,
+                  total: total,
+                  paymentId: response.razorpay_payment_id,
+                  status: "paid",
+                },
+              }),
+            }
+          );
+          // Also create order in Shiprocket
+          await createShiprocketOrder({
+            orderId: response.razorpay_payment_id,
+            userName: userDetails.name,
+            userEmail: userDetails.email,
+            userPhone: userDetails.phone,
+            address: userDetails.address,
+            address2: userDetails.address2 || "",
+            pincode: userDetails.pincode,
+            city: userDetails.city,
+            state: userDetails.state,
+            items: cartItems,
+            total: total,
           });
           alert(
             "Payment successful! Order placed. Payment ID: " +

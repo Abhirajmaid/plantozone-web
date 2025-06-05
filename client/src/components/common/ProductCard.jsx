@@ -12,7 +12,7 @@ const SHAPES = ["Hex", "Round"];
 
 const ProductCard = ({ data, onAddToCart }) => {
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedSize, setSelectedSize] = useState("6 Inch");
   const [selectedShape, setSelectedShape] = useState("");
   const addBtnRef = useRef(null);
 
@@ -25,10 +25,12 @@ const ProductCard = ({ data, onAddToCart }) => {
       toast.error("Please select size and shape.", { position: "top-right" });
       return;
     }
+    const price = selectedSize === "8 Inch" ? 850 : 650;
     if (onAddToCart) {
       onAddToCart({
         size: selectedSize,
         shape: selectedShape,
+        price: price,
       });
     }
     setShowPopup(false);
@@ -52,6 +54,12 @@ const ProductCard = ({ data, onAddToCart }) => {
     imgArr && imgArr[0]?.attributes?.url
       ? imgArr[0].attributes.url
       : "/images/default-featured-image.png.jpg";
+
+  // Price logic
+  const getPrice = () => {
+    if (selectedSize === "8 Inch") return 850;
+    return 650;
+  };
 
   // Position popup absolutely near the Add to Cart button
   return (
@@ -141,8 +149,7 @@ const ProductCard = ({ data, onAddToCart }) => {
 
       <div className="p-2 border-2 border-mediumGray rounded-md flex items-center justify-between">
         <span className="text-base font-semibold text-gray-800">
-          <span className="font-normal text-sm">From</span> ₹{" "}
-          {data?.attributes?.price}
+          <span className="font-normal text-sm">From</span> ₹ {getPrice()}
         </span>
         <span className="flex items-center gap-3">
           <Button ref={addBtnRef} onClick={handleAddToCartClick}>
@@ -152,9 +159,9 @@ const ProductCard = ({ data, onAddToCart }) => {
               height="1.3em"
             />
           </Button>
-          <Button asChild>
+          {/* <Button asChild>
             <Link href={`/product/${data?.id}`}>Buy Now</Link>
-          </Button>
+          </Button> */}
         </span>
       </div>
     </div>

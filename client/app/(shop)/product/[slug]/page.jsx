@@ -51,7 +51,7 @@ export default function ProductPage() {
       return;
     }
 
-    const price = selectedSize === "6 Inch" ? 550 : 750;
+    const price = selectedSize === "8 Inch" ? 850 : 650;
     const newItem = {
       product: product.id,
       title: product?.attributes?.title,
@@ -166,10 +166,10 @@ export default function ProductPage() {
 
             <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">
-                {selectedSize === "Small" ? "₹550" : "₹750"}
+                ₹{selectedSize === "8 Inch" ? "850" : "650"}
               </span>
               <span className="text-sm sm:text-base text-gray-500 line-through">
-                {selectedSize === "Small" ? "₹1,099" : "₹1,499"}
+                ₹{selectedSize === "8 Inch" ? "1,499" : "1,099"}
               </span>
               <Badge
                 variant="secondary"

@@ -127,7 +127,7 @@ export default function CheckoutPage() {
     setFormError("");
     setLoading(true);
     const options = {
-      key: "rzp_test_oypcbnwC2SClPu", // Replace with your Razorpay key
+      key: "rzp_live_ej1IxaDWxmb1nD", // Replace with your Razorpay key
       amount: total * 100, // in paise
       currency: "INR",
       name: "Plantozone",

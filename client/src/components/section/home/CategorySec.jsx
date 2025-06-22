@@ -35,7 +35,7 @@ const CategorySec = () => {
     <Section>
       <Container>
         <div className="w-full flex flex-col items-center mb-8">
-          <span className="text-section md:text-lg mb-1 font-medium">
+          <span className="text-lg md:text-lg mb-1 font-medium">
             Our Categories
           </span>
           <SectionTitle

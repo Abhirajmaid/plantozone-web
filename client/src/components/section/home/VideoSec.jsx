@@ -46,7 +46,7 @@ const VideoSec = () => {
             </video>
           )}
         </div>
-        <div className="mt-8 max-w-2xl text-center">
+        <div className="mt-8 max-w-2xl text-center px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-primary mb-2">
             Discover Plantozone
           </h2>

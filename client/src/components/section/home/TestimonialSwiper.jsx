@@ -24,7 +24,8 @@ const data = [
     name: "Emily R.",
     quote:
       "I’ve bought several plants from Plantozone, and each one has arrived in perfect condition! The packaging is superb, and the plants are thriving in my living room. I especially love the variety of air-purifying plants they offer. Will definitely be ordering more!",
-    image: "/images/testimonials/emily.png",
+    image:
+      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     location: "Bangalore",
     rating: 5,
   },
@@ -32,7 +33,8 @@ const data = [
     name: "John D.",
     quote:
       "Absolutely love the plants I received! They were well-packaged, and the delivery was fast. Highly recommend this store for plant lovers.",
-    image: "/images/testimonials/john.png",
+    image:
+      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     location: "Mumbai",
     rating: 4,
   },
@@ -40,7 +42,8 @@ const data = [
     name: "Sophia M.",
     quote:
       "Fantastic customer service and high-quality plants! I was worried about shipping, but the plants arrived healthy and beautiful.",
-    image: "/images/testimonials/sophia.png",
+    image:
+      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     location: "Delhi",
     rating: 5,
   },
@@ -48,7 +51,8 @@ const data = [
     name: "Michael B.",
     quote:
       "I've bought from many online plant shops, but this one stands out. The quality, packaging, and variety are excellent!",
-    image: "/images/testimonials/michael.png",
+    image:
+      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     location: "Hyderabad",
     rating: 5,
   },
@@ -56,7 +60,8 @@ const data = [
     name: "Olivia W.",
     quote:
       "Such a wonderful experience! My plants are thriving, and I appreciate the self-watering pots included. Will definitely buy again!",
-    image: "/images/testimonials/olivia.png",
+    image:
+      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     location: "Chennai",
     rating: 4,
   },
@@ -64,7 +69,8 @@ const data = [
     name: "Amit S.",
     quote:
       "The best online plant store! The plants are lush and healthy, and the support team is very responsive.",
-    image: "/images/testimonials/amit.png",
+    image:
+      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     location: "Pune",
     rating: 5,
   },
@@ -72,7 +78,8 @@ const data = [
     name: "Priya K.",
     quote:
       "Loved the eco-friendly packaging and the care instructions. My balcony looks amazing now!",
-    image: "/images/testimonials/priya.png",
+    image:
+      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     location: "Kolkata",
     rating: 5,
   },
@@ -114,7 +121,10 @@ const TestimonialSwiper = () => {
             <SwiperSlide key={id} className="px-3">
               <div className="bg-white rounded-2xl shadow-xl border border-lightGreen/20 p-8 flex flex-col items-center h-[410px] transition-all duration-300 hover:shadow-2xl">
                 <img
-                  src={item.image}
+                  src={
+                    item.image ||
+                    "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  }
                   alt={item.name}
                   className="w-20 h-20 rounded-full object-cover border-4 border-lightGreen mb-4 shadow"
                 />

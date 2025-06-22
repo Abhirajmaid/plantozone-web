@@ -57,9 +57,7 @@ const PlantingCat = () => {
       <Container>
         {/* Section Title */}
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-5 w-full">
-          <SectionTitle title="Indoors" />
-          <span className="text-section">/</span>
-          <SectionTitle title="Outdoors" />
+          <SectionTitle title="Shop With Us" />
         </div>
 
         {/* Carousel */}

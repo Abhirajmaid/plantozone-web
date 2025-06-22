@@ -155,7 +155,7 @@ export default function CustomNavbar() {
         <Container>
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
             {/* Left: Logo */}
-            <div className="w-[80px]">
+            <div className="w-[40px] md:w-[80px]">
               <Logo />
             </div>
             {/* Center: Navigation Links */}

@@ -25,7 +25,7 @@ const AboutUsSection = () => (
         {/* Left: Image with badge and play button */}
         <div className="relative flex-shrink-0 flex items-center justify-center w-full md:w-[50%]">
           <div className="relative bg-white rounded-3xl shadow-xl border border-lightGreen/20 p-0 flex flex-col items-center">
-            <div className="rounded-3xl overflow-hidden w-[240px] h-[320px] md:w-full md:h-[560px] shadow-lg border-2 border-lightGreen">
+            <div className="rounded-3xl overflow-hidden w-full h-[320px] md:w-full md:h-[560px] shadow-lg border-2 border-lightGreen">
               <Image
                 src={about.image}
                 alt="About Us"
@@ -34,16 +34,7 @@ const AboutUsSection = () => (
                 className="object-cover w-full h-full"
               />
             </div>
-            {/* Play Button */}
-            <button
-              className="absolute left-1/2 bottom-6 -translate-x-1/2 bg-white/90 border-2 border-lightGreen rounded-full w-16 h-16 flex items-center justify-center shadow-lg transition hover:scale-105"
-              aria-label="Play Video"
-            >
-              <svg width="36" height="36" fill="none" viewBox="0 0 36 36">
-                <circle cx="18" cy="18" r="18" fill="#16a34a" />
-                <polygon points="15,12 27,18 15,24" fill="#fff" />
-              </svg>
-            </button>
+           
             {/* Decorative badge */}
             <span className="absolute top-4 left-4 bg-lightGreen text-white text-xs font-semibold px-4 py-1 rounded-full shadow">
               Since 2018
@@ -52,7 +43,7 @@ const AboutUsSection = () => (
         </div>
         {/* Right: Content */}
         <div className="flex-1 flex flex-col items-center md:items-start">
-          <span className="text-section md:text-lg mb-1 font-medium">
+          <span className="text-lg md:text-lg mb-1 font-medium">
             {about.heading}
           </span>
           <SectionTitle

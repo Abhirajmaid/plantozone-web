@@ -24,14 +24,19 @@ export const header = [
 
 export const mobileTabs = [
   {
-    label: "shop",
-    href: "/shop",
-    icon: "lucide:shopping-bag"
+    label: "Home",
+    href: "/",
+    icon: "material-symbols:home-outline-rounded"
   },
   {
     label: "Blog",
     href: "/blog",
     icon: "lucide:newspaper"
+  },
+  {
+    label: "shop",
+    href: "/shop",
+    icon: "lucide:shopping-bag"
   },
   {
     label: "Contact",

@@ -10,6 +10,7 @@ import {
   VideoSec,
   WhyUs,
 } from "@/src/components";
+import AboutUsSection from "@/src/components/section/home/AboutUsSection";
 import Image from "next/image";
 
 export default function Home() {
@@ -19,6 +20,8 @@ export default function Home() {
       <InfiniteMarquee txt="PLANTOZONE" deg="0" />
       <PlantingCat />
       <CategorySec />
+      <AboutUsSection />
+      <InfiniteMarquee txt="PLANTOZONE" deg="0" />
       <NewArrivals />
       <WhyUs />
       <VideoSec />

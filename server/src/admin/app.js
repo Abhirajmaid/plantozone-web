@@ -15,7 +15,7 @@ export default {
           primary100: '#0B9C09',
           primary200: '#0B9C09',
           primary500: '#0B9C09',
-          primary600: '#0A8708',
+          primary600: '#024001',
           primary700: '#096C06',
 
           // Optional overrides for a clean dark theme

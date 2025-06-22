@@ -1,5 +1,9 @@
 export const header = [
   {
+    label: "Home",
+    href: "/"
+  },
+  {
     label: "shop",
     href: "/shop"
   },

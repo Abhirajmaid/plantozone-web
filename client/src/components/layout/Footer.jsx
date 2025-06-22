@@ -1,7 +1,9 @@
+"use client";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import { Container } from "./Container";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const aboutLinks = [
   { label: "Our Story", href: "/about" },
@@ -11,9 +13,9 @@ const aboutLinks = [
 
 const customerCareLinks = [
   { label: "Track Order", href: "/track-order" },
-  { label: "Shipping Policy", href: "/shipping-policy" },
+  { label: "Shipping Policy", href: "/shipping-and-delivery" },
   { label: "Terms and Conditions", href: "/terms" },
-  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
 ];
 
 const navLinks = [
@@ -22,7 +24,19 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
+const comingSoonLinks = ["/updates", "/stores", "/track-order"];
+
 export default function Footer() {
+  const router = useRouter();
+
+  // Intercept click for "Coming Soon" links
+  const handleLinkClick = (e, href) => {
+    if (comingSoonLinks.includes(href)) {
+      e.preventDefault();
+      router.push("/coming-soon");
+    }
+  };
+
   return (
     <footer className="bg-white py-10">
       <Container>
@@ -37,7 +51,12 @@ export default function Footer() {
             <ul className="mt-4 text-[14px] space-y-3 text-gray-600">
               {aboutLinks.map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href}>{link.label}</Link>
+                  <Link
+                    href={link.href}
+                    onClick={(e) => handleLinkClick(e, link.href)}
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -51,7 +70,12 @@ export default function Footer() {
             <ul className="mt-4 text-[14px] space-y-3 text-gray-600">
               {customerCareLinks.map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href}>{link.label}</Link>
+                  <Link
+                    href={link.href}
+                    onClick={(e) => handleLinkClick(e, link.href)}
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -81,17 +105,32 @@ export default function Footer() {
             </p>
             <p className="text-gray-600">Email : info@plantozone.com</p>
             <div className="mt-4 flex justify-center md:justify-start space-x-4 text-gray-600">
-              <a href="#" aria-label="Facebook">
+              <a
+                href="https://www.facebook.com/plantozone"
+                aria-label="Facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Icon icon="uiw:facebook" width="28" height="28" />
               </a>
-              <a href="#" aria-label="Instagram">
+              <a
+                href="https://www.instagram.com/plantozone"
+                aria-label="Instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Icon
                   icon="streamline:instagram-solid"
                   width="28"
                   height="28"
                 />
               </a>
-              <a href="#" aria-label="LinkedIn">
+              <a
+                href="https://www.linkedin.com/company/plantozone"
+                aria-label="LinkedIn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Icon icon="bi:linkedin" width="28" height="28" />
               </a>
             </div>

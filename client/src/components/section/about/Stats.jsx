@@ -10,26 +10,31 @@ const Stats = () => {
           <div className="max-w-2xl">
             <SectionTitle title="Who we are" />
             <p className="mt-4 text-darkGray">
-              We can deliver superior products by sourcing quality materials and
-              maintaining exceptional relationships with our suppliers. Our
-              extensive dealer support network with customer service,
-              distribution and end-user support. This streamlined model ensures
-              maximum efficiency and value throughout the tactical flow. Our
-              industry-leading LIFETIME warranty speaks for itself.
+              Plantozone is dedicated to making green living easy and accessible
+              for everyone. With a curated selection of 6000+ plants and
+              accessories, we help you find the perfect green companion for
+              every space. Our commitment to quality, customer happiness, and
+              sustainability drives everything we do.
             </p>
           </div>
           <div className="flex gap-12">
             <div className="text-center">
               <span className="font-heading text-section font-bold text-primary">
-                25+
+                50+
               </span>
-              <p className="mt-2 text-lg text-darkGray">worldwide stores</p>
+              <p className="mt-2 text-lg text-darkGray">Cities Served</p>
             </div>
             <div className="text-center">
               <span className="font-heading text-section font-bold text-primary">
-                1k+
+                6000+
               </span>
-              <p className="mt-2 text-lg text-darkGray">tactical products</p>
+              <p className="mt-2 text-lg text-darkGray">Products</p>
+            </div>
+            <div className="text-center">
+              <span className="font-heading text-section font-bold text-primary">
+                99%
+              </span>
+              <p className="mt-2 text-lg text-darkGray">Happy Customers</p>
             </div>
           </div>
         </div>

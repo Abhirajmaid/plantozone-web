@@ -3,7 +3,7 @@ import { Container } from "@/src/components/layout/Container";
 
 export default function PrivacyPolicyPage() {
   return (
-    <Container className="py-12 max-w-3xl mx-auto">
+    <Container className="py-12 max-w-3xl mx-auto pt-[170px]">
       <h1 className="text-3xl font-bold mb-6 text-green-700">Privacy Policy</h1>
       <div className="space-y-4 text-gray-700 text-base">
         <p>

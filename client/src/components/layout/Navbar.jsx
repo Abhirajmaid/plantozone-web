@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -52,6 +52,7 @@ export default function CustomNavbar() {
   const menuRef = useRef(null);
   const dropdownRef = useRef(null);
   const dropdownTimerRef = useRef(null);
+  const pathname = usePathname();
 
   const router = useRouter();
 
@@ -164,7 +165,11 @@ export default function CustomNavbar() {
                   <Link
                     key={id}
                     href={link.href}
-                    className="hover:text-[#0b9c09] transition-colors capitalize"
+                    className={`hover:text-[#0b9c09] transition-colors capitalize ${
+                      pathname === link.href
+                        ? "text-[#0b9c09] font-bold underline underline-offset-8"
+                        : ""
+                    }`}
                   >
                     {link.label}
                   </Link>

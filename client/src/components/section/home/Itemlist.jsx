@@ -2,12 +2,17 @@
 import React, { useState } from "react";
 import { ProductCard } from "../..";
 import { Button } from "../../ui/button";
+import {
+  addToCart as addToCartUtil,
+  getCartItems,
+} from "@/src/lib/utils/cartUtils";
 
 const NO_PREVIEW_IMG = "/no-preview.png"; // Place this image in your public folder
 
 const ItemList = ({ data }) => {
   const pageSize = 12;
   const [page, setPage] = useState(1);
+  const [cartItems, setCartItems] = useState([]);
 
   const totalPages = Math.ceil((data?.length || 0) / pageSize);
   const paginatedData = data?.slice((page - 1) * pageSize, page * pageSize);
@@ -23,10 +28,36 @@ const ItemList = ({ data }) => {
         ...item,
         attributes: {
           ...item.attributes,
+          images: {
+            data: [
+              {
+                id: "no-preview",
+                attributes: {
+                  url: NO_PREVIEW_IMG,
+                },
+              },
+            ],
+          },
         },
       };
     }
     return item;
+  };
+
+  // Handler for adding to cart (like cart page)
+  const handleAddToCart = (item, { size, shape, price }) => {
+    const attrs = item.attributes;
+    const img = attrs?.images?.data?.[0]?.attributes?.url || NO_PREVIEW_IMG;
+    addToCartUtil({
+      product: item.id,
+      title: attrs.title,
+      price: price,
+      size: size,
+      shape: shape,
+      quantity: 1,
+      image: img,
+    });
+    setCartItems(getCartItems());
   };
 
   return (
@@ -34,7 +65,12 @@ const ItemList = ({ data }) => {
       {/* Grid Layout for Better Responsiveness */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-4 md:px-6">
         {paginatedData.map((item, id) => (
-          <ProductCard key={id} data={getCardData(item)} />
+          <ProductCard
+            key={id}
+            data={getCardData(item)}
+            onAddToCart={(opts) => handleAddToCart(getCardData(item), opts)}
+            showAddToCart
+          />
         ))}
       </div>
 

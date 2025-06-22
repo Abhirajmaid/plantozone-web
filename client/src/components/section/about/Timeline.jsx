@@ -5,32 +5,36 @@ import { Section } from "../../layout/Section";
 
 const timelineEvents = [
   {
-    year: "1988",
-    title: "FOUNDED WITH HEADQUARTERS IN UK",
+    year: "2018",
+    title: "PLANTOZONE IS BORN",
     description:
-      "We believe in giving each customer access to exceptional products that are expertly crafted to give unparalleled experience.",
-    image: "/placeholder.svg?height=300&width=400",
+      "Plantozone was founded with a vision to make green living accessible and joyful for everyone. We started with a small collection and a big dream.",
+    image:
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80",
   },
   {
-    year: "2001",
-    title: "WE HAVE EXPERT TEAM MEMBER",
+    year: "2020",
+    title: "EXPANSION & NEW CATEGORIES",
     description:
-      "We believe in giving each customer access to exceptional products that are expertly crafted to give unparalleled experience.",
-    image: "/placeholder.svg?height=300&width=400",
+      "We expanded our range to 20+ categories and 3000+ products, introducing rare, exotic, and air-purifying plants for every space.",
+    image:
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
   },
   {
-    year: "2015",
-    title: "WHAT IT MEANS TO BE PROFESSIONAL",
+    year: "2022",
+    title: "DELIVERING PAN-INDIA",
     description:
-      "We believe in giving each customer access to exceptional products that are expertly crafted to give unparalleled experience.",
-    image: "/placeholder.svg?height=300&width=400",
+      "With a robust logistics network, we started delivering to 50+ cities, ensuring every plant lover in India could enjoy our collection.",
+    image:
+      "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80",
   },
   {
     year: "2024",
-    title: "THE NEXT CHAPTER",
+    title: "COMMUNITY & SUSTAINABILITY",
     description:
-      "We believe in giving each customer access to exceptional products that are expertly crafted to give unparalleled experience.",
-    image: "/placeholder.svg?height=300&width=400",
+      "We launched our plant care community and adopted sustainable packaging, aiming for a greener, happier planet together.",
+    image:
+      "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80",
   },
 ];
 
@@ -51,7 +55,7 @@ const Timeline = () => {
                     <Image
                       width={1000}
                       height={800}
-                      src="https://images.unsplash.com/photo-1503149779833-1de50ebe5f8a?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                      src={event.image}
                       alt={event.title}
                       className="rounded-lg object-cover h-[300px] w-full"
                     />
@@ -85,7 +89,7 @@ const Timeline = () => {
                     <Image
                       width={1000}
                       height={800}
-                      src="https://images.unsplash.com/photo-1503149779833-1de50ebe5f8a?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                      src={event.image}
                       alt={event.title}
                       className="rounded-lg object-cover h-[300px] w-full"
                     />

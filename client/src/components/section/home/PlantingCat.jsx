@@ -5,9 +5,16 @@ import { Loader, ProductCard, SectionTitle } from "../..";
 import { Section } from "../../layout/Section";
 import { Container } from "../../layout/Container";
 import plantsAction from "@/src/lib/action/plants.action";
+import {
+  addToCart as addToCartUtil,
+  getCartItems,
+} from "@/src/lib/utils/cartUtils";
+
+const NO_PREVIEW_IMG = "/no-preview.png"; // Ensure this exists in public
 
 const PlantingCat = () => {
   const [data, setData] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
   const [emblaRef, embla] = useEmblaCarousel({ loop: true, align: "start" });
 
   useEffect(() => {
@@ -29,6 +36,22 @@ const PlantingCat = () => {
   const scrollPrev = useCallback(() => embla && embla.scrollPrev(), [embla]);
   const scrollNext = useCallback(() => embla && embla.scrollNext(), [embla]);
 
+  // Handler for adding to cart (like cart page)
+  const handleAddToCart = (item, { size, shape, price }) => {
+    const attrs = item.attributes;
+    const img = attrs?.images?.data?.[0]?.attributes?.url || NO_PREVIEW_IMG;
+    addToCartUtil({
+      product: item.id,
+      title: attrs.title,
+      price: price,
+      size: size,
+      shape: shape,
+      quantity: 1,
+      image: img,
+    });
+    setCartItems(getCartItems());
+  };
+
   return (
     <Section>
       <Container>
@@ -47,9 +70,13 @@ const PlantingCat = () => {
                 data.slice(0, 8).map((item, id) => (
                   <div
                     key={id}
-                    className="flex-shrink-0 w-[250px] sm:w-[300px]"
+                    className="flex-shrink-0 w-[250px] sm:w-[300px] h-[520px] flex" // Added fixed height and flex for alignment
                   >
-                    <ProductCard data={item} />
+                    <ProductCard
+                      data={item}
+                      onAddToCart={(opts) => handleAddToCart(item, opts)}
+                      showAddToCart
+                    />
                   </div>
                 ))
               ) : (

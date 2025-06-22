@@ -16,10 +16,6 @@ export const header = [
     href: "/blog"
   },
   {
-    label: "Care Tips",
-    href: "/care-tips"
-  },
-  {
     label: "Contact Us",
     href: "/contact-us"
   },

@@ -32,7 +32,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "/images/og-image.jpg", // A sample image for Open Graph
+        url: "/images/og-image.png", // A sample image for Open Graph
         width: 1200,
         height: 630,
         alt: "Plantozone - Your Plant Haven",
@@ -45,7 +45,7 @@ export const metadata = {
     title: "Plantozone | Your Plant Haven",
     description:
       "Discover beautiful plants at Plantozone, your go-to online store for indoor and outdoor greenery.",
-    image: "/images/twitter-card.jpg", // Image for Twitter card
+    image: "/images/og-image.png", // Image for Twitter card
   },
 };
 

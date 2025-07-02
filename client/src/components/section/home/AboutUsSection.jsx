@@ -8,11 +8,11 @@ const about = {
   heading: "About Plantozone",
   subheading: "Greenery for Every Space",
   description:
-    "At Plantozone, we are passionate about making green living easy and accessible. With 6000+ products and 20+ categories, we help you find the perfect plant for every space. Our mission is to inspire a greener lifestyle, simplify plant care, and deliver happiness to your doorstep in 50+ cities.",
+    "At Plantozone, we are passionate about making green living easy and accessible. With lot of products and 20+ categories, we help you find the perfect plant for every space. Our mission is to inspire a greener lifestyle, simplify plant care, and deliver happiness to your doorstep in 50+ cities.",
   signature: "Prabhas Rao Balla",
   stats: [
-    { label: "Categories", value: "20+" },
-    { label: "Products", value: "6000+" },
+    { label: "Categories", value: "10+" },
+    { label: "Products", value: "Variety" },
     { label: "Happy Customers", value: "99%" },
     { label: "Cities Served", value: "50+" },
   ],
@@ -34,7 +34,7 @@ const AboutUsSection = () => (
                 className="object-cover w-full h-full"
               />
             </div>
-           
+
             {/* Decorative badge */}
             <span className="absolute top-4 left-4 bg-lightGreen text-white text-xs font-semibold px-4 py-1 rounded-full shadow">
               Since 2018

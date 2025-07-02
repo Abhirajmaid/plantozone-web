@@ -9,23 +9,23 @@ import Image from "next/image";
 // Update categories to match the image you shared
 const categories = [
   {
-    name: "Indoor Plants",
-    url: "indoor-plants",
-    image: "/images/plant.png", // Ensure this image exists in public
+    name: "Flowering",
+    url: "flowering",
+    image: "/images/plant.png", // Update image as needed
   },
   {
-    name: "Outdoor Plants",
-    url: "outdoor-plants",
-    image: "/images/plant.png", // Ensure this image exists in public
+    name: "Air Purifying",
+    url: "air-purifying",
+    image: "/images/plant.png",
   },
   {
-    name: "Office Desk Plants",
-    url: "office-desk-plants",
-    image: "/images/plant.png", // Ensure this image exists in public
+    name: "Ornamentals",
+    url: "ornamentals",
+    image: "/images/plant.png",
   },
   {
-    name: "Pots & Accessories",
-    url: "pots-accessories",
+    name: "Pot Accessories",
+    url: "pot-accessories",
     image: "/images/plant.png",
   },
 ];

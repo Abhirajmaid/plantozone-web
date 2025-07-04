@@ -26,15 +26,15 @@ const Stats = () => {
             </div>
             <div className="text-center">
               <span className="font-heading text-section font-bold text-primary">
-                6000+
+                Variety
               </span>
               <p className="mt-2 text-lg text-darkGray">Products</p>
             </div>
             <div className="text-center">
               <span className="font-heading text-section font-bold text-primary">
-                99%
+                4.9/5
               </span>
-              <p className="mt-2 text-lg text-darkGray">Happy Customers</p>
+              <p className="mt-2 text-lg text-darkGray">Avg. Customer Rating</p>
             </div>
           </div>
         </div>

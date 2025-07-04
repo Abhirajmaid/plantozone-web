@@ -144,7 +144,7 @@ const ProductCard = ({ data, onAddToCart }) => {
             {data?.attributes?.title}
           </h3>
         </Link>
-        <p className="text-gray-500 text-sm">↕ 20-24cm</p>
+        {/* <p className="text-gray-500 text-sm">↕ 20-24cm</p> */}
       </div>
 
       <div className="p-2 border-2 border-mediumGray rounded-md flex items-center justify-between">

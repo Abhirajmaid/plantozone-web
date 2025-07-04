@@ -20,6 +20,11 @@ export default function CartPage() {
   const [suggestions, setSuggestions] = useState([]);
   const router = useRouter();
 
+  // Discount system state
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountPercent, setDiscountPercent] = useState(0);
+  const [discountError, setDiscountError] = useState("");
+
   useEffect(() => {
     setCartItems(getCartItems());
     // Fetch all plants, then pick 3 random
@@ -42,8 +47,23 @@ export default function CartPage() {
     setCartItems(updated);
   };
 
+  // Discount code handler
+  const handleApplyDiscount = () => {
+    const code = discountCode.trim().toUpperCase();
+    if (code === "SAVE10") {
+      setDiscountPercent(10);
+      setDiscountError("");
+    } else if (code === "SAVE15") {
+      setDiscountPercent(15);
+      setDiscountError("");
+    } else {
+      setDiscountPercent(0);
+      setDiscountError("Invalid discount code");
+    }
+  };
+
   // Updated total calculation to use correct price per item
-  const total = cartItems.reduce((sum, item) => {
+  const subtotal = cartItems.reduce((sum, item) => {
     // Use item.price if present, fallback to 650/850 based on size
     let price = item.price;
     if (!price) {
@@ -51,6 +71,9 @@ export default function CartPage() {
     }
     return sum + price * item.quantity;
   }, 0);
+
+  const discountAmount = Math.round((subtotal * discountPercent) / 100);
+  const total = subtotal - discountAmount;
 
   return (
     <Section className="min-h-screen">
@@ -149,11 +172,43 @@ export default function CartPage() {
 
             <div className="bg-gray-50 p-6 rounded-lg h-fit">
               <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
+              {/* Discount Code Input */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-4">
+                <input
+                  type="text"
+                  placeholder="Discount code"
+                  value={discountCode}
+                  onChange={(e) => setDiscountCode(e.target.value)}
+                  className="border rounded-md px-3 py-2 text-sm sm:text-base"
+                />
+                <Button
+                  type="button"
+                  onClick={handleApplyDiscount}
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 text-sm sm:text-base"
+                >
+                  Apply
+                </Button>
+              </div>
+              {discountError && (
+                <div className="text-red-500 text-xs mb-2">{discountError}</div>
+              )}
+              {discountPercent > 0 && (
+                <div className="text-green-600 text-xs mb-2">
+                  Code applied: {discountCode.trim().toUpperCase()} (-
+                  {discountPercent}%)
+                </div>
+              )}
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>₹{total}</span>
+                  <span>₹{subtotal}</span>
                 </div>
+                {discountPercent > 0 && (
+                  <div className="flex justify-between text-green-700">
+                    <span>Discount</span>
+                    <span>-₹{discountAmount}</span>
+                  </div>
+                )}
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
                   <span>₹{total}</span>

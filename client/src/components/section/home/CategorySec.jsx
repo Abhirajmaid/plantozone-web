@@ -11,22 +11,22 @@ const categories = [
   {
     name: "Flowering",
     url: "flowering",
-    image: "/images/plant.png", // Update image as needed
+    image: "/images/flowering.jpg", // Update image as needed
   },
   {
     name: "Air Purifying",
     url: "air-purifying",
-    image: "/images/plant.png",
+    image: "/images/air_purifying.jpg",
   },
   {
     name: "Ornamentals",
     url: "ornamentals",
-    image: "/images/plant.png",
+    image: "/images/ornamentals.jpg",
   },
   {
     name: "Pot Accessories",
     url: "pot-accessories",
-    image: "/images/plant.png",
+    image: "/images/accessories.jpg",
   },
 ];
 
@@ -48,22 +48,20 @@ const CategorySec = () => {
         </div>
         <div className="flex flex-wrap justify-center gap-6 md:gap-10">
           {categories.map((item, idx) => (
-            <Link key={idx} href={`/shop/${item.url}`} passHref>
-              <div className="flex flex-col items-center group cursor-pointer">
-                <div className="w-[120px] h-[120px] md:w-[250px] md:h-[250px] rounded-full overflow-hidden shadow-lg border-2 border-lightGreen/30 bg-white flex items-center justify-center mb-3 transition-transform duration-200 group-hover:scale-105">
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={350}
-                    height={350}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <span className="text-sm md:text-base font-semibold text-primary text-center">
-                  {item.name}
-                </span>
+            <div className="flex flex-col items-center group" key={idx}>
+              <div className="w-[120px] h-[120px] md:w-[250px] md:h-[250px] rounded-full overflow-hidden shadow-lg border-2 border-lightGreen/30 bg-white flex items-center justify-center mb-3 transition-transform duration-200 group-hover:scale-105">
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  width={350}
+                  height={350}
+                  className="object-cover w-full h-full"
+                />
               </div>
-            </Link>
+              <span className="text-sm md:text-base font-semibold text-primary text-center">
+                {item.name}
+              </span>
+            </div>
           ))}
         </div>
       </Container>

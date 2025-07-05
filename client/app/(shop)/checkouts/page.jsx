@@ -10,6 +10,9 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Discount state
+  const [discount, setDiscount] = useState({ code: "", percent: 0 });
+
   // User details state
   const [userDetails, setUserDetails] = useState({
     name: "",
@@ -25,12 +28,27 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     setCartItems(getCartItems());
+    // Read discount info from localStorage
+    if (typeof window !== "undefined") {
+      const d = localStorage.getItem("plantozone_discount");
+      if (d) {
+        try {
+          const parsed = JSON.parse(d);
+          if (parsed && parsed.code && parsed.percent) {
+            setDiscount(parsed);
+          }
+        } catch {}
+      }
+    }
   }, []);
 
-  const total = cartItems.reduce(
+  // Calculate subtotal
+  const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+  const discountAmount = Math.round((subtotal * discount.percent) / 100);
+  const total = subtotal - discountAmount;
 
   // Validation
   const isValid =
@@ -128,7 +146,7 @@ export default function CheckoutPage() {
     setLoading(true);
     const options = {
       key: "rzp_live_ej1IxaDWxmb1nD", // Replace with your Razorpay key
-      amount: total * 100, // in paise
+      amount: total * 100, // in paise, use discounted total
       currency: "INR",
       name: "Plantozone",
       description: "Order Payment",
@@ -157,6 +175,10 @@ export default function CheckoutPage() {
                   city: userDetails.city,
                   state: userDetails.state,
                   items: cartItems,
+                  subtotal: subtotal,
+                  discountCode: discount.code,
+                  discountPercent: discount.percent,
+                  discountAmount: discountAmount,
                   total: total,
                   paymentId: response.razorpay_payment_id,
                   status: "paid",
@@ -176,6 +198,10 @@ export default function CheckoutPage() {
             city: userDetails.city,
             state: userDetails.state,
             items: cartItems,
+            subtotal: subtotal,
+            discountCode: discount.code,
+            discountPercent: discount.percent,
+            discountAmount: discountAmount,
             total: total,
           });
           alert(
@@ -477,9 +503,24 @@ export default function CheckoutPage() {
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-gray-600">Subtotal</span>
                       <span className="font-semibold text-gray-800">
-                        ₹{total}
+                        ₹{subtotal}
                       </span>
                     </div>
+                    {discount.percent > 0 && (
+                      <div className="flex justify-between items-center mb-2 text-green-700">
+                        <span>
+                          Discount
+                          {discount.code && (
+                            <span className="ml-2 text-xs text-green-600">
+                              ({discount.code} -{discount.percent}%)
+                            </span>
+                          )}
+                        </span>
+                        <span className="font-semibold">
+                          -₹{discountAmount}
+                        </span>
+                      </div>
+                    )}
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-gray-600">Delivery</span>
                       <span className="font-semibold text-gray-800">Free</span>

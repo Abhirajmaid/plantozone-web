@@ -59,15 +59,30 @@ export default function CartPage() {
       "NAG10",
       "SV10",
     ];
+    let percent = 0;
     if (tenPercentCodes.includes(code)) {
+      percent = 10;
       setDiscountPercent(10);
       setDiscountError("");
     } else if (code === "SAVE15") {
+      percent = 15;
       setDiscountPercent(15);
       setDiscountError("");
     } else {
       setDiscountPercent(0);
       setDiscountError("Invalid discount code");
+    }
+    // Store discount info for checkout page
+    if (percent > 0) {
+      localStorage.setItem(
+        "plantozone_discount",
+        JSON.stringify({
+          code,
+          percent,
+        })
+      );
+    } else {
+      localStorage.removeItem("plantozone_discount");
     }
   };
 

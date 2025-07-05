@@ -50,7 +50,16 @@ export default function CartPage() {
   // Discount code handler
   const handleApplyDiscount = () => {
     const code = discountCode.trim().toUpperCase();
-    if (code === "SAVE10") {
+    const tenPercentCodes = [
+      "SHRI10",
+      "ARJV10",
+      "SVM10",
+      "CP10",
+      "TEJU10",
+      "NAG10",
+      "SV10",
+    ];
+    if (tenPercentCodes.includes(code)) {
       setDiscountPercent(10);
       setDiscountError("");
     } else if (code === "SAVE15") {

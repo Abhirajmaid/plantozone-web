@@ -18,7 +18,7 @@ const VideoSec = () => {
           {!isPlaying ? (
             <>
               <img
-                src="/images/video.png"
+                src="/images/plantozone.png"
                 alt="Video Thumbnail"
                 className="w-full h-[350px] md:h-[500px] object-cover transition-all duration-300"
               />

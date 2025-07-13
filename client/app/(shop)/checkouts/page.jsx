@@ -144,15 +144,34 @@ export default function CheckoutPage() {
     }
     setFormError("");
     setLoading(true);
+
+    // 1. Create order on backend
+    const orderRes = await fetch(
+      "https://dashboard.plantozone.com/api/create-razorpay-order",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: total }),
+      }
+    );
+    const orderData = await orderRes.json();
+
+    if (!orderData.id) {
+      setLoading(false);
+      setFormError("Failed to initiate payment. Please try again.");
+      return;
+    }
+
     const options = {
-      key: "rzp_live_ej1IxaDWxmb1nD", // Replace with your Razorpay key
-      amount: total * 100, // in paise, use discounted total
+      key: "rzp_live_sJplWbjaaPEBXZ",
+      amount: total * 100,
       currency: "INR",
       name: "Plantozone",
       description: "Order Payment",
       image: "/images/logo_color.png",
+      order_id: orderData.id, // Pass order_id here!
       handler: async function (response) {
-        // Add order to Strapi Orders API
+        // Save order in your DB as before
         try {
           const orderRes = await fetch(
             "https://dashboard.plantozone.com/api/order-details",
@@ -163,7 +182,9 @@ export default function CheckoutPage() {
               },
               body: JSON.stringify({
                 data: {
-                  orderId: response.razorpay_payment_id,
+                  orderId: response.razorpay_order_id,
+                  paymentId: response.razorpay_payment_id,
+                  paymentSignature: response.razorpay_signature,
                   userName: userDetails.name,
                   userEmail: userDetails.email,
                   userPhone: userDetails.phone,
@@ -180,15 +201,14 @@ export default function CheckoutPage() {
                   discountPercent: discount.percent,
                   discountAmount: discountAmount,
                   total: total,
-                  paymentId: response.razorpay_payment_id,
                   status: "paid",
                 },
               }),
             }
           );
-          // Also create order in Shiprocket
+          // ... Shiprocket order as before
           await createShiprocketOrder({
-            orderId: response.razorpay_payment_id,
+            orderId: response.razorpay_order_id,
             userName: userDetails.name,
             userEmail: userDetails.email,
             userPhone: userDetails.phone,

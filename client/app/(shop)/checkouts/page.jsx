@@ -48,7 +48,14 @@ export default function CheckoutPage() {
     0
   );
   const discountAmount = Math.round((subtotal * discount.percent) / 100);
-  const total = subtotal - discountAmount;
+
+  // Delivery fee logic
+  const DELIVERY_FEE = 79;
+  const FREE_DELIVERY_THRESHOLD = 2000;
+  const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
+  const isFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
+
+  const total = subtotal - discountAmount + deliveryFee;
 
   // Validation
   const isValid =
@@ -200,6 +207,8 @@ export default function CheckoutPage() {
                   discountCode: discount.code,
                   discountPercent: discount.percent,
                   discountAmount: discountAmount,
+                  deliveryFee: deliveryFee,
+                  isFreeDelivery: isFreeDelivery,
                   total: total,
                   status: "paid",
                 },
@@ -222,6 +231,8 @@ export default function CheckoutPage() {
             discountCode: discount.code,
             discountPercent: discount.percent,
             discountAmount: discountAmount,
+            deliveryFee: deliveryFee,
+            isFreeDelivery: isFreeDelivery,
             total: total,
           });
           alert(
@@ -275,6 +286,27 @@ export default function CheckoutPage() {
     <Section className="min-h-screen bg-gray-50">
       <Container className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-[100px] py-8 sm:py-10 lg:py-16 pt-20 lg:pt-[120px]">
         <div className="max-w-5xl mx-auto">
+          {/* Free Delivery Banner */}
+          {cartItems.length > 0 && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-lg">
+              <div className="flex items-center justify-center gap-3">
+                <span className="text-2xl">🚚</span>
+                <div className="text-center">
+                  <h3 className="font-bold text-lg">
+                    FREE Delivery on Orders Above ₹2000!
+                  </h3>
+                  <p className="text-sm opacity-90">
+                    {isFreeDelivery
+                      ? `🎉 Congratulations! You've saved ₹${DELIVERY_FEE} on delivery!`
+                      : `Add ₹${
+                          FREE_DELIVERY_THRESHOLD - subtotal
+                        } more and save ₹${DELIVERY_FEE}!`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <h1 className="text-3xl font-bold mb-8 text-center text-green-700">
             Checkout
           </h1>
@@ -470,7 +502,7 @@ export default function CheckoutPage() {
                 <div className="w-full max-w-md mx-auto bg-gradient-to-br from-green-50 to-white rounded-2xl border border-green-200 shadow p-0 mt-0">
                   <div className="flex flex-col items-center py-6 border-b border-dashed border-green-300">
                     <img
-                      src="/logo.png"
+                      src="/images/logo_color.png"
                       alt="Plantozone"
                       className="w-16 h-16 mb-2"
                     />
@@ -478,6 +510,18 @@ export default function CheckoutPage() {
                       Plantozone
                     </h2>
                     <span className="text-xs text-gray-400">Order Bill</span>
+
+                    {/* Free Delivery Status */}
+                    {isFreeDelivery ? (
+                      <div className="mt-3 px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
+                        🎉 FREE Delivery Unlocked!
+                      </div>
+                    ) : (
+                      <div className="mt-3 px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
+                        ₹{FREE_DELIVERY_THRESHOLD - subtotal} more for FREE
+                        delivery
+                      </div>
+                    )}
                   </div>
                   <ul className="divide-y divide-dashed divide-green-200 mb-0">
                     {cartItems.map((item, idx) => (
@@ -542,9 +586,32 @@ export default function CheckoutPage() {
                       </div>
                     )}
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-gray-600">Delivery</span>
-                      <span className="font-semibold text-gray-800">Free</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">Delivery</span>
+                        {isFreeDelivery && (
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                            FREE
+                          </span>
+                        )}
+                      </div>
+                      <span
+                        className={`font-semibold ${
+                          isFreeDelivery
+                            ? "text-green-700 line-through"
+                            : "text-gray-800"
+                        }`}
+                      >
+                        {isFreeDelivery
+                          ? `₹${DELIVERY_FEE}`
+                          : `₹${deliveryFee}`}
+                      </span>
                     </div>
+                    {isFreeDelivery && (
+                      <div className="text-xs text-green-600 bg-green-50 p-2 rounded border border-green-200 mb-2">
+                        🎉 Congratulations! You've qualified for free delivery
+                        on orders above ₹2000
+                      </div>
+                    )}
                     <div className="flex justify-between items-center font-bold text-lg border-t border-dashed border-green-200 pt-3">
                       <span>Total</span>
                       <span className="text-green-700">₹{total}</span>

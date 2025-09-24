@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
@@ -26,6 +26,7 @@ export default function ProductPage() {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const params = useParams();
+  const router = useRouter();
   const productId = params.slug;
 
   useEffect(() => {
@@ -84,6 +85,54 @@ export default function ProductPage() {
       ),
     });
     setTimeout(() => setShowSuccess(false), 2000);
+  };
+
+  const buyNow = () => {
+    if (!selectedSize) {
+      alert("Please select a plant size");
+      return;
+    }
+    if (!selectedShape) {
+      alert("Please select a plant shape");
+      return;
+    }
+
+    const price = selectedSize === "8 Inch" ? 850 : 650;
+    const newItem = {
+      product: product.id,
+      title: product?.attributes?.title,
+      price: price,
+      size: selectedSize,
+      shape: selectedShape,
+      quantity: quantity,
+      image: product?.attributes?.images?.data[0]?.attributes?.url || "",
+    };
+
+    addToCartUtil(newItem);
+    toast.success("Added to cart! Redirecting to checkout...", {
+      position: "top-right",
+      autoClose: 1500,
+      icon: (
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+      ),
+    });
+
+    // Redirect to checkout after a short delay
+    setTimeout(() => {
+      router.push("/checkouts");
+    }, 1500);
   };
 
   const handleIncrease = () => setQuantity((prev) => prev + 1);
@@ -237,8 +286,8 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Quantity & Add to Cart */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+            {/* Quantity & Add to Cart - Hidden on mobile, visible on desktop */}
+            <div className="hidden sm:flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <div className="flex items-center border rounded-md">
                 <button
                   onClick={handleDecrease}
@@ -266,6 +315,33 @@ export default function ProductPage() {
                 ADD TO CART
               </Button>
             </div>
+
+            {/* Mobile Quantity Controls - Only visible on mobile */}
+            <div className="sm:hidden">
+              <label className="mb-2 text-sm font-medium text-gray-700 block">
+                QUANTITY
+              </label>
+              <div className="flex items-center border rounded-md w-fit">
+                <button
+                  onClick={handleDecrease}
+                  className="px-4 py-3 border-r hover:bg-gray-200 text-lg"
+                >
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={quantity}
+                  readOnly
+                  className="w-16 text-center text-base py-3"
+                />
+                <button
+                  onClick={handleIncrease}
+                  className="px-4 py-3 border-l hover:bg-gray-200 text-lg"
+                >
+                  +
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -274,6 +350,54 @@ export default function ProductPage() {
         <NewArrivals />
         <TestimonialSwiper />
       </Container>
+
+      {/* Mobile Bottom Bar - Only visible on mobile */}
+      <div className="sm:hidden fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-[110]">
+        <div className="flex items-center justify-between p-4 gap-3">
+          {/* Price Display */}
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-500">Price</span>
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold text-green-600">
+                ₹{selectedSize === "8 Inch" ? "850" : "650"}
+              </span>
+              <span className="text-sm text-gray-400 line-through">
+                ₹{selectedSize === "8 Inch" ? "1,499" : "1,099"}
+              </span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 flex-1">
+            <Button
+              onClick={addToCart}
+              variant="outline"
+              className="flex-1 border-green-600 text-green-600 hover:bg-green-50 py-3 font-semibold"
+            >
+              ADD TO CART
+            </Button>
+            <Button
+              onClick={buyNow}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 font-semibold"
+            >
+              BUY NOW
+            </Button>
+          </div>
+        </div>
+
+        {/* Free Delivery Banner */}
+        <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2">
+          <div className="flex items-center justify-center gap-2 text-sm">
+            <span>🚚</span>
+            <span className="font-medium">
+              FREE Delivery on Orders Above ₹2000!
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Padding - To prevent content from being hidden behind the bottom bar */}
+      <div className="sm:hidden h-[200px]"></div>
     </Section>
   );
 }

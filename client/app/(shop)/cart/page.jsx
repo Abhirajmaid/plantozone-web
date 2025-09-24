@@ -97,11 +97,40 @@ export default function CartPage() {
   }, 0);
 
   const discountAmount = Math.round((subtotal * discountPercent) / 100);
-  const total = subtotal - discountAmount;
+
+  // Delivery fee logic
+  const DELIVERY_FEE = 79;
+  const FREE_DELIVERY_THRESHOLD = 2000;
+  const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
+  const isFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
+
+  const total = subtotal - discountAmount + deliveryFee;
 
   return (
     <Section className="min-h-screen">
       <Container className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-[100px] py-4 sm:py-6 lg:py-8 pt-16 lg:pt-[100px]">
+        {/* Free Delivery Banner */}
+        <div className="mb-6 p-4 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🚚</span>
+              <div>
+                <h3 className="font-bold text-lg">
+                  FREE Delivery on Orders Above ₹2000!
+                </h3>
+                <p className="text-sm opacity-90">
+                  Save ₹{DELIVERY_FEE} on shipping charges
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-medium">
+                🌱 Shop More, Save More!
+              </div>
+            </div>
+          </div>
+        </div>
+
         <h1 className="text-2xl font-bold mb-8">Shopping Cart</h1>
 
         {cartItems.length === 0 ? (
@@ -196,6 +225,50 @@ export default function CartPage() {
 
             <div className="bg-gray-50 p-6 rounded-lg h-fit">
               <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
+
+              {/* Free Delivery Progress */}
+              {!isFreeDelivery && (
+                <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-green-800">
+                      🚚 Free Delivery Progress
+                    </span>
+                    <span className="text-xs text-green-600 font-semibold">
+                      ₹{FREE_DELIVERY_THRESHOLD - subtotal} more to go!
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                    <div
+                      className="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.min(
+                          (subtotal / FREE_DELIVERY_THRESHOLD) * 100,
+                          100
+                        )}%`,
+                      }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-green-700">
+                    Add ₹{FREE_DELIVERY_THRESHOLD - subtotal} more to your cart
+                    and save ₹{DELIVERY_FEE} on delivery! 🌱
+                  </p>
+                </div>
+              )}
+
+              {isFreeDelivery && (
+                <div className="mb-6 p-4 bg-gradient-to-r from-green-100 to-green-50 rounded-lg border border-green-300">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">🎉</span>
+                    <span className="text-sm font-bold text-green-800">
+                      Congratulations! FREE Delivery Unlocked!
+                    </span>
+                  </div>
+                  <p className="text-xs text-green-700">
+                    You've saved ₹{DELIVERY_FEE} on delivery charges. Keep
+                    shopping for more amazing plants! 🌿
+                  </p>
+                </div>
+              )}
               {/* Discount Code Input */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-4">
                 <input
@@ -233,6 +306,31 @@ export default function CartPage() {
                     <span>-₹{discountAmount}</span>
                   </div>
                 )}
+                <div className="flex justify-between">
+                  <div className="flex items-center gap-2">
+                    <span>Delivery</span>
+                    {isFreeDelivery && (
+                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                        FREE
+                      </span>
+                    )}
+                  </div>
+                  <span
+                    className={`font-semibold ${
+                      isFreeDelivery
+                        ? "text-green-700 line-through"
+                        : "text-gray-800"
+                    }`}
+                  >
+                    {isFreeDelivery ? `₹${DELIVERY_FEE}` : `₹${deliveryFee}`}
+                  </span>
+                </div>
+                {isFreeDelivery && (
+                  <div className="text-xs text-green-600 bg-green-50 p-2 rounded border border-green-200">
+                    🎉 Congratulations! You've qualified for free delivery on
+                    orders above ₹2000
+                  </div>
+                )}
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
                   <span>₹{total}</span>
@@ -250,7 +348,25 @@ export default function CartPage() {
 
         {/* Suggestion Section */}
         <div className="mt-16">
-          <h2 className="text-xl font-semibold mb-6">You may also like</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold">
+              {!isFreeDelivery
+                ? "🌱 Add More Plants & Get FREE Delivery!"
+                : "You may also like"}
+            </h2>
+            {!isFreeDelivery && (
+              <div className="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">
+                Save ₹{DELIVERY_FEE} on delivery
+              </div>
+            )}
+          </div>
+          {!isFreeDelivery && (
+            <p className="text-gray-600 mb-6 text-sm">
+              Add just ₹{FREE_DELIVERY_THRESHOLD - subtotal} more to unlock free
+              delivery and save ₹{DELIVERY_FEE}! Choose from our beautiful
+              collection below:
+            </p>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {suggestions.map((plant) => (
               <ProductCard

@@ -5,6 +5,11 @@ import { getCartItems } from "@/src/lib/utils/cartUtils";
 import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import { Button } from "@/src/components/ui/button";
+import {
+  isPincodeServiceable,
+  isValidPincodeFormat,
+  getServiceablePincodesList,
+} from "@/src/lib/utils/pincodeValidation";
 
 export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -25,6 +30,8 @@ export default function CheckoutPage() {
   });
   const [touched, setTouched] = useState({});
   const [formError, setFormError] = useState("");
+  const [pincodeError, setPincodeError] = useState("");
+  const [isPincodeValidating, setIsPincodeValidating] = useState(false);
 
   useEffect(() => {
     setCartItems(getCartItems());
@@ -64,6 +71,8 @@ export default function CheckoutPage() {
     /^[6-9]\d{9}$/.test(userDetails.phone) &&
     userDetails.address.trim() &&
     userDetails.pincode.trim().length === 6 &&
+    isValidPincodeFormat(userDetails.pincode) &&
+    isPincodeServiceable(userDetails.pincode) &&
     userDetails.city.trim() &&
     userDetails.state.trim();
 
@@ -149,7 +158,20 @@ export default function CheckoutPage() {
       });
       return;
     }
+
+    // Additional pin code validation
+    if (userDetails.pincode && !isPincodeServiceable(userDetails.pincode)) {
+      setFormError(
+        "Sorry, we don't deliver to this pin code yet. Please check our serviceable areas."
+      );
+      setPincodeError(
+        "Sorry, we don't deliver to this pin code yet. Coming soon!"
+      );
+      return;
+    }
+
     setFormError("");
+    setPincodeError("");
     setLoading(true);
 
     // 1. Create order on backend
@@ -269,10 +291,31 @@ export default function CheckoutPage() {
   };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setUserDetails((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+
+    // Validate pin code when it changes
+    if (name === "pincode") {
+      setPincodeError("");
+      setIsPincodeValidating(true);
+
+      // Debounce pin code validation
+      setTimeout(() => {
+        if (value.length === 6) {
+          if (!isValidPincodeFormat(value)) {
+            setPincodeError("Please enter a valid 6-digit pin code");
+          } else if (!isPincodeServiceable(value)) {
+            setPincodeError(
+              "Sorry, we don't deliver to this pin code yet. Coming soon!"
+            );
+          }
+        }
+        setIsPincodeValidating(false);
+      }, 500);
+    }
   };
 
   const handleBlur = (e) => {
@@ -394,21 +437,130 @@ export default function CheckoutPage() {
                     <label className="block text-sm font-medium mb-1 text-gray-700">
                       Pincode<span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
-                      name="pincode"
-                      value={userDetails.pincode}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      maxLength={6}
-                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
-                        touched.pincode && userDetails.pincode.length !== 6
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
-                      required
-                      placeholder="6-digit pincode"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        name="pincode"
+                        value={userDetails.pincode}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        maxLength={6}
+                        className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                          touched.pincode && userDetails.pincode.length !== 6
+                            ? "border-red-500"
+                            : pincodeError
+                            ? "border-red-500"
+                            : userDetails.pincode.length === 6 &&
+                              isPincodeServiceable(userDetails.pincode)
+                            ? "border-green-500"
+                            : "border-gray-300"
+                        }`}
+                        required
+                        placeholder="6-digit pincode"
+                      />
+                      {isPincodeValidating && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500"></div>
+                        </div>
+                      )}
+                      {userDetails.pincode.length === 6 &&
+                        !isPincodeValidating &&
+                        isPincodeServiceable(userDetails.pincode) && (
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <svg
+                              className="w-4 h-4 text-green-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </div>
+                        )}
+                    </div>
+                    {pincodeError && (
+                      <div className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        {pincodeError}
+                      </div>
+                    )}
+                    {userDetails.pincode.length === 6 &&
+                      !pincodeError &&
+                      isPincodeServiceable(userDetails.pincode) && (
+                        <div className="text-green-600 text-sm mt-1 flex items-center gap-1">
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                          Great! We deliver to this pin code
+                        </div>
+                      )}
+                  </div>
+
+                  {/* Serviceable Areas Info */}
+                  <div className="col-span-full">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <svg
+                          className="w-5 h-5 text-blue-600 mt-0.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <div>
+                          <h4 className="text-sm font-semibold text-blue-800 mb-1">
+                            Serviceable Areas
+                          </h4>
+                          <p className="text-xs text-blue-700 mb-2">
+                            We currently deliver to select pin codes. Check if
+                            your area is covered:
+                          </p>
+                          <details className="text-xs">
+                            <summary className="cursor-pointer text-blue-600 hover:text-blue-800 font-medium">
+                              View Serviceable Pin Codes
+                            </summary>
+                            <div className="mt-2 p-2 bg-white rounded border border-blue-200">
+                              <p className="text-gray-700 font-mono text-xs break-all">
+                                {getServiceablePincodesList()}
+                              </p>
+                            </div>
+                          </details>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   {/* City */}
                   <div>

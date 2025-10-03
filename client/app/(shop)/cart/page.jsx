@@ -88,10 +88,10 @@ export default function CartPage() {
 
   // Updated total calculation to use correct price per item
   const subtotal = cartItems.reduce((sum, item) => {
-    // Use item.price if present, fallback to 650/850 based on size
+    // Use item.price if present, fallback to 10/850 based on size
     let price = item.price;
     if (!price) {
-      price = item.size === "8 Inch" ? 850 : 650;
+      price = item.size === "8 Inch" ? 850 : 10;
     }
     return sum + price * item.quantity;
   }, 0);
@@ -146,7 +146,7 @@ export default function CartPage() {
               {cartItems.map((item) => {
                 // Ensure price is correct for display
                 const displayPrice =
-                  item.price || (item.size === "8 Inch" ? 850 : 650);
+                  item.price || (item.size === "8 Inch" ? 850 : 10);
                 return (
                   <div
                     key={`${item.product}-${item.size}-${item.shape || ""}`}

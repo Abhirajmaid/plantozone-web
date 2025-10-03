@@ -52,7 +52,7 @@ export default function ProductPage() {
       return;
     }
 
-    const price = selectedSize === "8 Inch" ? 850 : 10;
+    const price = selectedSize === "8 Inch" ? 850 : 650;
     const newItem = {
       product: product.id,
       title: product?.attributes?.title,
@@ -97,7 +97,7 @@ export default function ProductPage() {
       return;
     }
 
-    const price = selectedSize === "8 Inch" ? 850 : 10;
+    const price = selectedSize === "8 Inch" ? 850 : 650;
     const newItem = {
       product: product.id,
       title: product?.attributes?.title,
@@ -215,7 +215,7 @@ export default function ProductPage() {
 
             <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
               <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">
-                ₹{selectedSize === "8 Inch" ? "850" : "10"}
+                ₹{selectedSize === "8 Inch" ? "850" : "650"}
               </span>
               <span className="text-sm sm:text-base text-gray-500 line-through">
                 ₹{selectedSize === "8 Inch" ? "1,499" : "1,099"}
@@ -359,7 +359,7 @@ export default function ProductPage() {
             <span className="text-xs text-gray-500">Price</span>
             <div className="flex items-center gap-2">
               <span className="text-lg font-bold text-green-600">
-                ₹{selectedSize === "8 Inch" ? "850" : "10"}
+                ₹{selectedSize === "8 Inch" ? "850" : "650"}
               </span>
               <span className="text-sm text-gray-400 line-through">
                 ₹{selectedSize === "8 Inch" ? "1,499" : "1,099"}

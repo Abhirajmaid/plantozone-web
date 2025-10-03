@@ -25,7 +25,7 @@ const ProductCard = ({ data, onAddToCart }) => {
       toast.error("Please select size and shape.", { position: "top-right" });
       return;
     }
-    const price = selectedSize === "8 Inch" ? 850 : 10;
+    const price = selectedSize === "8 Inch" ? 850 : 650;
     if (onAddToCart) {
       onAddToCart({
         size: selectedSize,
@@ -58,7 +58,7 @@ const ProductCard = ({ data, onAddToCart }) => {
   // Price logic
   const getPrice = () => {
     if (selectedSize === "8 Inch") return 850;
-    return 10;
+    return 650;
   };
 
   // Position popup absolutely near the Add to Cart button

@@ -8,6 +8,7 @@ export { default as Diver } from "./common/Diver"
 export { default as TestimonialCard } from "./common/TestimonialCard"
 export { default as Filters } from "./common/Filters"
 export { default as Loader } from "./common/Loader"
+export { default as NewsletterSection } from "./common/NewsletterSection"
 
 export { default as Hero } from "./section/home/Hero"
 export { default as InfiniteMarquee } from "./section/home/InfiniteMarquee"
@@ -20,6 +21,10 @@ export { default as TestimonialSwiper } from "./section/home/TestimonialSwiper"
 export { default as BlogSection } from "./section/home/BlogSection"
 export { default as PageBanner } from "./section/home/Banner"
 export { default as Itemlist } from "./section/home/Itemlist"
+export { default as ServicesSection } from "./section/home/ServicesSection"
+export { default as TopSellerProducts } from "./section/home/TopSellerProducts"
+export { default as SpecialOffer } from "./section/home/SpecialOffer"
+export { default as BottomCategoryNav } from "./section/home/BottomCategoryNav"
 
 export { default as Checkout } from "./section/checkout/Checkout"
 

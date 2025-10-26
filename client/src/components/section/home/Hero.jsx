@@ -1,99 +1,104 @@
-import Image from "next/image";
 import { Container } from "../../layout/Container";
 import { Section } from "../../layout/Section";
 import { Button } from "../../ui/button";
 import Link from "next/link";
 
-// Animation keyframes (inject into page, or move to global CSS)
-const floatingKeyframes = `
-@keyframes float {
-  0% { transform: translateY(0px);}
-  50% { transform: translateY(-20px);}
-  100% { transform: translateY(0px);}
-}
-@keyframes gradientMove {
-  0% { background-position: 0% 50%;}
-  100% { background-position: 100% 50%;}
-}
-`;
-
 const Hero = () => {
   return (
-    <Section className="relative overflow-hidden">
-      {/* Inject keyframes */}
-      <style>{floatingKeyframes}</style>
-      {/* Background Image */}
-      <div className="absolute inset-0 w-full h-full">
-        <Image
-          src="/images/plantozone.png"
-          alt="Beautiful indoor plants"
-          layout="fill"
-          objectFit="cover"
-          quality={100}
-          className="absolute z-0"
-        />
-        {/* Animated Gradient Overlay */}
-        <div
-          className="absolute inset-0 z-10"
-          style={{
-            background:
-              "linear-gradient(120deg, rgba(34,197,94,0.25) 0%, rgba(16,185,129,0.25) 50%, rgba(59,130,246,0.25) 100%)",
-            backgroundSize: "200% 200%",
-            animation: "gradientMove 8s ease-in-out infinite alternate",
-            mixBlendMode: "overlay",
-          }}
-        ></div>
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-50 z-20"></div>
+    <Section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 min-h-[80vh] flex items-center">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23374151' fill-opacity='0.1'%3E%3Cpath d='M50 0L60 40L100 50L60 60L50 100L40 60L0 50L40 40L50 0Z'/%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '60px 60px'
+        }}></div>
       </div>
 
-      {/* Floating Plant Illustration */}
-      <div
-        className="absolute left-1/2 top-[15%] z-30 pointer-events-none hidden md:block"
-        style={{
-          transform: "translateX(-50%)",
-          animation: "float 4s ease-in-out infinite",
-        }}
-      >
-        <Image
-          src="/images/plant-float.png"
-          alt="Floating Plant"
-          width={220}
-          height={220}
-          priority
-        />
-      </div>
+      {/* Decorative Elements */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-200/20 to-teal-200/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-slate-200/30 to-gray-300/30 rounded-full blur-2xl"></div>
+      <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-br from-blue-100/15 to-indigo-100/15 rounded-full blur-xl"></div>
 
-      {/* Content */}
-      <Container className="relative z-40 flex flex-col items-center justify-center min-h-[75vh] text-center text-white px-6">
-        <h1 className="font-playfair font-extrabold tracking-tight text-[clamp(2rem,4vw,4rem)] leading-tight opacity-0 animate-fadein">
-          Bring Nature Indoors
-        </h1>
-        <p className="mt-4 text-[clamp(1.2rem,2vw,2rem)] max-w-3xl opacity-0 animate-fadein delay-200">
-          Transform your space with our curated collection of beautiful,
-          easy-to-care-for plants.
-        </p>
-        <Link href="/shop">
-          <Button
-            size="lg"
-            className="mt-6 px-6 py-3 text-lg font-semibold transition duration-300 ease-in-out transform hover:scale-105 opacity-0 animate-fadein delay-400"
-          >
-            Shop Now
-          </Button>
-        </Link>
+      {/* Sparkle Elements */}
+      <div className="absolute top-20 right-20 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
+      <div className="absolute top-32 right-32 w-1 h-1 bg-yellow-300 rounded-full animate-pulse"></div>
+      <div className="absolute bottom-32 left-20 w-1 h-1 bg-yellow-400 rounded-full animate-ping"></div>
+      <div className="absolute bottom-20 left-32 w-2 h-2 bg-yellow-300 rounded-full animate-pulse"></div>
+
+      <Container className="relative z-10">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+          {/* Left Content */}
+          <div className="flex-1 max-w-2xl">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              The Best Online Plant Shop
+            </div>
+
+            {/* Main Heading */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              The Ultimate Plant{" "}
+              <span className="text-green-600">Shopping Destination</span>
+            </h1>
+
+            {/* Description */}
+            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/shop">
+                <Button className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-4 text-lg font-semibold rounded-lg flex items-center gap-2 transition-all duration-300 hover:scale-105">
+                  Shop Now
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Button>
+              </Link>
+              <Link href="/shop">
+                <Button variant="outline" className="border-2 border-gray-300 text-gray-700 hover:border-gray-400 px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-300">
+                  View All Products
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Content - Decorative Elements */}
+          <div className="flex-1 max-w-lg relative">
+            {/* Main decorative circle */}
+            <div className="w-80 h-80 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-2xl relative">
+              {/* Plant icon or decorative element */}
+              <div className="text-8xl text-green-600">🌱</div>
+              
+              {/* Floating badges */}
+              <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 bg-white border-2 border-green-500 rounded-full px-4 py-2 shadow-lg">
+                <div className="flex items-center gap-2 text-sm font-medium text-green-700">
+                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+                  </svg>
+                  Fast delivery
+                </div>
+              </div>
+              
+              <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white border-2 border-green-500 rounded-full px-4 py-2 shadow-lg">
+                <div className="flex items-center gap-2 text-sm font-medium text-green-700">
+                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  Secure Payment
+                </div>
+              </div>
+            </div>
+
+            {/* Additional sparkle elements */}
+            <div className="absolute top-8 right-8 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
+            <div className="absolute bottom-8 left-8 w-2 h-2 bg-yellow-300 rounded-full animate-pulse"></div>
+            <div className="absolute top-1/2 -left-4 w-1 h-1 bg-yellow-400 rounded-full animate-ping"></div>
+          </div>
+        </div>
       </Container>
-      {/* Fade-in animation utility */}
-      <style>{`
-        .animate-fadein {
-          animation: fadeInUp 1.2s cubic-bezier(.23,1.01,.32,1) forwards;
-        }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-400 { animation-delay: 0.4s; }
-        @keyframes fadeInUp {
-          0% { opacity: 0; transform: translateY(40px);}
-          100% { opacity: 1; transform: translateY(0);}
-        }
-      `}</style>
     </Section>
   );
 };

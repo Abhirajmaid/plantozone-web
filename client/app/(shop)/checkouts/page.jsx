@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getCartItems } from "@/src/lib/utils/cartUtils";
 import { Container } from "@/src/components/layout/Container";
-import { Section } from "@/src/components/layout/Section";
 import { Button } from "@/src/components/ui/button";
+import Link from "next/link";
+import ServicesSection from "@/src/components/section/home/ServicesSection";
+import { NewsletterSection } from "@/src/components";
 import {
   isPincodeServiceable,
   isValidPincodeFormat,
@@ -12,6 +15,7 @@ import {
 } from "@/src/lib/utils/pincodeValidation";
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -21,6 +25,9 @@ export default function CheckoutPage() {
   // User details state
   const [userDetails, setUserDetails] = useState({
     name: "",
+    lastName: "",
+    companyName: "",
+    country: "India",
     email: "",
     phone: "",
     address: "",
@@ -257,10 +264,8 @@ export default function CheckoutPage() {
             isFreeDelivery: isFreeDelivery,
             total: total,
           });
-          alert(
-            "Payment successful! Order placed. Payment ID: " +
-              response.razorpay_payment_id
-          );
+          // Redirect to order completed page
+          router.push("/order-completed");
         } catch (err) {
           alert(
             "Payment succeeded but failed to save order. Please contact support."
@@ -326,55 +331,63 @@ export default function CheckoutPage() {
   };
 
   return (
-    <Section className="min-h-screen bg-gray-50">
-      <Container className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-[100px] py-8 sm:py-10 lg:py-16 pt-20 lg:pt-[120px]">
-        <div className="max-w-5xl mx-auto">
-          {/* Free Delivery Banner */}
-          {cartItems.length > 0 && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-lg">
-              <div className="flex items-center justify-center gap-3">
-                <span className="text-2xl">🚚</span>
-                <div className="text-center">
-                  <h3 className="font-bold text-lg">
-                    FREE Delivery on Orders Above ₹2000!
-                  </h3>
-                  <p className="text-sm opacity-90">
-                    {isFreeDelivery
-                      ? `🎉 Congratulations! You've saved ₹${DELIVERY_FEE} on delivery!`
-                      : `Add ₹${
-                          FREE_DELIVERY_THRESHOLD - subtotal
-                        } more and save ₹${DELIVERY_FEE}!`}
-                  </p>
-                </div>
-              </div>
+    <div className="pt-[88px]">
+      {/* Hero/Breadcrumb Section */}
+      <div 
+        className="relative py-20 md:py-24 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/breadcrumbbg.png')" }}
+      >
+        <div className="absolute inset-0 bg-white/70"></div>
+        <Container>
+          <div className="relative z-10 flex flex-col items-center text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+              Checkout
+            </h1>
+            <div className="flex items-center gap-2 text-gray-600">
+              <Link href="/" className="hover:text-green-600 transition-colors">
+                Home
+              </Link>
+              <span>/</span>
+              <Link href="/cart" className="hover:text-green-600 transition-colors">
+                Shopping Cart
+              </Link>
+              <span>/</span>
+              <span className="text-gray-800 font-medium">Checkout</span>
             </div>
-          )}
+          </div>
+        </Container>
+      </div>
 
-          <h1 className="text-3xl font-bold mb-8 text-center text-green-700">
-            Checkout
-          </h1>
+      {/* Main Checkout Section */}
+      <div className="py-16 bg-white">
+        <Container>
           {cartItems.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-lg shadow">
+            <div className="text-center py-16">
               <p className="mb-4 text-lg text-gray-500">Your cart is empty</p>
+              <Link href="/shop">
+                <Button className="bg-green-600 hover:bg-green-700">
+                  Continue Shopping
+                </Button>
+              </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 bg-transparent">
-              {/* Left: Shipping Form */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+              {/* Left: Billing Details - Spans 2 columns */}
               <form
-                className="space-y-6 bg-white rounded-xl p-6 border border-gray-200 shadow-sm flex flex-col h-fit"
+                className="lg:col-span-2 space-y-6"
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleRazorpay();
                 }}
               >
-                <h3 className="text-lg font-semibold text-green-700 mb-4">
-                  Shipping Details
-                </h3>
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                  Billing Details
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Name */}
+                  {/* First Name */}
                   <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700">
-                      Name<span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">
+                      First Name *
                     </label>
                     <input
                       type="text"
@@ -382,190 +395,83 @@ export default function CheckoutPage() {
                       value={userDetails.name}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
-                        touched.name && !userDetails.name
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                       required
-                      placeholder="Full Name"
+                      placeholder="Ex. John"
                     />
-                  </div>
-                  {/* Email */}
-                  <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700">
-                      Email<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={userDetails.email}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
-                        touched.email &&
-                        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userDetails.email)
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
-                      required
-                      placeholder="you@email.com"
-                    />
-                  </div>
-                  {/* Phone */}
-                  <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700">
-                      Phone<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={userDetails.phone}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
-                        touched.phone && !/^[6-9]\d{9}$/.test(userDetails.phone)
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
-                      required
-                      placeholder="10-digit mobile number"
-                    />
-                  </div>
-                  {/* Pincode */}
-                  <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700">
-                      Pincode<span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        name="pincode"
-                        value={userDetails.pincode}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        maxLength={6}
-                        className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
-                          touched.pincode && userDetails.pincode.length !== 6
-                            ? "border-red-500"
-                            : pincodeError
-                            ? "border-red-500"
-                            : userDetails.pincode.length === 6 &&
-                              isPincodeServiceable(userDetails.pincode)
-                            ? "border-green-500"
-                            : "border-gray-300"
-                        }`}
-                        required
-                        placeholder="6-digit pincode"
-                      />
-                      {isPincodeValidating && (
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500"></div>
-                        </div>
-                      )}
-                      {userDetails.pincode.length === 6 &&
-                        !isPincodeValidating &&
-                        isPincodeServiceable(userDetails.pincode) && (
-                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                            <svg
-                              className="w-4 h-4 text-green-500"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          </div>
-                        )}
-                    </div>
-                    {pincodeError && (
-                      <div className="text-red-600 text-sm mt-1 flex items-center gap-1">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        {pincodeError}
-                      </div>
-                    )}
-                    {userDetails.pincode.length === 6 &&
-                      !pincodeError &&
-                      isPincodeServiceable(userDetails.pincode) && (
-                        <div className="text-green-600 text-sm mt-1 flex items-center gap-1">
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                          Great! We deliver to this pin code
-                        </div>
-                      )}
                   </div>
 
-                  {/* Serviceable Areas Info */}
-                  <div className="col-span-full">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <div className="flex items-start gap-3">
-                        <svg
-                          className="w-5 h-5 text-blue-600 mt-0.5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <div>
-                          <h4 className="text-sm font-semibold text-blue-800 mb-1">
-                            Serviceable Areas
-                          </h4>
-                          <p className="text-xs text-blue-700 mb-2">
-                            We currently deliver to select pin codes. Check if
-                            your area is covered:
-                          </p>
-                          <details className="text-xs">
-                            <summary className="cursor-pointer text-blue-600 hover:text-blue-800 font-medium">
-                              View Serviceable Pin Codes
-                            </summary>
-                            <div className="mt-2 p-2 bg-white rounded border border-blue-200">
-                              <p className="text-gray-700 font-mono text-xs break-all">
-                                {getServiceablePincodesList()}
-                              </p>
-                            </div>
-                          </details>
-                        </div>
-                      </div>
-                    </div>
+                  {/* Last Name */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">
+                      Last Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={userDetails.lastName || ""}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                      required
+                      placeholder="Ex. Doe"
+                    />
                   </div>
+                </div>
+
+                {/* Company Name (Optional) */}
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                    Company Name (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    name="companyName"
+                    value={userDetails.companyName || ""}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                    placeholder="Enter Company Name"
+                  />
+                </div>
+
+                {/* Country */}
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                    Country *
+                  </label>
+                  <select
+                    name="country"
+                    value={userDetails.country || "India"}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                    required
+                  >
+                    <option value="">Select Country</option>
+                    <option value="India">India</option>
+                  </select>
+                </div>
+
+                {/* Street Address */}
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                    Street Address *
+                  </label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={userDetails.address}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                    required
+                    placeholder="Enter Street Address"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* City */}
                   <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700">
-                      City<span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">
+                      City *
                     </label>
                     <input
                       type="text"
@@ -573,19 +479,16 @@ export default function CheckoutPage() {
                       value={userDetails.city}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
-                        touched.city && !userDetails.city
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                       required
-                      placeholder="City"
+                      placeholder="Select City"
                     />
                   </div>
+
                   {/* State */}
                   <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700">
-                      State<span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">
+                      State *
                     </label>
                     <input
                       type="text"
@@ -593,216 +496,169 @@ export default function CheckoutPage() {
                       value={userDetails.state}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
-                        touched.state && !userDetails.state
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                       required
-                      placeholder="State"
+                      placeholder="Select State"
                     />
                   </div>
                 </div>
-                {/* Address */}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Zip Code */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">
+                      Zip Code *
+                    </label>
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={userDetails.pincode}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      maxLength={6}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                      required
+                      placeholder="Enter Zip Code"
+                    />
+                  </div>
+
+                  {/* Phone */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">
+                      Phone *
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={userDetails.phone}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                      required
+                      placeholder="Enter Phone Number"
+                    />
+                  </div>
+                </div>
+
+                {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-700">
-                    Address<span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                    Email *
                   </label>
-                  <textarea
-                    name="address"
-                    value={userDetails.address}
+                  <input
+                    type="email"
+                    name="email"
+                    value={userDetails.email}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-200 ${
-                      touched.address && !userDetails.address
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                    rows={2}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                     required
-                    placeholder="Flat, House no., Building, Company, Apartment"
-                  />
-                  <textarea
-                    name="address2"
-                    value={userDetails.address2 || ""}
-                    onChange={(e) =>
-                      setUserDetails((prev) => ({
-                        ...prev,
-                        address2: e.target.value,
-                      }))
-                    }
-                    className="w-full border rounded-lg px-3 py-2 bg-white mt-2 focus:outline-none focus:ring-2 focus:ring-green-200 border-gray-300"
-                    rows={2}
-                    placeholder="Area, Colony, Street, Sector, Village (optional)"
+                    placeholder="Enter Email Address"
                   />
                 </div>
+
+                {/* Delivery Address Section */}
+                <div>
+                  <label className="block text-sm font-medium mb-3 text-gray-700">
+                    Delivery Address *
+                  </label>
+                  <div className="space-y-3">
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="deliveryAddress"
+                        value="same"
+                        defaultChecked
+                        className="w-5 h-5 text-green-600 focus:ring-green-600"
+                      />
+                      <span className="text-gray-700">Same as shipping address</span>
+                    </label>
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="deliveryAddress"
+                        value="different"
+                        className="w-5 h-5 text-green-600 focus:ring-green-600"
+                      />
+                      <span className="text-gray-700">Use a different billing address</span>
+                    </label>
+                  </div>
+                </div>
+
                 {formError && (
-                  <div className="text-red-600 text-sm font-medium">
+                  <div className="text-red-600 text-sm font-medium bg-red-50 p-4 rounded-lg">
                     {formError}
                   </div>
                 )}
-                <Button
-                  className="w-full py-5 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white text-base font-bold rounded-xl shadow-md border-0 transition-all duration-200 flex items-center justify-center gap-2"
-                  type="submit"
-                  disabled={loading}
-                >
-                  {loading ? "Processing..." : "Pay Now"}
-                </Button>
               </form>
-              {/* Right: Order Summary */}
-              <div className="bg-white rounded-2xl shadow-xl p-0 h-fit flex flex-col items-center">
-                <div className="w-full max-w-md mx-auto bg-gradient-to-br from-green-50 to-white rounded-2xl border border-green-200 shadow p-0 mt-0">
-                  <div className="flex flex-col items-center py-6 border-b border-dashed border-green-300">
-                    <img
-                      src="/images/logo_color.png"
-                      alt="Plantozone"
-                      className="w-16 h-16 mb-2"
-                    />
-                    <h2 className="text-2xl font-bold text-green-700 tracking-wider mb-1">
-                      Plantozone
-                    </h2>
-                    <span className="text-xs text-gray-400">Order Bill</span>
 
-                    {/* Free Delivery Status */}
-                    {isFreeDelivery ? (
-                      <div className="mt-3 px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
-                        🎉 FREE Delivery Unlocked!
-                      </div>
-                    ) : (
-                      <div className="mt-3 px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
-                        ₹{FREE_DELIVERY_THRESHOLD - subtotal} more for FREE
-                        delivery
-                      </div>
-                    )}
-                  </div>
-                  <ul className="divide-y divide-dashed divide-green-200 mb-0">
-                    {cartItems.map((item, idx) => (
-                      <li
-                        key={idx}
-                        className="py-4 flex items-center gap-3 px-6"
-                      >
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-12 h-12 object-cover rounded border"
-                        />
-                        <div className="flex-1">
-                          <div className="font-medium text-gray-800 text-sm line-clamp-1">
-                            {item.title}
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            <span className="mr-2">
-                              Size:{" "}
-                              <span className="font-semibold">{item.size}</span>
-                            </span>
-                            <span>
-                              Shape:{" "}
-                              <span className="font-semibold">
-                                {item.shape}
-                              </span>
-                            </span>
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            Qty:{" "}
-                            <span className="font-semibold">
-                              {item.quantity}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="font-semibold text-green-700 text-base min-w-[60px] text-right">
-                          ₹{item.price * item.quantity}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="px-6 py-4 border-t border-dashed border-green-300">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-gray-600">Subtotal</span>
-                      <span className="font-semibold text-gray-800">
-                        ₹{subtotal}
-                      </span>
+              {/* Right: Order Summary - Spans 1 column */}
+              <div className="lg:col-span-1">
+                <div className="bg-gray-50 rounded-xl p-6 sticky top-24">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                    Order Summary
+                  </h2>
+                  
+                  <div className="space-y-4 mb-6">
+                    <div className="flex justify-between text-gray-700">
+                      <span>Items:</span>
+                      <span className="font-semibold">{cartItems.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-700">
+                      <span>Sub Total</span>
+                      <span className="font-semibold">₹{subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-700">
+                      <span>Shipping</span>
+                      <span className="font-semibold">₹{deliveryFee.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-700">
+                      <span>Taxes</span>
+                      <span className="font-semibold">₹0.00</span>
                     </div>
                     {discount.percent > 0 && (
-                      <div className="flex justify-between items-center mb-2 text-green-700">
-                        <span>
-                          Discount
-                          {discount.code && (
-                            <span className="ml-2 text-xs text-green-600">
-                              ({discount.code} -{discount.percent}%)
-                            </span>
-                          )}
-                        </span>
-                        <span className="font-semibold">
-                          -₹{discountAmount}
-                        </span>
+                      <div className="flex justify-between text-green-600">
+                        <span>Coupon Discount</span>
+                        <span className="font-semibold">-₹{discountAmount.toFixed(2)}</span>
                       </div>
                     )}
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-gray-600">Delivery</span>
-                        {isFreeDelivery && (
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-                            FREE
-                          </span>
-                        )}
+                    <div className="border-t border-gray-300 pt-4">
+                      <div className="flex justify-between text-gray-900">
+                        <span className="text-lg font-bold">Total</span>
+                        <span className="text-2xl font-bold">₹{total.toFixed(2)}</span>
                       </div>
-                      <span
-                        className={`font-semibold ${
-                          isFreeDelivery
-                            ? "text-green-700 line-through"
-                            : "text-gray-800"
-                        }`}
-                      >
-                        {isFreeDelivery
-                          ? `₹${DELIVERY_FEE}`
-                          : `₹${deliveryFee}`}
-                      </span>
-                    </div>
-                    {isFreeDelivery && (
-                      <div className="text-xs text-green-600 bg-green-50 p-2 rounded border border-green-200 mb-2">
-                        🎉 Congratulations! You've qualified for free delivery
-                        on orders above ₹2000
-                      </div>
-                    )}
-                    <div className="flex justify-between items-center font-bold text-lg border-t border-dashed border-green-200 pt-3">
-                      <span>Total</span>
-                      <span className="text-green-700">₹{total}</span>
                     </div>
                   </div>
-                  <div className="px-6 pb-6">
-                    <Button
-                      className="w-full py-5 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white text-base font-bold rounded-xl shadow-md border-0 transition-all duration-200 flex items-center justify-center gap-2"
-                      type="button"
-                      disabled={loading || !isValid}
-                      onClick={handleRazorpay}
-                    >
-                      <svg
-                        className="w-6 h-6 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M17 9V7a5 5 0 00-10 0v2M5 12h14l-1.38 8.29A2 2 0 0115.64 22H8.36a2 2 0 01-1.98-1.71L5 12zm2 0V7a3 3 0 016 0v5"
-                        />
-                      </svg>
-                      {loading ? "Processing..." : "Pay with Razorpay"}
-                    </Button>
-                    {!isValid && (
-                      <div className="text-red-600 text-sm font-medium mt-2 text-center">
-                        Please fill all required details to proceed.
-                      </div>
-                    )}
-                  </div>
+
+                  <Button
+                    onClick={handleRazorpay}
+                    disabled={loading || !isValid}
+                    className="w-full py-4 bg-green-800 hover:bg-green-900 text-white text-lg font-semibold rounded-lg transition-colors"
+                  >
+                    {loading ? "Processing..." : "Proceed to Payment"}
+                  </Button>
+
+                  {!isValid && (
+                    <p className="text-red-600 text-sm mt-3 text-center">
+                      Please fill all required fields
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
           )}
-        </div>
-      </Container>
-    </Section>
+        </Container>
+      </div>
+
+      {/* Services Section (Center Aligned) */}
+      <div className="mb-16">
+        <ServicesSection />
+      </div>
+
+      {/* Newsletter Section */}
+      <div className="mb-16">
+        <NewsletterSection />
+      </div>
+    </div>
   );
 }

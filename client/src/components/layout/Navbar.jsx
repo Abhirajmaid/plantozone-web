@@ -14,7 +14,7 @@ import {
   LogOutIcon,
   UserCircleIcon,
 } from "lucide-react";
-import { Logo } from "..";
+import Logo from "../common/Logo";
 import { header, mobileTabs } from "@/src/lib/data/links";
 import { Container } from "./Container";
 import {
@@ -150,24 +150,69 @@ export default function CustomNavbar() {
 
   return (
     <>
-      <header className="fixed w-full bg-white z-[99] border-b">
-        <div className="bg-primary h-5"></div>
+      {/* Top Header Bar */}
+      <div className="fixed w-full bg-green-600 text-white z-[100] py-2">
+        <Container>
+          <div className="flex items-center justify-between text-sm">
+            {/* Left: Call Us */}
+            <div className="flex items-center">
+              <span>Call Us : +91 89994 92523</span>
+            </div>
+            
+            {/* Center: Sign up offer */}
+            <div className="flex items-center space-x-2">
+              <span>Sign up and GET 25% OFF for your first order.</span>
+              <button className="text-yellow-400 underline hover:text-yellow-300 transition-colors">
+                Sign up now
+              </button>
+            </div>
+            
+            {/* Right: Social Media Icons */}
+            <div className="flex items-center space-x-2">
+              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                <Icon icon="mdi:facebook" className="w-3 h-3 text-black" />
+              </a>
+              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                <Icon icon="mdi:twitter" className="w-3 h-3 text-black" />
+              </a>
+              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                <Icon icon="mdi:pinterest" className="w-3 h-3 text-black" />
+              </a>
+              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                <Icon icon="mdi:instagram" className="w-3 h-3 text-black" />
+              </a>
+              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                <Icon icon="mdi:youtube" className="w-3 h-3 text-black" />
+              </a>
+            </div>
+          </div>
+        </Container>
+      </div>
+
+      {/* Main Navigation Bar */}
+      <header className="fixed w-full bg-white z-[99] border-b top-10">
         <Container>
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
-            {/* Left: Logo */}
-            <div className="w-[40px] md:w-[80px]">
-              <Logo />
+            {/* Left: Logo and Brand */}
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center">
+                <Logo />
+              </div>
+              <span className="text-xl font-semibold text-gray-800">
+                Plantozone<span className="text-yellow-400">.</span>
+              </span>
             </div>
+            
             {/* Center: Navigation Links */}
-            <div className="hidden md:flex gap-10 items-center">
-              <nav className="space-x-8 text-[16px] font-medium">
+            <div className="hidden md:flex items-center">
+              <nav className="flex space-x-8 text-[16px] font-medium">
                 {header.map((link, id) => (
                   <Link
                     key={id}
                     href={link.href}
-                    className={`hover:text-[#0b9c09] transition-colors capitalize ${
+                    className={`text-gray-700 hover:text-green-600 transition-colors capitalize ${
                       pathname === link.href
-                        ? "text-[#0b9c09] font-bold underline underline-offset-8"
+                        ? "text-green-600 font-semibold"
                         : ""
                     }`}
                   >
@@ -179,16 +224,24 @@ export default function CustomNavbar() {
 
             {/* Right: Icons */}
             <div className="hidden md:flex items-center space-x-4">
+              <Button variant="ghost" size="icon" className="relative">
+                <Icon icon="mdi:magnify" className="h-6 w-6 text-gray-700" />
+              </Button>
+              <Button variant="ghost" size="icon" className="relative">
+                <Icon icon="mdi:heart-outline" className="h-6 w-6 text-gray-700" />
+              </Button>
               <Button variant="ghost" size="icon" asChild className="relative">
                 <Link href="/cart">
-                  <ShoppingCartIcon className="h-7 w-7" />
-                  <span className="sr-only">Shopping Cart</span>
+                  <Icon icon="mdi:cart-outline" className="h-6 w-6 text-gray-700" />
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
                       {cartCount}
                     </span>
                   )}
                 </Link>
+              </Button>
+              <Button variant="ghost" size="icon" className="relative">
+                <Icon icon="mdi:account-outline" className="h-6 w-6 text-gray-700" />
               </Button>
               {/* <Button variant="ghost" size="icon">
                 <HeartIcon className="h-7 w-7" />
@@ -261,7 +314,9 @@ export default function CustomNavbar() {
             className="absolute top-0 left-0 right-0 bg-white shadow-md z-50 md:hidden transform transition-all duration-300 ease-in-out translate-x-0 min-h-screen"
           >
             <div className="flex justify-between items-center p-4">
-              <Logo />
+              <div className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center">
+                <Logo />
+              </div>
               <Button variant="ghost" size="icon" onClick={toggleMenu}>
                 <XIcon className="h-7 w-7" />
                 <span className="sr-only">Close Menu</span>

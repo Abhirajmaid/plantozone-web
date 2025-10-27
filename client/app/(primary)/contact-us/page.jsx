@@ -6,8 +6,7 @@ import { Icon } from "@iconify/react";
 import { Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import ServicesSection from "@/src/components/section/home/ServicesSection";
-import NewsletterSection from "@/src/components/section/home/NewsletterSection";
+import { ShopServiceSection, NewsletterSection } from "@/src/components";
 
 // Hero Section with Breadcrumb
 function ContactHero() {
@@ -352,7 +351,7 @@ export default function Page() {
 
       {/* Services Section (3 Badge Strip) */}
       <div className="mb-16">
-        <ServicesSection />
+        <ShopServiceSection />
       </div>
 
       {/* Newsletter Section */}

@@ -9,6 +9,7 @@ export { default as TestimonialCard } from "./common/TestimonialCard"
 export { default as Filters } from "./common/Filters"
 export { default as Loader } from "./common/Loader"
 export { default as NewsletterSection } from "./common/NewsletterSection"
+export { default as ShopServiceSection } from "./common/ShopServiceSection"
 
 export { default as Hero } from "./section/home/Hero"
 export { default as InfiniteMarquee } from "./section/home/InfiniteMarquee"

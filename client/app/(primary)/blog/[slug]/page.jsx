@@ -2,9 +2,78 @@
 import React from "react";
 import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
-import { NewsletterSection } from "@/src/components";
-import { Icon } from "@iconify/react";
+import { NewsletterSection, ShopServiceSection } from "@/src/components";
 import Link from "next/link";
+
+// Related Blogs Data
+const relatedBlogsData = [
+  {
+    id: 1,
+    title: "How to Style Plants in Every Room of Your Home",
+    slug: "style-plants-every-room",
+    excerpt: "Discover creative ways to incorporate plants into every space of your home, from living rooms to bathrooms.",
+    image: "/images/plant.png",
+    category: "Indoor Plant",
+    author: "Jenny Alexander",
+    date: "08 October 2024",
+    readTime: "6 min read"
+  },
+  {
+    id: 2,
+    title: "Essential Plant Care Tips for Beginners",
+    slug: "plant-care-tips-beginners",
+    excerpt: "Learn the fundamental principles of plant care that every beginner should know to keep their plants thriving.",
+    image: "/images/plant.png",
+    category: "Plant Care",
+    author: "Jenny Alexander",
+    date: "05 October 2024",
+    readTime: "8 min read"
+  },
+  {
+    id: 3,
+    title: "Creating a Sustainable Indoor Garden",
+    slug: "sustainable-indoor-garden",
+    excerpt: "Build an eco-friendly indoor garden using sustainable practices and environmentally conscious plant choices.",
+    image: "/images/plant.png",
+    category: "Sustainability",
+    author: "Jenny Alexander",
+    date: "02 October 2024",
+    readTime: "7 min read"
+  },
+  {
+    id: 4,
+    title: "The Complete Guide to Air-Purifying Plants",
+    slug: "air-purifying-plants-guide",
+    excerpt: "Explore the best air-purifying plants for your home and learn how they can improve your indoor air quality.",
+    image: "/images/air_purifying.jpg",
+    category: "Air Purifying",
+    author: "Sarah Green",
+    date: "01 October 2024",
+    readTime: "9 min read"
+  },
+  {
+    id: 5,
+    title: "Seasonal Plant Care: Adapting Your Garden",
+    slug: "seasonal-plant-care-guide",
+    excerpt: "Learn how to adjust your plant care routine throughout the seasons for optimal plant health year-round.",
+    image: "/images/plant.png",
+    category: "Plant Care",
+    author: "Mike Thompson",
+    date: "28 September 2024",
+    readTime: "10 min read"
+  },
+  {
+    id: 6,
+    title: "Propagation Techniques: Growing New Plants",
+    slug: "plant-propagation-techniques",
+    excerpt: "Master different plant propagation methods to expand your collection and share plants with friends.",
+    image: "/images/plant.png",
+    category: "Plant Care",
+    author: "Emma Wilson",
+    date: "25 September 2024",
+    readTime: "12 min read"
+  }
+];
 
 // Hero Section with Breadcrumb
 function BlogDetailHero() {
@@ -39,13 +108,13 @@ const BlogDetailPage = () => {
       <BlogDetailHero />
 
       {/* Main Content */}
-      <Section className="bg-white py-16">
+      <Section className="bg-white py-16 lg:overflow-visible">
         <Container>
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="flex flex-col lg:flex-row gap-8">
               
               {/* Main Blog Content - Left Column (2/3 width) */}
-              <div className="lg:col-span-2">
+              <div className="lg:w-2/3">
                 
                 {/* Blog Hero Image */}
                 <div className="mb-8">
@@ -243,8 +312,8 @@ const BlogDetailPage = () => {
               </div>
 
               {/* Sidebar - Right Column (1/3 width) */}
-              <div className="lg:col-span-1">
-                <div className="sticky top-8 space-y-6">
+              <div className="lg:w-1/3 lg:sticky lg:top-36 lg:self-start">
+                <div className="space-y-6">
                   
                   {/* Filter by Categories */}
                   <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -343,142 +412,47 @@ const BlogDetailPage = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Blog Card 1 */}
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="relative">
-                  <img 
-                    src="/images/plant.png" 
-                    alt="How to Style Plants in Every Room"
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute bottom-4 left-4">
-                    <span className="bg-yellow-400 text-gray-800 px-3 py-1 rounded-full text-sm font-bold">
-                      Indoor Plant
-                    </span>
+              {relatedBlogsData.slice(0, 3).map((blog) => (
+                <div key={blog.id} className="rounded-2xl  overflow-hidden ">
+                  <div className="relative">
+                    <img 
+                      src={blog.image} 
+                      alt={blog.title}
+                      className="w-full h-48 object-cover rounded-2xl"
+                    />
+                    <div className="absolute bottom-4 left-4">
+                      <span className="bg-yellow-400 text-gray-800 px-3 py-1 rounded-full text-sm font-bold">
+                        {blog.category}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-6 pl-0">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-sm text-gray-600">{blog.author}</span>
+                      <span className="text-gray-400">•</span>
+                      <span className="text-sm text-gray-600">{blog.date}</span>
+                      <span className="text-gray-400">•</span>
+                      <span className="text-sm text-gray-600">{blog.readTime}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
+                      {blog.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                      {blog.excerpt}
+                    </p>
+                    <Link href={`/blog/${blog.slug}`} className="text-green-600 hover:text-green-700 font-medium">
+                      Read More
+                    </Link>
                   </div>
                 </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm text-gray-600">Jenny Alexander</span>
-                    <span className="text-gray-400">•</span>
-                    <span className="text-sm text-gray-600">08 October 2024</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
-                    How to Style Plants in Every Room of Your Home
-                  </h3>
-                  <a href="#" className="text-green-600 hover:text-green-700 font-medium">
-                    Read More
-                  </a>
-                </div>
-              </div>
-
-              {/* Blog Card 2 */}
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="relative">
-                  <img 
-                    src="/images/plant.png" 
-                    alt="Essential Plant Care Tips for Beginners"
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute bottom-4 left-4">
-                    <span className="bg-yellow-400 text-gray-800 px-3 py-1 rounded-full text-sm font-bold">
-                      Plant Care
-                    </span>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm text-gray-600">Jenny Alexander</span>
-                    <span className="text-gray-400">•</span>
-                    <span className="text-sm text-gray-600">05 October 2024</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
-                    Essential Plant Care Tips for Beginners
-                  </h3>
-                  <a href="#" className="text-green-600 hover:text-green-700 font-medium">
-                    Read More
-                  </a>
-                </div>
-              </div>
-
-              {/* Blog Card 3 */}
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="relative">
-                  <img 
-                    src="/images/plant.png" 
-                    alt="Creating a Sustainable Indoor Garden"
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute bottom-4 left-4">
-                    <span className="bg-yellow-400 text-gray-800 px-3 py-1 rounded-full text-sm font-bold">
-                      Sustainability
-                    </span>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm text-gray-600">Jenny Alexander</span>
-                    <span className="text-gray-400">•</span>
-                    <span className="text-sm text-gray-600">02 October 2024</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
-                    Creating a Sustainable Indoor Garden
-                  </h3>
-                  <a href="#" className="text-green-600 hover:text-green-700 font-medium">
-                    Read More
-                  </a>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </Container>
       </Section>
 
-      {/* Services Section - Exact same as cart/shop page */}
-      <Section className="bg-white py-16">
-        <Container>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
-            <div className="flex items-center space-x-4 text-center">
-              <div className="relative flex-shrink-0">
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-                <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                  <Icon icon="material-symbols:local-shipping-outline" className="w-8 h-8 text-green-700" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">Free Shipping</h3>
-                <p className="text-sm text-gray-600">Free shipping for order above ₹2000</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4 text-center">
-              <div className="relative flex-shrink-0">
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-                <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                  <Icon icon="material-symbols:account-balance-wallet-outline" className="w-8 h-8 text-green-700" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">Flexible Payment</h3>
-                <p className="text-sm text-gray-600">Multiple secure payment options</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4 text-center">
-              <div className="relative flex-shrink-0">
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-                <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                  <Icon icon="material-symbols:headphones" className="w-8 h-8 text-green-700" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">24×7 Support</h3>
-                <p className="text-sm text-gray-600">We support online all days.</p>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </Section>
+      {/* Services Section */}
+      <ShopServiceSection />
 
       {/* Newsletter Section - Exact same as cart/shop page */}
       <NewsletterSection />

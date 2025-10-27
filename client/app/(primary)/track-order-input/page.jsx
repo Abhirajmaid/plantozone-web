@@ -5,7 +5,7 @@ import { Section } from "@/src/components/layout/Section";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { NewsletterSection } from "@/src/components";
+import { NewsletterSection, ShopServiceSection } from "@/src/components";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -179,57 +179,8 @@ const TrackOrderInputPage = () => {
         </Container>
       </Section>
 
-      {/* Services Section - Exact same as cart/shop page */}
-      <Section className="bg-white py-16">
-        <Container>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="relative flex-shrink-0">
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-                <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">Free Shipping</h3>
-                <p className="text-sm text-gray-600">Free shipping for order above ₹2000</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="relative flex-shrink-0">
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-                <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">Flexible Payment</h3>
-                <p className="text-sm text-gray-600">Multiple secure payment options</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="relative flex-shrink-0">
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-                <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 11-9.75 9.75 9.75 9.75 0 019.75-9.75z" />
-                  </svg>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">24×7 Support</h3>
-                <p className="text-sm text-gray-600">We support online all days.</p>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </Section>
+      {/* Services Section */}
+      <ShopServiceSection />
 
       {/* Newsletter Section - Exact same as cart/shop page */}
       <NewsletterSection />

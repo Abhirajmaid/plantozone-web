@@ -1,8 +1,7 @@
 "use client";
-import { PageBanner } from "@/src/components";
+import { PageBanner, ShopServiceSection } from "@/src/components";
 import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
-import { Icon } from "@iconify/react";
 import React from "react";
 
 const Layout = ({ children }) => {
@@ -17,47 +16,7 @@ const Layout = ({ children }) => {
       </Section>
 
       {/* Services Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 my-16 mb-28 n
-      nbvc  justify-items-center">
-        <div className="flex items-center space-x-4 text-center">
-          <div className="relative flex-shrink-0">
-            <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-            <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-              <Icon icon="material-symbols:local-shipping-outline" className="w-8 h-8 text-green-700" />
-            </div>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-gray-800">Free Shipping</h3>
-            <p className="text-sm text-gray-600">Free shipping for order above ₹2000</p>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-4 text-center">
-          <div className="relative flex-shrink-0">
-            <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-            <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-              <Icon icon="material-symbols:account-balance-wallet-outline" className="w-8 h-8 text-green-700" />
-            </div>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-gray-800">Flexible Payment</h3>
-            <p className="text-sm text-gray-600">Multiple secure payment options</p>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-4 text-center">
-          <div className="relative flex-shrink-0">
-            <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-            <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-              <Icon icon="material-symbols:headphones" className="w-8 h-8 text-green-700" />
-            </div>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-gray-800">24×7 Support</h3>
-            <p className="text-sm text-gray-600">We support online all days.</p>
-          </div>
-        </div>
-      </div>
+      <ShopServiceSection />
 
       {/* Newsletter Section */}
       <div className="bg-gray-100 py-16 mb-16 rounded-2xl mx-6">

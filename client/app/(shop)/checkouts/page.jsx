@@ -6,8 +6,7 @@ import { getCartItems } from "@/src/lib/utils/cartUtils";
 import { Container } from "@/src/components/layout/Container";
 import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
-import ServicesSection from "@/src/components/section/home/ServicesSection";
-import { NewsletterSection } from "@/src/components";
+import { ShopServiceSection, NewsletterSection } from "@/src/components";
 import {
   isPincodeServiceable,
   isValidPincodeFormat,
@@ -652,7 +651,7 @@ export default function CheckoutPage() {
 
       {/* Services Section (Center Aligned) */}
       <div className="mb-16">
-        <ServicesSection />
+        <ShopServiceSection />
       </div>
 
       {/* Newsletter Section */}

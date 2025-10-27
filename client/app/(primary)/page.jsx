@@ -7,7 +7,7 @@ import {
   NewArrivals,
   NewsletterSection,
   PlantingCat,
-  ServicesSection,
+  ShopServiceSection,
   TestimonialSwiper,
   VideoSec,
   WhyUs,
@@ -30,7 +30,7 @@ export default function Home() {
       <SpecialOffer />
       <InfiniteMarquee txt="PLANTOZONE" deg="0" />
       <NewArrivals />
-      <ServicesSection />
+      <ShopServiceSection />
       <WhyUs />
       <VideoSec />
       <div className="w-full h-[100px]">

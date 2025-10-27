@@ -2,9 +2,142 @@
 import React from "react";
 import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
-import { NewsletterSection } from "@/src/components";
-import { Icon } from "@iconify/react";
+import { NewsletterSection, ShopServiceSection } from "@/src/components";
 import Link from "next/link";
+
+// Blog Data Structure
+const blogData = [
+  {
+    id: 1,
+    title: "Creating Your Own Indoor Jungle: A Step-by-Step Guide for Plant Lovers",
+    slug: "creating-indoor-jungle",
+    excerpt: "Transform your living space into a lush indoor jungle with our comprehensive guide. Learn about plant selection, placement strategies, and maintenance tips to create your perfect green sanctuary.",
+    image: "/images/plant.png",
+    category: "Indoor Plant",
+    author: "Jenny Alexander",
+    date: "14 October 2024",
+    readTime: "5 min read",
+    featured: true
+  },
+  {
+    id: 2,
+    title: "Mastering the Art of Watering: How to Keep Your Plants Happy and Thriving",
+    slug: "mastering-watering",
+    excerpt: "Discover the secrets to proper plant watering techniques. Learn about different watering methods, signs of overwatering and underwatering, and how to create the perfect watering schedule for your plants.",
+    image: "/images/plant.png",
+    category: "Plant Care",
+    author: "Jenny Alexander",
+    date: "13 October 2024",
+    readTime: "4 min read",
+    featured: true
+  },
+  {
+    id: 3,
+    title: "Understanding Light Requirements: How to Position Your Plants for Optimal Growth",
+    slug: "light-requirements",
+    excerpt: "Learn how to identify and provide the right amount of light for your plants. From low-light tolerant species to sun-loving varieties, master the art of plant lighting for healthy growth.",
+    image: "/images/plant.png",
+    category: "Indoor Plant",
+    author: "Jenny Alexander",
+    date: "12 October 2024",
+    readTime: "6 min read",
+    featured: true
+  },
+  {
+    id: 4,
+    title: "Creating a Plant Care Schedule: How to Organize Your Watering, Feeding, and Pruning",
+    slug: "plant-care-schedule",
+    excerpt: "Stay organized with your plant care routine. Learn how to create effective schedules for watering, fertilizing, pruning, and other essential plant maintenance tasks.",
+    image: "/images/plant.png",
+    category: "Indoor Plant",
+    author: "Jenny Alexander",
+    date: "11 October 2024",
+    readTime: "7 min read",
+    featured: true
+  },
+  {
+    id: 5,
+    title: "Transforming Small Spaces with Plants: Creative Ideas for Urban Gardening",
+    slug: "small-spaces-gardening",
+    excerpt: "Maximize your small space with creative plant arrangements. Discover vertical gardening techniques, space-saving planters, and compact plant varieties perfect for urban living.",
+    image: "/images/plant.png",
+    category: "Indoor Plant",
+    author: "Jenny Alexander",
+    date: "10 October 2024",
+    readTime: "5 min read",
+    featured: true
+  },
+  {
+    id: 6,
+    title: "The Complete Guide to Air-Purifying Plants: Breathe Cleaner Air Naturally",
+    slug: "air-purifying-plants-guide",
+    excerpt: "Explore the best air-purifying plants for your home and office. Learn about their benefits, care requirements, and how they can improve your indoor air quality naturally.",
+    image: "/images/air_purifying.jpg",
+    category: "Air Purifying",
+    author: "Sarah Green",
+    date: "09 October 2024",
+    readTime: "6 min read",
+    featured: false
+  },
+  {
+    id: 7,
+    title: "Seasonal Plant Care: Adapting Your Garden to Weather Changes",
+    slug: "seasonal-plant-care",
+    excerpt: "Learn how to adjust your plant care routine throughout the seasons. From winter dormancy to summer growth spurts, keep your plants healthy year-round.",
+    image: "/images/plant.png",
+    category: "Plant Care",
+    author: "Mike Thompson",
+    date: "08 October 2024",
+    readTime: "8 min read",
+    featured: false
+  },
+  {
+    id: 8,
+    title: "Propagation Techniques: Growing New Plants from Cuttings",
+    slug: "plant-propagation-guide",
+    excerpt: "Master the art of plant propagation with our comprehensive guide. Learn different techniques for growing new plants from cuttings, seeds, and divisions.",
+    image: "/images/plant.png",
+    category: "Plant Care",
+    author: "Emma Wilson",
+    date: "07 October 2024",
+    readTime: "9 min read",
+    featured: false
+  }
+];
+
+// Recent Posts Data
+const recentPostsData = [
+  {
+    id: 1,
+    title: "How to Choose the Perfect Indoor Plant for Your Space",
+    slug: "choosing-perfect-indoor-plant",
+    image: "/images/plant.png",
+    date: "09 October 2024"
+  },
+  {
+    id: 2,
+    title: "Best Plants for Small Apartments and Tight Spaces",
+    slug: "plants-small-apartments",
+    image: "/images/plant.png",
+    date: "08 October 2024"
+  },
+  {
+    id: 3,
+    title: "Choosing the Right Plants For Your Home: A Room-by-Room Guide",
+    slug: "choosing-right-plants-home",
+    image: "/images/plant.png",
+    date: "07 October 2024"
+  }
+];
+
+// Categories Data
+const categoriesData = [
+  { name: "Indoor Plants", slug: "indoor-plants", count: 15 },
+  { name: "Outdoor Plants", slug: "outdoor-plants", count: 12 },
+  { name: "Flowering Plants", slug: "flowering-plants", count: 8 },
+  { name: "Air-purifying Plants", slug: "air-purifying-plants", count: 10 },
+  { name: "Herbs & Edibles", slug: "herbs-edibles", count: 6 }
+];
 
 // Hero Section with Breadcrumb
 function BlogHero() {
@@ -39,7 +172,7 @@ const BlogPage = () => {
       <BlogHero />
 
       {/* Main Content */}
-      <Section className="bg-white py-16">
+      <Section className="bg-white py-16 lg:overflow-visible">
         <Container>
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-green-800 mb-12 text-center">
@@ -47,168 +180,44 @@ const BlogPage = () => {
             </h2>
             
             {/* Blog Posts Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="flex flex-col lg:flex-row gap-8">
               {/* Left Column - Blog Posts */}
-              <div className="lg:col-span-2 space-y-8">
-                {/* Blog Post 1 */}
-                <article className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                  <div className="relative">
-                    <img 
-                      src="/images/plant.png" 
-                      alt="Creating Your Own Indoor Jungle"
-                      className="w-full h-64 object-cover"
-                    />
-                    <div className="absolute bottom-4 left-4">
-                      <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium">
-                        Indoor Plant
-                      </span>
+              <div className="lg:w-2/3 space-y-8">
+                {/* Map over blog data to render posts */}
+                {blogData.map((post) => (
+                  <article key={post.id} className="bg-white rounded-2xl overflow-hidden transition-shadow duration-300">
+                    <div className="relative">
+                      <img 
+                        src={post.image} 
+                        alt={post.title}
+                        className="w-full h-[400px] object-cover rounded-3xl"
+                      />
+                      <div className="absolute bottom-4 left-4">
+                        <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium">
+                          {post.category}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center text-sm text-gray-600 mb-3">
-                      <span className="font-medium">Jenny Alexander</span>
-                      <span className="mx-2">•</span>
-                      <span>14 October 2024</span>
+                    <div className="p-6 pl-0">
+                      <div className="flex items-center text-base text-gray-600 mb-3">
+                        <span className="font-medium">{post.author}</span>
+                        <span className="mx-2">•</span>
+                        <span>{post.date}</span>
+                        <span className="mx-2">•</span>
+                        <span>{post.readTime}</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-3 leading-tight">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-600 mb-4 leading-relaxed">
+                        {post.excerpt}
+                      </p>
+                      <Link href={`/blog/${post.slug}`} className="text-primary hover:text-primary/80 font-medium underline">
+                        Read More
+                      </Link>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
-                      Creating Your Own Indoor Jungle: A Step-by-Step Guide for Plant Lovers
-                    </h3>
-                    <p className="text-gray-600 mb-4 leading-relaxed">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
-                    </p>
-                    <Link href="/blog/creating-indoor-jungle" className="text-blue-600 hover:text-blue-800 font-medium underline">
-                      Read More
-                    </Link>
-                  </div>
-                </article>
-
-                {/* Blog Post 2 */}
-                <article className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                  <div className="relative">
-                    <img 
-                      src="/images/plant.png" 
-                      alt="Mastering the Art of Watering"
-                      className="w-full h-64 object-cover"
-                    />
-                    <div className="absolute bottom-4 left-4">
-                      <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium">
-                        Plant Care
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center text-sm text-gray-600 mb-3">
-                      <span className="font-medium">Jenny Alexander</span>
-                      <span className="mx-2">•</span>
-                      <span>13 October 2024</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
-                      Mastering the Art of Watering: How to Keep Your Plants Happy and Thriving
-                    </h3>
-                    <p className="text-gray-600 mb-4 leading-relaxed">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
-                    </p>
-                    <Link href="/blog/mastering-watering" className="text-blue-600 hover:text-blue-800 font-medium underline">
-                      Read More
-                    </Link>
-                  </div>
-                </article>
-
-                {/* Blog Post 3 */}
-                <article className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                  <div className="relative">
-                    <img 
-                      src="/images/plant.png" 
-                      alt="Understanding Light Requirements"
-                      className="w-full h-64 object-cover"
-                    />
-                    <div className="absolute bottom-4 left-4">
-                      <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium">
-                        Indoor Plant
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center text-sm text-gray-600 mb-3">
-                      <span className="font-medium">Jenny Alexander</span>
-                      <span className="mx-2">•</span>
-                      <span>12 October 2024</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
-                      Understanding Light Requirements: How to Position Your Plants for Optimal Growth
-                    </h3>
-                    <p className="text-gray-600 mb-4 leading-relaxed">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
-                    </p>
-                    <Link href="/blog/light-requirements" className="text-blue-600 hover:text-blue-800 font-medium underline">
-                      Read More
-                    </Link>
-          </div>
-                </article>
-
-                {/* Blog Post 4 */}
-                <article className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                  <div className="relative">
-                    <img 
-                      src="/images/plant.png" 
-                      alt="Creating a Plant Care Schedule"
-                      className="w-full h-64 object-cover"
-                    />
-                    <div className="absolute bottom-4 left-4">
-                      <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium">
-                        Indoor Plant
-            </span>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center text-sm text-gray-600 mb-3">
-                      <span className="font-medium">Jenny Alexander</span>
-                      <span className="mx-2">•</span>
-                      <span>11 October 2024</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
-                      Creating a Plant Care Schedule: How to Organize Your Watering, Feeding, and Pruning
-                    </h3>
-                    <p className="text-gray-600 mb-4 leading-relaxed">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
-                    </p>
-                    <Link href="/blog/plant-care-schedule" className="text-blue-600 hover:text-blue-800 font-medium underline">
-                      Read More
-                    </Link>
-          </div>
-                </article>
-
-                {/* Blog Post 5 */}
-                <article className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                  <div className="relative">
-                    <img 
-                      src="/images/plant.png" 
-                      alt="Transforming Small Spaces with Plants"
-                      className="w-full h-64 object-cover"
-                    />
-                    <div className="absolute bottom-4 left-4">
-                      <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium">
-                        Indoor Plant
-            </span>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center text-sm text-gray-600 mb-3">
-                      <span className="font-medium">Jenny Alexander</span>
-                      <span className="mx-2">•</span>
-                      <span>10 October 2024</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
-                      Transforming Small Spaces with Plants: Creative Ideas for Urban Gardening
-                    </h3>
-                    <p className="text-gray-600 mb-4 leading-relaxed">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
-                    </p>
-                    <Link href="/blog/small-spaces-gardening" className="text-blue-600 hover:text-blue-800 font-medium underline">
-                      Read More
-                    </Link>
-                  </div>
-                </article>
+                  </article>
+                ))}
 
                 {/* Pagination */}
                 <div className="flex items-center justify-center space-x-2 mt-12">
@@ -231,7 +240,8 @@ const BlogPage = () => {
               </div>
 
               {/* Right Column - Sidebar */}
-              <div className="lg:col-span-1 space-y-8">
+              <div className="lg:w-1/3 lg:sticky lg:top-36 lg:self-start">
+                <div className="space-y-8">
                 {/* Search Section */}
                 <div className="bg-white rounded-2xl shadow-lg p-6">
                   <h3 className="text-xl font-bold text-gray-900 mb-4">Search</h3>
@@ -253,31 +263,14 @@ const BlogPage = () => {
                 <div className="bg-white rounded-2xl shadow-lg p-6">
                   <h3 className="text-xl font-bold text-gray-900 mb-4">Popular Category</h3>
                   <ul className="space-y-3">
-                    <li>
-                      <Link href="/blog/category/indoor-plants" className="text-gray-700 hover:text-green-600 transition-colors">
-                        Indoor Plants
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/blog/category/outdoor-plants" className="text-gray-700 hover:text-green-600 transition-colors">
-                        Outdoor Plants
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/blog/category/flowering-plants" className="text-gray-700 hover:text-green-600 transition-colors">
-                        Flowering Plants
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/blog/category/air-purifying-plants" className="text-gray-700 hover:text-green-600 transition-colors">
-                        Air-purifying Plants
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/blog/category/herbs-edibles" className="text-gray-700 hover:text-green-600 transition-colors">
-                        Herbs & Edibles
-                      </Link>
-                    </li>
+                    {categoriesData.map((category) => (
+                      <li key={category.slug}>
+                        <Link href={`/blog/category/${category.slug}`} className="text-gray-700 hover:text-green-600 transition-colors flex justify-between items-center">
+                          <span>{category.name}</span>
+                          <span className="text-sm text-gray-500">({category.count})</span>
+                        </Link>
+                      </li>
+                    ))}
                   </ul>
                 </div>
 
@@ -285,58 +278,25 @@ const BlogPage = () => {
                 <div className="bg-white rounded-2xl shadow-lg p-6">
                   <h3 className="text-xl font-bold text-gray-900 mb-4">Recent Post</h3>
                   <div className="space-y-4">
-                    {/* Recent Post 1 */}
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0">
-                        <img 
-                          src="/images/plant.png" 
-                          alt="How to Choose the Perfect Indoor Plant"
-                          className="w-16 h-16 object-cover rounded-lg"
-                        />
+                    {recentPostsData.map((post) => (
+                      <div key={post.id} className="flex items-start space-x-3">
+                        <div className="flex-shrink-0">
+                          <img 
+                            src={post.image} 
+                            alt={post.title}
+                            className="w-16 h-16 object-cover rounded-lg"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <Link href={`/blog/${post.slug}`} className="text-sm font-medium text-gray-900 hover:text-green-600 transition-colors line-clamp-2">
+                            {post.title}
+                          </Link>
+                          <p className="text-xs text-gray-500 mt-1">{post.date}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <Link href="/blog/choosing-perfect-indoor-plant" className="text-sm font-medium text-gray-900 hover:text-green-600 transition-colors line-clamp-2">
-                          How to Choose the Perfect Indoor Plant for Your Space
-                        </Link>
-                        <p className="text-xs text-gray-500 mt-1">09 October 2024</p>
-                      </div>
-                    </div>
-
-                    {/* Recent Post 2 */}
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0">
-                        <img 
-                          src="/images/plant.png" 
-                          alt="Best Plants for Small Apartments"
-                          className="w-16 h-16 object-cover rounded-lg"
-                    />
+                    ))}
                   </div>
-                      <div className="flex-1 min-w-0">
-                        <Link href="/blog/plants-small-apartments" className="text-sm font-medium text-gray-900 hover:text-green-600 transition-colors line-clamp-2">
-                          Best Plants for Small Apartments and Tight Sp...
-                        </Link>
-                        <p className="text-xs text-gray-500 mt-1">08 October 2024</p>
-                      </div>
-                    </div>
-
-                    {/* Recent Post 3 */}
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0">
-                        <img 
-                          src="/images/plant.png" 
-                          alt="Choosing the Right Plants For Your Home"
-                          className="w-16 h-16 object-cover rounded-lg"
-                        />
                 </div>
-                      <div className="flex-1 min-w-0">
-                        <Link href="/blog/choosing-right-plants-home" className="text-sm font-medium text-gray-900 hover:text-green-600 transition-colors line-clamp-2">
-                          Choosing the Right Plants For Your Home: A Room-...
-                        </Link>
-                        <p className="text-xs text-gray-500 mt-1">07 October 2024</p>
-                </div>
-              </div>
-            </div>
-          </div>
 
                 {/* Advertisement Banner */}
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -357,6 +317,7 @@ const BlogPage = () => {
                     </div>
                   </div>
                 </div>
+                </div>
               </div>
             </div>
           </div>
@@ -364,50 +325,7 @@ const BlogPage = () => {
       </Section>
 
       {/* Services Section */}
-      <Section className="bg-white py-16">
-        <Container>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
-            <div className="flex items-center space-x-4 text-center">
-              <div className="relative flex-shrink-0">
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-                <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                  <Icon icon="material-symbols:local-shipping-outline" className="w-8 h-8 text-green-700" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">Free Shipping</h3>
-                <p className="text-sm text-gray-600">Free shipping for order above ₹2000</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4 text-center">
-              <div className="relative flex-shrink-0">
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-                <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                  <Icon icon="material-symbols:account-balance-wallet-outline" className="w-8 h-8 text-green-700" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">Flexible Payment</h3>
-                <p className="text-sm text-gray-600">Multiple secure payment options</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4 text-center">
-              <div className="relative flex-shrink-0">
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-                <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                  <Icon icon="material-symbols:headphones" className="w-8 h-8 text-green-700" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">24×7 Support</h3>
-                <p className="text-sm text-gray-600">We support online all days.</p>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </Section>
+      <ShopServiceSection />
 
       {/* Newsletter Section */}
       <NewsletterSection />

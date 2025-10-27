@@ -13,7 +13,7 @@ import { Section } from "@/src/components/layout/Section";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
-import { PageBanner } from "@/src/components";
+import { PageBanner, ShopServiceSection } from "@/src/components";
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -263,45 +263,8 @@ export default function CartPage() {
         )}
 
         {/* Services Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 mt-28 justify-items-center">
-          <div className="flex items-center space-x-4 text-center">
-            <div className="relative flex-shrink-0">
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-              <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                <Icon icon="material-symbols:local-shipping-outline" className="w-8 h-8 text-green-700" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-800">Free Shipping</h3>
-              <p className="text-sm text-gray-600">Free shipping for order above ₹2000</p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-4 text-center">
-            <div className="relative flex-shrink-0">
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-              <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                <Icon icon="material-symbols:account-balance-wallet-outline" className="w-8 h-8 text-green-700" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-800">Flexible Payment</h3>
-              <p className="text-sm text-gray-600">Multiple secure payment options</p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-4 text-center">
-            <div className="relative flex-shrink-0">
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-              <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-                <Icon icon="material-symbols:headphones" className="w-8 h-8 text-green-700" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-800">24×7 Support</h3>
-              <p className="text-sm text-gray-600">We support online all days.</p>
-            </div>
-          </div>
+        <div className="mb-12 mt-28">
+          <ShopServiceSection />
         </div>
       </Container>
       </Section>

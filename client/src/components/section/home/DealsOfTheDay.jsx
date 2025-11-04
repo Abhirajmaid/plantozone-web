@@ -1,69 +1,85 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
 import { Section } from "../../layout/Section";
 import { Container } from "../../layout/Container";
-import { PlantGridCard } from "@/src/components";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import Image from "next/image";
+import { PlantGridCard } from "@/src/components";
+import Link from "next/link";
+import { useState, useEffect, useRef } from "react";
 
 // Helper function to format price with comma separators
 const formatPrice = (price) => {
   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-// Mock data for top seller products with countdown timers
-const mockTopSellers = [
+// Mock data for deals of the day
+const dealsData = [
   {
     id: 1,
-    title: "Monstera deliciosa",
-    category: "Indoor Plant",
-    currentPrice: 650,
-    originalPrice: 1099,
-    discount: "50% off",
-    rating: 4.9,
-    image: "/images/plant.png",
-    countdown: { days: 5, hours: 12, minutes: 30, seconds: 25 }
-  },
-  {
-    id: 2,
-    title: "Watermelon Peperomia",
-    category: "Indoor Plant",
-    currentPrice: 850,
-    originalPrice: 1499,
-    discount: "20% off",
-    rating: 4.9,
-    image: "/images/plant.png",
-    countdown: { days: 3, hours: 8, minutes: 45, seconds: 12 }
-  },
-  {
-    id: 3,
-    title: "Pepper Face Plant",
+    title: "Calathea Medallion",
     category: "Indoor Plant",
     currentPrice: 650,
     originalPrice: 975,
-    discount: "20% off",
-    rating: 4.9,
+    discount: "30% off",
+    rating: 5.0,
     image: "/images/plant.png",
-    countdown: { days: 2, hours: 6, minutes: 15, seconds: 8 }
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+  },
+  {
+    id: 2,
+    title: "Birds Nest",
+    category: "Indoor Plant",
+    currentPrice: 650,
+    originalPrice: 975,
+    discount: "50% off",
+    rating: 5.0,
+    image: "/images/plant.png",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+  },
+  {
+    id: 3,
+    title: "Snake Plant",
+    category: "Indoor Plant",
+    currentPrice: 650,
+    originalPrice: 975,
+    discount: "50% off",
+    rating: 5.0,
+    image: "/images/plant.png",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
   },
   {
     id: 4,
-    title: "Bird's Nest Fern",
+    title: "ZZ Plant",
     category: "Indoor Plant",
-    currentPrice: 750,
-    originalPrice: 1299,
-    discount: "20% off",
-    rating: 4.9,
+    currentPrice: 650,
+    originalPrice: 975,
+    discount: "40% off",
+    rating: 5.0,
     image: "/images/plant.png",
-    countdown: { days: 4, hours: 10, minutes: 20, seconds: 35 }
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
   }
 ];
 
-// Using common PlantGridCard instead of a custom card
+const DealCard = ({ deal }) => {
+  return (
+    <PlantGridCard
+      href={`/product/${deal.title.toLowerCase().replace(/\s+/g, '-')}`}
+      imageUrl={deal.image}
+      discountLabel={deal.discount}
+      category={deal.category}
+      rating={deal.rating}
+      title={deal.title}
+      price={formatPrice(deal.currentPrice)}
+      originalPrice={formatPrice(deal.originalPrice)}
+    />
+  );
+};
 
-const TopSellerProducts = () => {
+const DealsOfTheDay = () => {
   const [swiper, setSwiper] = useState(null);
   const prevRef = useRef(null);
   const nextRef = useRef(null);
@@ -82,10 +98,10 @@ const TopSellerProducts = () => {
       <Container>
         {/* Section Header */}
         <div className="text-center mb-12">
-          <p className="text-base text-black uppercase tracking-wide mb-2">Our Products</p>
+          <p className="text-base text-black uppercase tracking-wide mb-2">Today Deals</p>
           <h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
-            Our Top Seller Products
-            </h2>
+            Deals of the Day
+          </h2>
         </div>
 
         {/* Swiper Carousel */}
@@ -105,11 +121,11 @@ const TopSellerProducts = () => {
                 spaceBetween: 20,
               },
               768: {
-                slidesPerView: 3,
+                slidesPerView: 2,
                 spaceBetween: 24,
               },
               1024: {
-                slidesPerView: 4,
+                slidesPerView: 2,
                 spaceBetween: 24,
               },
             }}
@@ -118,22 +134,11 @@ const TopSellerProducts = () => {
               disableOnInteraction: false,
             }}
             loop={true}
-            className="top-seller-swiper"
+            className="deals-swiper"
           >
-            {mockTopSellers.map((product) => (
-              <SwiperSlide key={product.id}>
-                <div className="px-1">
-                  <PlantGridCard
-                    href={`/product/${product.title.toLowerCase().replace(/\s+/g, '-')}`}
-                    imageUrl={product.image}
-                    discountLabel={product.discount}
-                    category={product.category}
-                    rating={product.rating}
-                    title={product.title}
-                    price={formatPrice(product.currentPrice)}
-                    originalPrice={formatPrice(product.originalPrice)}
-                  />
-                </div>
+            {dealsData.map((deal) => (
+              <SwiperSlide key={deal.id}>
+                <DealCard deal={deal} />
               </SwiperSlide>
             ))}
           </Swiper>
@@ -163,4 +168,5 @@ const TopSellerProducts = () => {
   );
 };
 
-export default TopSellerProducts;
+export default DealsOfTheDay;
+

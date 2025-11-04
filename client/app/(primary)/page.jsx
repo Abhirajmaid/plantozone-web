@@ -1,45 +1,50 @@
 import {
+  AboutUsSection,
   BlogSection,
   CategorySec,
   Diver,
   Hero,
-  InfiniteMarquee,
   NewArrivals,
   NewsletterSection,
-  PlantingCat,
   ShopServiceSection,
   TestimonialSwiper,
-  VideoSec,
-  WhyUs,
+  TestimonialsSection,
+  // VideoSec,
+  // WhyUs,
   TopSellerProducts,
   SpecialOffer,
-  BottomCategoryNav,
+  DealsOfTheDay,
+  PromotionalBanners,
+  DealsOfTheDaySection,
+  InfiniteCategoryMarquee,
+  // TodayDealsPromo,
 } from "@/src/components";
-import AboutUsSection from "@/src/components/section/home/AboutUsSection";
 import Image from "next/image";
 
 export default function Home() {
   return (
     <>
       <Hero />
-      <InfiniteMarquee txt="PLANTOZONE" deg="0" />
-      <PlantingCat />
       <CategorySec />
       <AboutUsSection />
       <TopSellerProducts />
       <SpecialOffer />
-      <InfiniteMarquee txt="PLANTOZONE" deg="0" />
+      {/* <TodayDealsPromo /> */}
+      <DealsOfTheDay />
+      <PromotionalBanners />
+      <InfiniteCategoryMarquee />
+      <DealsOfTheDaySection />
       <NewArrivals />
       <ShopServiceSection />
-      <WhyUs />
-      <VideoSec />
+      {/* <WhyUs /> */}
+      {/* <VideoSec /> */}
       <div className="w-full h-[100px]">
         <Diver />
       </div>
-      <TestimonialSwiper />
+      <TestimonialsSection />
       <BlogSection />
       <NewsletterSection />
-      <BottomCategoryNav />
+      <InfiniteCategoryMarquee />
       <Image
         src="/images/plantozone.svg"
         alt="platozone"
@@ -47,7 +52,6 @@ export default function Home() {
         height={1000}
         className="w-full h-auto"
       />
-      <InfiniteMarquee txt="PLANTOZONE" deg="0" />
     </>
   );
 }

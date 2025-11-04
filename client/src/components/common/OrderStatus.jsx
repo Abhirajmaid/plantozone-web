@@ -46,8 +46,15 @@ const OrderStatus = ({ orderData }) => {
     }
   ];
 
-  const completedSteps = steps.filter(step => step.completed).length;
-  const progressPercentage = completedSteps > 0 ? ((completedSteps - 1) / (steps.length - 1)) * 100 : 0;
+  // Calculate progress: line should reach the center of the last completed step
+  const lastCompletedIndex = steps.findIndex(step => !step.completed);
+  const progressToIndex = lastCompletedIndex === -1 ? steps.length - 1 : lastCompletedIndex - 1;
+  
+  // Calculate percentage to reach center of the completed step icon
+  // Each step takes up 1/(steps.length-1) of the width, and we want to reach the center
+  const progressPercentage = progressToIndex >= 0 
+    ? (progressToIndex / (steps.length - 1)) * 100 + (1 / (steps.length - 1)) * 100 / 2
+    : 0;
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
@@ -59,22 +66,23 @@ const OrderStatus = ({ orderData }) => {
         {/* Background Line */}
         <div className="absolute top-6 left-0 right-0 h-0.5 bg-gray-200 z-0"></div>
         
-        {/* Progress Line */}
+        {/* Progress Line - Green line that reaches the center of completed icons */}
         <div 
           className="absolute top-6 left-0 h-0.5 bg-green-600 z-0 transition-all duration-500"
-          style={{ width: `${progressPercentage}%` }}
+          style={{ width: `${Math.min(progressPercentage, 100)}%` }}
         ></div>
         
         <div className="flex justify-between items-start relative z-10">
           {steps.map((step, index) => {
             const IconComponent = step.icon;
+            const isStepCompleted = step.completed;
             return (
               <div key={step.id} className="flex flex-col items-center relative flex-1">
-                {/* Step Icon */}
+                {/* Step Icon with White Background */}
                 <div className="relative flex-shrink-0 mb-3">
-                  <div className="relative z-10 w-12 h-12 flex items-center justify-center">
+                  <div className="relative z-10 w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-md border-2 border-gray-200">
                     <IconComponent 
-                      className={`w-6 h-6 ${step.completed ? 'text-yellow-600' : 'text-gray-400'}`} 
+                      className="w-6 h-6 text-gray-400" 
                     />
                   </div>
                 </div>
@@ -82,7 +90,7 @@ const OrderStatus = ({ orderData }) => {
                 {/* Step Name */}
                 <div className="text-center mb-2">
                   <h3 className={`font-semibold text-sm ${
-                    step.completed 
+                    isStepCompleted 
                       ? 'text-gray-900' 
                       : 'text-gray-400'
                   }`}>
@@ -90,26 +98,22 @@ const OrderStatus = ({ orderData }) => {
                   </h3>
                 </div>
                 
-                {/* Status Indicator */}
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center mb-2 ${
-                  step.completed 
-                    ? 'bg-green-500' 
-                    : 'bg-gray-300'
-                }`}>
+                {/* Status Indicator - Grey tick for all steps */}
+                <div className="w-6 h-6 rounded-full flex items-center justify-center mb-2 bg-gray-300">
                   <Check className="w-4 h-4 text-white" />
                 </div>
                 
                 {/* Date/Time */}
                 <div className="text-center">
                   <div className={`text-xs ${
-                    step.completed 
+                    isStepCompleted 
                       ? 'text-gray-700' 
                       : 'text-gray-400'
                   }`}>
                     {step.date}
                   </div>
                   <div className={`text-xs ${
-                    step.completed 
+                    isStepCompleted 
                       ? 'text-gray-700' 
                       : 'text-gray-400'
                   }`}>

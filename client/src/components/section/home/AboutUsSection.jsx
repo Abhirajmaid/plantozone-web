@@ -53,14 +53,14 @@ const AboutUsSection = () => (
         {/* Right: Content */}
         <div className="flex-1 w-full lg:w-1/2">
           <div className="text-center lg:text-left">
-            <span className="text-lg text-gray-500 mb-2 font-medium">
+            <span className="text-sm md:text-base text-gray-500 mb-2 font-medium">
               {about.heading}
             </span>
             <SectionTitle
               title={
                 <>
-                  {about.subheading.split(' ').slice(0, 2).join(' ')}{' '}
-                  <span className="text-green-600">{about.subheading.split(' ').slice(2).join(' ')}</span>
+                  <span className="text-gray-900">{about.subheading.split(' ').slice(0, 2).join(' ')}</span>{' '}
+                  <span className="text-primary">{about.subheading.split(' ').slice(2).join(' ')}</span>
                 </>
               }
               className="mb-6"
@@ -69,21 +69,16 @@ const AboutUsSection = () => (
               {about.description}
             </p>
 
-            {/* Statistics */}
-            <div className="grid grid-cols-3 gap-4 mb-8 max-w-lg mx-auto lg:mx-0">
-              {about.stats.map((stat, idx) => (
-                <div
-                  key={idx}
-                  className="bg-green-600 text-white rounded-lg px-4 py-6 text-center shadow-lg"
-                >
-                  <div className="text-2xl font-bold mb-1">
-                    {stat.value}
+            {/* Statistics - unified green pill */}
+            <div className="mb-8 max-w-xl mx-auto lg:mx-0">
+              <div className="bg-primary text-white rounded-xl px-6 md:px-8 py-6 shadow-lg grid grid-cols-3 gap-4 items-center">
+                {about.stats.map((stat, idx) => (
+                  <div key={idx} className="text-center">
+                    <div className="text-xl md:text-3xl font-bold text-secondary mb-1">{stat.value}</div>
+                    <div className="text-xs md:text-sm font-medium opacity-95">{stat.label}</div>
                   </div>
-                  <div className="text-sm font-medium">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
             {/* Signature */}

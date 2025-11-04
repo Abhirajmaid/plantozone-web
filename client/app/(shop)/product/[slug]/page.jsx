@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Star, Heart, Share2, Plus, Minus } from "lucide-react";
 import { Icon } from "@iconify/react";
-import { Button } from "@/src/components/ui/button";
+import PrimaryButton from "@/src/components/common/PrimaryButton";
+import SecondaryButton from "@/src/components/common/SecondaryButton";
 import { Badge } from "@/src/components/ui/badge";
 import {
   Breadcrumb,
@@ -419,15 +420,15 @@ export default function ProductPage() {
 
             {/* Action Buttons */}
             <div className="flex gap-4">
-              <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-sm font-semibold rounded-lg flex-1">
+              <SecondaryButton onClick={addToCart} withArrow={false} className="flex-1">
                 Add To Cart
-              </Button>
-              <Button className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 px-8 py-3 text-sm font-semibold rounded-lg flex-1">
+              </SecondaryButton>
+              <PrimaryButton onClick={buyNow} withArrow={false} className="flex-1">
                 Buy Now
-              </Button>
-              <Button variant="outline" size="icon" className="border-2 border-gray-300 hover:border-gray-400">
+              </PrimaryButton>
+              <button className="border-2 border-gray-300 hover:border-gray-400 rounded-lg w-12 h-12 inline-flex items-center justify-center">
                 <Heart className="w-6 h-6" />
-              </Button>
+              </button>
             </div>
 
             {/* SKU & Tags */}
@@ -861,18 +862,15 @@ export default function ProductPage() {
                       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                         <Icon icon="material-symbols:cloud-upload" className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                         <p className="text-sm text-gray-600 mb-2">Drag and drop your files here, or</p>
-                        <button type="button" className="text-sm text-yellow-600 hover:text-yellow-700 font-medium">
+                        <PrimaryButton type="button" withArrow={false} className="!px-4 !py-2 rounded-md bg-white text-yellow-600 hover:text-yellow-700 shadow-none hover:scale-100">
                           Browse
-                        </button>
+                        </PrimaryButton>
                       </div>
                     </div>
                     
-                    <button 
-                      type="submit" 
-                      className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors"
-                    >
-                      Submit
-                    </button>
+                <SecondaryButton type="submit" withArrow={false} className="px-6 py-2 rounded-md">
+                  Submit
+                </SecondaryButton>
                   </form>
                 </div>
               </div>
@@ -918,12 +916,9 @@ export default function ProductPage() {
                   className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   required
                 />
-                <button
-                  type="submit"
-                  className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-3 rounded-lg font-medium transition-colors"
-                >
+                <PrimaryButton type="submit" withArrow={false} className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-3 rounded-lg font-medium transition-colors">
                   Subscribe
-                </button>
+                </PrimaryButton>
               </div>
             </form>
           </div>
@@ -948,19 +943,20 @@ export default function ProductPage() {
 
           {/* Action Buttons */}
           <div className="flex gap-3 flex-1">
-            <Button
+            <SecondaryButton
               onClick={addToCart}
-              variant="outline"
-              className="flex-1 border-green-600 text-green-600 hover:bg-green-50 py-3 font-semibold"
+              withArrow={false}
+              className="flex-1"
             >
               ADD TO CART
-            </Button>
-            <Button
+            </SecondaryButton>
+            <PrimaryButton
               onClick={buyNow}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 font-semibold"
+              withArrow={false}
+              className="flex-1"
             >
               BUY NOW
-            </Button>
+            </PrimaryButton>
           </div>
         </div>
 

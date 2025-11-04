@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Container } from "@/src/components/layout/Container";
-import { Button } from "@/src/components/ui/button";
+import PrimaryButton from "@/src/components/common/PrimaryButton";
+import SecondaryButton from "@/src/components/common/SecondaryButton";
 import {
   getCartItems,
   removeFromCart,
@@ -96,9 +97,9 @@ export default function CartPage() {
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">Your cart is empty</h2>
             <p className="text-gray-600 mb-6">Looks like you haven't added any items to your cart yet.</p>
             <Link href="/shop">
-              <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3">
+              <SecondaryButton withArrow={false} className="px-8 py-3">
                 Continue Shopping
-              </Button>
+              </SecondaryButton>
             </Link>
           </div>
         ) : (
@@ -196,12 +197,13 @@ export default function CartPage() {
                     onChange={(e) => setDiscountCode(e.target.value)}
                     className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
-                  <Button
+                  <SecondaryButton
                     onClick={handleApplyDiscount}
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
+                    withArrow={false}
+                    className="px-6 py-2"
                   >
                     Apply Coupon
-                  </Button>
+                  </SecondaryButton>
                 </div>
                 <button
                   onClick={handleClearCart}
@@ -251,12 +253,13 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <Button
+                <PrimaryButton
                   onClick={() => router.push("/checkouts")}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-base font-medium"
+                  withArrow={false}
+                  className="w-full py-3 text-base font-medium"
                 >
                   Proceed to Checkout
-                </Button>
+                </PrimaryButton>
               </div>
             </div>
           </div>
@@ -291,12 +294,9 @@ export default function CartPage() {
                   className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   required
                 />
-                <button
-                  type="submit"
-                  className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-3 rounded-lg font-medium transition-colors"
-                >
+                <PrimaryButton type="submit" withArrow={false} className="px-6 py-3">
                   Subscribe
-                </button>
+                </PrimaryButton>
               </div>
             </form>
           </div>

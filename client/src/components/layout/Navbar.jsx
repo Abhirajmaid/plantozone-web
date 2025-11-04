@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
+import PrimaryButton from "@/src/components/common/PrimaryButton";
 import {
   ShoppingCartIcon,
   HeartIcon,
@@ -42,17 +43,22 @@ function getCartCount() {
 }
 
 export default function CustomNavbar() {
+  const pathname = usePathname();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("/shop");
+  const [activeTab, setActiveTab] = useState(pathname || "/");
+  
+  // Sync activeTab with pathname changes
+  useEffect(() => {
+    setActiveTab(pathname || "/");
+  }, [pathname]);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const menuRef = useRef(null);
   const dropdownRef = useRef(null);
   const dropdownTimerRef = useRef(null);
-  const pathname = usePathname();
 
   const router = useRouter();
 
@@ -151,7 +157,7 @@ export default function CustomNavbar() {
   return (
     <>
       {/* Top Header Bar */}
-      <div className="fixed w-full bg-green-600 text-white z-[100] py-2">
+      <div className="fixed w-full bg-green-600 text-white z-[100] py-2 hidden md:block">
         <Container>
           <div className="flex items-center justify-between text-sm">
             {/* Left: Call Us */}
@@ -190,7 +196,7 @@ export default function CustomNavbar() {
       </div>
 
       {/* Main Navigation Bar */}
-      <header className="fixed w-full bg-white z-[99] border-b top-10">
+      <header className="fixed w-full bg-white z-[99] border-b md:top-10 top-0">
         <Container>
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
             {/* Left: Logo and Brand */}
@@ -288,7 +294,9 @@ export default function CustomNavbar() {
                   )}
                 </div>
               ) : (
-                <Button onClick={openAuthModal}>Login</Button>
+                <PrimaryButton onClick={openAuthModal} withArrow={false}>
+                  Login
+                </PrimaryButton>
               )}
             </div>
 
@@ -376,30 +384,35 @@ export default function CustomNavbar() {
       </header>
 
       {/* Bottom Navigation Tabs */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-md z-[100]">
-        <div className="flex justify-between items-center p-4">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-[100]">
+        <div className="flex justify-around items-center py-2 px-2">
           {mobileTabs
             .filter((link) => link.href !== "/wishlist")
-            .map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`flex flex-col items-center text-sm transition-colors duration-200 p-2 ${
-                  activeTab === link.href
-                    ? "text-[#0b9c09] bg-gray-100 rounded-md"
-                    : "text-gray-600 hover:text-[#0b9c09]"
-                }`}
-                onClick={() => handleTabClick(link.href)}
-              >
-                <Icon icon={link.icon} width="25" height="25" />
-                <span className="text-xs">{link.label}</span>
-                {link.href === "/cart" && cartCount > 0 && (
-                  <span className="absolute top-1 right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
-            ))}
+            .map((link) => {
+              const isActive = pathname === link.href || (link.href === "/" && pathname === "/");
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative flex flex-col items-center justify-center text-sm transition-colors duration-200 px-2 py-1 min-w-[60px] ${
+                    isActive
+                      ? "text-[#0b9c09]"
+                      : "text-gray-600"
+                  }`}
+                  onClick={() => handleTabClick(link.href)}
+                >
+                  <div className={`relative ${isActive ? "bg-green-50 rounded-lg p-1.5" : ""}`}>
+                    <Icon icon={link.icon} width="24" height="24" />
+                    {link.href === "/cart" && cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+                        {cartCount}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`text-xs mt-1 ${isActive ? "font-medium" : ""}`}>{link.label}</span>
+                </Link>
+              );
+            })}
         </div>
       </div>
 

@@ -1,7 +1,8 @@
 import { Container } from "../../layout/Container";
 import { Section } from "../../layout/Section";
-import { Button } from "../../ui/button";
+import { PrimaryButton, SecondaryButton } from "@/src/components";
 import Link from "next/link";
+import Image from "next/image";
 
 const Hero = () => {
   return (
@@ -32,14 +33,17 @@ const Hero = () => {
           <div className="flex-1 max-w-2xl">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <div className="w-6 h-6 flex items-center justify-center rounded-full bg-green-500/90 text-white">
+                {/* leaf */}
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor"><path d="M5 21c6.627 0 12-5.373 12-12V4a1 1 0 0 0-1-1h-5C4.477 3 1 6.477 1 11v1a9 9 0 0 0 9 9h1a1 1 0 0 0 1-1v-1c0-3.866 3.134-7 7-7h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1C12.82 9 9 12.82 9 17v1H8a7 7 0 0 1-7-7v-1c0-3.314 2.686-6 6-6h4v2c0 5.523-4.477 10-10 10v2Z"/></svg>
+              </div>
               The Best Online Plant Shop
             </div>
 
             {/* Main Heading */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              The Ultimate Plant{" "}
-              <span className="text-green-600">Shopping Destination</span>
+              The Ultimate <span className="text-green-700">Plant</span>
+              {" "}Shopping Destination
             </h1>
 
             {/* Description */}
@@ -49,44 +53,40 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/shop">
-                <Button className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-4 text-lg font-semibold rounded-lg flex items-center gap-2 transition-all duration-300 hover:scale-105">
-                  Shop Now
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Button>
-              </Link>
-              <Link href="/shop">
-                <Button variant="outline" className="border-2 border-gray-300 text-gray-700 hover:border-gray-400 px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-300">
-                  View All Products
-                </Button>
-              </Link>
+              <PrimaryButton href="/shop">Shop Now</PrimaryButton>
+              <SecondaryButton href="/shop">View All Products</SecondaryButton>
             </div>
           </div>
 
-          {/* Right Content - Decorative Elements */}
+          {/* Right Content - Image with decorative circle */}
           <div className="flex-1 max-w-lg relative">
-            {/* Main decorative circle */}
-            <div className="w-80 h-80 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-2xl relative">
-              {/* Plant icon or decorative element */}
-              <div className="text-8xl text-green-600">🌱</div>
-              
+            <div className="w-[22rem] h-[22rem] sm:w-[26rem] sm:h-[26rem] bg-gradient-to-b from-emerald-100 to-emerald-200 rounded-full shadow-2xl mx-auto relative">
+              <div className="absolute inset-3 rounded-full overflow-hidden shadow-xl">
+                <Image
+                  src="/images/plant.png"
+                  alt="Hero visual"
+                  fill
+                  sizes="(max-width: 768px) 18rem, 26rem"
+                  className="object-cover object-center"
+                  priority
+                />
+              </div>
+
               {/* Floating badges */}
-              <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 bg-white border-2 border-green-500 rounded-full px-4 py-2 shadow-lg">
+              <div className="absolute -left-4 top-1/2 -translate-y-1/2 bg-white border border-green-500/60 rounded-full px-4 py-2 shadow-lg">
                 <div className="flex items-center gap-2 text-sm font-medium text-green-700">
-                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
-                  </svg>
-                  Fast delivery
+                  <span className="w-6 h-6 rounded-full bg-green-500 text-white grid place-items-center">
+                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor"><path d="M3 12h3l3 7 4-14 3 7h4"/></svg>
+                  </span>
+                  Fast Delivery
                 </div>
               </div>
-              
-              <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white border-2 border-green-500 rounded-full px-4 py-2 shadow-lg">
+
+              <div className="absolute -right-4 top-1/2 -translate-y-1/2 bg-white border border-green-500/60 rounded-full px-4 py-2 shadow-lg">
                 <div className="flex items-center gap-2 text-sm font-medium text-green-700">
-                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+                  <span className="w-6 h-6 rounded-full bg-green-500 text-white grid place-items-center">
+                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm1 14h-2v-2h2Zm0-4h-2V6h2Z"/></svg>
+                  </span>
                   Secure Payment
                 </div>
               </div>

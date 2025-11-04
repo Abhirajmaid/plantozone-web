@@ -7,6 +7,7 @@ import { Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShopServiceSection, NewsletterSection } from "@/src/components";
+import SecondaryButton from "@/src/components/common/SecondaryButton";
 
 // Hero Section with Breadcrumb
 function ContactHero() {
@@ -46,7 +47,7 @@ function ContactInfoCards() {
     },
     {
       icon: "mdi:phone",
-      iconColor: "text-green-600",
+      iconColor: "text-yellow-400",
       bgColor: "bg-green-800",
       title: "Phone",
       description: "+0123-456-789",
@@ -307,13 +308,14 @@ export default function Page() {
                   </div>
 
                   {/* Submit Button */}
-                  <button
+                  <SecondaryButton
                     type="submit"
-                    className="px-8 py-3 bg-green-800 text-white rounded-lg hover:bg-green-900 transition-colors disabled:opacity-50 font-medium"
+                    withArrow={false}
+                    className="px-8 py-3 disabled:opacity-50"
                     disabled={loading}
                   >
                     {loading ? "Sending..." : "Send a Message"}
-                  </button>
+                  </SecondaryButton>
                 </form>
               )}
             </div>

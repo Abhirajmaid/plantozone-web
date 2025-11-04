@@ -3,7 +3,7 @@ import React from "react";
 import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/src/components/ui/breadcrumb";
-import { NewsletterSection } from "@/src/components";
+import { NewsletterSection, ShopServiceSection } from "@/src/components";
 import OrderStatus from "@/src/components/common/OrderStatus";
 import Link from "next/link";
 import Image from "next/image";
@@ -188,47 +188,21 @@ const TrackOrderPage = () => {
                 ))}
               </div>
             </div>
-
-            {/* Service Benefits */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-              <div className="bg-white rounded-xl p-6 text-center shadow-lg">
-                <div className="w-16 h-16 bg-yellow-100 border-2 border-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                    <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 14H17a1 1 0 001-1V8a1 1 0 00-1-1h-3z" />
-                  </svg>
-                </div>
-                <h4 className="font-bold text-gray-900 mb-2">Free Shipping</h4>
-                <p className="text-sm text-gray-600">Free shipping for order above ₹2000</p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 text-center shadow-lg">
-                <div className="w-16 h-16 bg-yellow-100 border-2 border-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                    <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <h4 className="font-bold text-gray-900 mb-2">Flexible Payment</h4>
-                <p className="text-sm text-gray-600">Multiple secure payment options</p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 text-center shadow-lg">
-                <div className="w-16 h-16 bg-yellow-100 border-2 border-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                  </svg>
-                </div>
-                <h4 className="font-bold text-gray-900 mb-2">24x7 Support</h4>
-                <p className="text-sm text-gray-600">We support online all days</p>
-              </div>
-            </div>
-
-            {/* Newsletter Section */}
-            <NewsletterSection />
           </div>
         </Container>
       </Section>
+
+      {/* Service Section - Full Width */}
+      <Section className="bg-gray-50">
+        <Container>
+          <div className="[&>div]:!mb-8 [&>div]:!my-8">
+            <ShopServiceSection />
+          </div>
+        </Container>
+      </Section>
+
+      {/* Newsletter Section */}
+      <NewsletterSection />
     </div>
   );
 };

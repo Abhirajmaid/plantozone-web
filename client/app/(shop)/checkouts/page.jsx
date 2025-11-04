@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCartItems } from "@/src/lib/utils/cartUtils";
 import { Container } from "@/src/components/layout/Container";
-import { Button } from "@/src/components/ui/button";
+import PrimaryButton from "@/src/components/common/PrimaryButton";
+import SecondaryButton from "@/src/components/common/SecondaryButton";
 import Link from "next/link";
 import { ShopServiceSection, NewsletterSection } from "@/src/components";
 import {
@@ -364,9 +365,9 @@ export default function CheckoutPage() {
             <div className="text-center py-16">
               <p className="mb-4 text-lg text-gray-500">Your cart is empty</p>
               <Link href="/shop">
-                <Button className="bg-green-600 hover:bg-green-700">
+                <SecondaryButton withArrow={false}>
                   Continue Shopping
-                </Button>
+                </SecondaryButton>
               </Link>
             </div>
           ) : (
@@ -629,13 +630,14 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <Button
+                  <PrimaryButton
                     onClick={handleRazorpay}
                     disabled={loading || !isValid}
-                    className="w-full py-4 bg-green-800 hover:bg-green-900 text-white text-lg font-semibold rounded-lg transition-colors"
+                    withArrow={false}
+                    className="w-full py-4 text-lg font-semibold"
                   >
                     {loading ? "Processing..." : "Proceed to Payment"}
-                  </Button>
+                  </PrimaryButton>
 
                   {!isValid && (
                     <p className="text-red-600 text-sm mt-3 text-center">

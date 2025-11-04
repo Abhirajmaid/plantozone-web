@@ -4,6 +4,7 @@ import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import { NewsletterSection, ShopServiceSection } from "@/src/components";
 import Link from "next/link";
+import PrimaryButton from "@/src/components/common/PrimaryButton";
 
 // Blog Data Structure
 const blogData = [
@@ -310,9 +311,9 @@ const BlogPage = () => {
                       <div className="text-white">
                         <p className="text-sm font-medium mb-2">Summer Sale</p>
                         <h4 className="text-xl font-bold mb-4">25% Off on Best-Selling Indoor Plants!</h4>
-                        <button className="bg-yellow-400 text-black px-6 py-3 rounded-lg font-semibold hover:bg-yellow-500 transition-colors">
+                        <PrimaryButton withArrow={false} className="px-6 py-3">
                           Buy Now
-                        </button>
+                        </PrimaryButton>
                       </div>
                     </div>
                   </div>

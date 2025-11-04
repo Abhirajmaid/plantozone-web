@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ProductCard } from "../..";
-import { Button } from "../../ui/button";
+import { PrimaryButton } from "@/src/components";
 import { Icon } from "@iconify/react";
 import {
   addToCart as addToCartUtil,
@@ -461,18 +461,18 @@ const ItemList = ({ data }) => {
       {/* Pagination Controls */}
       {totalPages > 1 && (
           <div className="flex justify-center items-center mt-8 gap-2">
-          <Button
+          <button
             onClick={handlePrev}
             disabled={page === 1}
               className="px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Icon icon="mdi:chevron-left" className="w-4 h-4" />
-            </Button>
+            </button>
             
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               const pageNum = i + 1;
               return (
-                <Button
+                <button
                   key={pageNum}
                   onClick={() => setPage(pageNum)}
                   className={`px-3 py-2 ${
@@ -482,14 +482,14 @@ const ItemList = ({ data }) => {
                   }`}
                 >
                   {pageNum}
-                </Button>
+                </button>
               );
             })}
             
             {totalPages > 5 && (
               <>
                 <span className="text-gray-500">...</span>
-                <Button
+                <button
                   onClick={() => setPage(totalPages)}
                   className={`px-3 py-2 ${
                     page === totalPages
@@ -498,17 +498,17 @@ const ItemList = ({ data }) => {
                   }`}
                 >
                   {totalPages}
-          </Button>
+          </button>
               </>
             )}
             
-          <Button
+          <button
             onClick={handleNext}
             disabled={page === totalPages}
               className="px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
               <Icon icon="mdi:chevron-right" className="w-4 h-4" />
-          </Button>
+          </button>
         </div>
       )}
       </div>

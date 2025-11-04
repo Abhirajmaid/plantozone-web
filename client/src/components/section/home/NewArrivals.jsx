@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Section } from "../../layout/Section";
 import { Container } from "../../layout/Container";
 import { ProductCard, SectionTitle } from "../..";
-import { Button } from "../../ui/button";
+import { PrimaryButton } from "@/src/components";
 import Link from "next/link";
 import plantsAction from "@/src/lib/action/plants.action";
 import {
@@ -203,11 +203,7 @@ const NewArrivals = () => {
 
         {/* Load More Button */}
         <div className="w-full flex justify-center mt-8">
-          <Link href="/shop">
-            <Button className="text-[20px] p-5 px-7 font-medium">
-              Load More
-            </Button>
-          </Link>
+          <PrimaryButton href="/shop" className="text-base px-7 py-3">Load More</PrimaryButton>
         </div>
       </Container>
     </Section>

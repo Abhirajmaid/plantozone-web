@@ -4,6 +4,7 @@ import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import { NewsletterSection, ShopServiceSection } from "@/src/components";
 import Link from "next/link";
+import PrimaryButton from "@/src/components/common/PrimaryButton";
 
 // Related Blogs Data
 const relatedBlogsData = [
@@ -385,9 +386,9 @@ const BlogDetailPage = () => {
                         <h3 className="text-white font-bold text-lg mb-3">
                           25% Off on Best-Selling Indoor Plants!
                         </h3>
-                        <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-800 px-6 py-2 rounded-lg font-semibold transition-colors">
+                        <PrimaryButton withArrow={false} className="px-6 py-2">
                           Buy Now
-                        </button>
+                        </PrimaryButton>
                       </div>
                     </div>
                   </div>

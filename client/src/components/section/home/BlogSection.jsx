@@ -3,7 +3,7 @@ import { Container } from "../../layout/Container";
 import { Section } from "../../layout/Section";
 import { useEffect, useState } from "react";
 import blogsAction from "@/src/lib/action/blogs.action";
-import BlogCard from "@/src/components/section/blogs/BlogCard";
+import Link from "next/link";
 
 const BlogSection = () => {
   const [blogs, setBlogs] = useState([]);
@@ -33,50 +33,104 @@ const BlogSection = () => {
       });
   }, []);
 
-  return (
-    <Section>
-      <Container>
-        <div className="w-full flex flex-col items-center mb-12 text-center">
-          <p className="text-base text-black uppercase tracking-wide mb-2">News & Blogs</p>
-          <h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
-            Our Latest News & Blogs
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-          {blogs.map((blog, idx) => {
-            const attributes = blog?.attributes || {};
-            const imageUrl = attributes?.image?.data?.attributes?.url || "/images/plant.png";
-            const authorName = attributes?.author?.data?.attributes?.name || "Plantozone";
-            const authorImage = attributes?.author?.data?.attributes?.image?.data?.attributes?.url;
-            // Format date properly - handle both date strings and timestamps
-            let dateStr = "";
-            if (attributes?.date) {
-              try {
-                const dateObj = new Date(attributes.date);
-                if (!isNaN(dateObj.getTime())) {
-                  dateStr = dateObj.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'numeric', 
-                    day: 'numeric' 
-                  });
-                }
-              } catch (e) {
-                dateStr = "";
-              }
-            }
+  // Format date to match the single blog page format
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    try {
+      const dateObj = new Date(dateString);
+      if (!isNaN(dateObj.getTime())) {
+        return dateObj.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        });
+      }
+    } catch (e) {
+      return "";
+    }
+    return "";
+  };
 
-            return (
-              <BlogCard
-                key={blog?.id || idx}
-                title={attributes?.title}
-                description={attributes?.description}
-                image={imageUrl}
-                author={{ name: authorName, image: authorImage }}
-                date={dateStr}
-                slug={attributes?.slug}
-              />
-            );
-          })}
+  // Calculate read time (simple estimation: ~200 words per minute)
+  const calculateReadTime = (description) => {
+    if (!description) return "5 min read";
+    const wordCount = description.split(/\s+/).length;
+    const readTime = Math.ceil(wordCount / 200);
+    return `${readTime} min read`;
+  };
+
+  return (
+    <Section className="bg-gray-50 py-16">
+      <Container>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">Related News & Blogs</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+              Latest Related News & Blogs
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {blogs.map((blog, idx) => {
+              const attributes = blog?.attributes || {};
+              // Handle image URL - check if it's already a full URL
+              let imageUrl = "/images/plant.png";
+              if (attributes?.image?.data?.attributes?.url) {
+                const url = attributes.image.data.attributes.url;
+                if (url.startsWith('http://') || url.startsWith('https://')) {
+                  imageUrl = url;
+                } else {
+                  imageUrl = `https://dashboard.plantozone.com${url}`;
+                }
+              }
+              const authorName = attributes?.author?.data?.attributes?.name || "Jenny Alexander";
+              const category = attributes?.category || "Indoor Plant";
+              const dateStr = formatDate(attributes?.date);
+              const readTime = calculateReadTime(attributes?.description);
+
+              // Truncate description to a few lines (excerpt)
+              const getExcerpt = (text, maxLength = 120) => {
+                if (!text) return "";
+                if (text.length <= maxLength) return text;
+                return text.substring(0, maxLength).trim() + "...";
+              };
+
+              return (
+                <div key={blog?.id || idx} className="rounded-2xl overflow-hidden">
+                  <div className="relative">
+                    <img 
+                      src={imageUrl} 
+                      alt={attributes?.title || "Blog post"}
+                      className="w-full h-48 object-cover rounded-2xl"
+                    />
+                    <div className="absolute bottom-4 left-4">
+                      <span className="bg-yellow-400 text-gray-800 px-3 py-1 rounded-full text-sm font-bold">
+                        {category}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-6 pl-0">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-sm text-gray-600">{authorName}</span>
+                      <span className="text-gray-400">•</span>
+                      <span className="text-sm text-gray-600">{dateStr}</span>
+                      <span className="text-gray-400">•</span>
+                      <span className="text-sm text-gray-600">{readTime}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
+                      {attributes?.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                      {getExcerpt(attributes?.description)}
+                    </p>
+                    <Link href={`/blog/${attributes?.slug}`} className="text-green-600 hover:text-green-700 font-medium">
+                      Read More
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </Container>
     </Section>

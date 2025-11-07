@@ -2,36 +2,32 @@
 import React from "react";
 import { Section } from "../../layout/Section";
 import { Container } from "../../layout/Container";
-import { SecondaryButton } from "@/src/components";
-import Link from "next/link";
-import Image from "next/image";
-import { PlantGridCard } from "@/src/components";
-
-// Helper function to format price with comma separators
-const formatPrice = (price) => {
-  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
+import DealCard from "@/src/components/common/DealCard";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 
 // Product data for deals of the day
 const dealsProducts = [
   {
     id: 1,
-    title: "Calathea plant",
+    title: "Calathea Medallion",
     category: "Indoor Plant",
     currentPrice: 650,
     originalPrice: 975,
-    discount: "50% off",
-    rating: 4.8,
+    discount: "30% off",
+    rating: 5.0,
     image: "/images/plant.png"
   },
   {
     id: 2,
-    title: "Sansevieria Trifasciata",
+    title: "Birds Nest",
     category: "Indoor Plant",
     currentPrice: 650,
     originalPrice: 975,
     discount: "50% off",
-    rating: 4.9,
+    rating: 5.0,
     image: "/images/plant.png"
   },
   {
@@ -50,7 +46,7 @@ const dealsProducts = [
     category: "Indoor Plant",
     currentPrice: 650,
     originalPrice: 975,
-    discount: "50% off",
+    discount: "30% off",
     rating: 4.8,
     image: "/images/plant.png"
   },
@@ -70,82 +66,96 @@ const dealsProducts = [
     category: "Indoor Plant",
     currentPrice: 650,
     originalPrice: 975,
-    discount: "50% off",
+    discount: "30% off",
     rating: 4.8,
     image: "/images/plant.png"
   }
 ];
 
-const ProductCard = ({ product }) => {
-  return (
-    <PlantGridCard
-      href={`/product/${product.title.toLowerCase().replace(/\s+/g, '-')}`}
-      imageUrl={product.image}
-      discountLabel={product.discount}
-      category={product.category}
-      rating={product.rating}
-      title={product.title}
-      price={formatPrice(product.currentPrice)}
-      originalPrice={formatPrice(product.originalPrice)}
-    />
-  );
-};
-
 const DealsOfTheDaySection = () => {
   return (
-    <Section className="bg-white py-12 md:py-16">
+    <Section className="bg-gray-50 py-12 md:py-16">
       <Container>
         {/* Section Header */}
         <div className="text-center mb-12">
-          <p className="text-base text-black uppercase tracking-wide mb-2">Best Seller</p>
-          <h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
+          <p className="text-base text-gray-500 uppercase tracking-wide mb-2">Today Deals</p>
+          <h2 className="text-4xl md:text-5xl font-semibold text-[#0b9c09]">
             Deals of the Day
           </h2>
         </div>
 
-        {/* Main Content - Promotional Card + Product Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left: Large Promotional Card */}
-          <div className="lg:col-span-1">
-            <div className="relative rounded-2xl overflow-hidden shadow-xl h-full min-h-[500px] md:min-h-[600px]">
-              <Image
-                src="/images/planterimg.jpg"
-                alt="50% Off Deal"
-                fill
-                sizes="(max-width: 1024px) 100vw, 33vw"
-                className="object-cover"
-              />
-              
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-              
-              {/* Content Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                {/* 50% Off Badge */}
-                <div className="mb-4">
-                  <div className="text-4xl md:text-5xl font-bold text-white mb-2">50% Off</div>
-                  <div className="text-sm md:text-base text-white/90 font-medium">06 OCT - 16 OCT</div>
+        {/* Carousel Container */}
+        <div className="max-w-6xl mx-auto">
+          <Swiper
+            modules={[Pagination, Autoplay]}
+            spaceBetween={24}
+            slidesPerView={1}
+            breakpoints={{
+              640: {
+                slidesPerView: 1,
+                spaceBetween: 20,
+              },
+              768: {
+                slidesPerView: 2,
+                spaceBetween: 24,
+              },
+              1024: {
+                slidesPerView: 2,
+                spaceBetween: 30,
+              },
+            }}
+            pagination={{
+              clickable: true,
+              bulletActiveClass: 'swiper-pagination-bullet-active',
+            }}
+            autoplay={{
+              delay: 3000,
+              disableOnInteraction: false,
+            }}
+            loop={true}
+            className="deals-swiper"
+          >
+            {dealsProducts.map((product) => (
+              <SwiperSlide key={product.id}>
+                <div className="flex justify-center">
+                  <DealCard
+                    id={product.id}
+                    title={product.title}
+                    category={product.category}
+                    currentPrice={product.currentPrice}
+                    originalPrice={product.originalPrice}
+                    discount={product.discount}
+                    rating={product.rating}
+                    image={product.image}
+                  />
                 </div>
-                
-                {/* Shop Now Button */}
-                <SecondaryButton href="/shop">Shop Now</SecondaryButton>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Product Grid (6 cards) */}
-          <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {dealsProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
+
+        {/* Custom Pagination Styles - Same as TestimonialsSection */}
+        <style jsx global>{`
+          .deals-swiper .swiper-pagination {
+            position: relative;
+            margin-top: 2rem;
+          }
+          .deals-swiper .swiper-pagination-bullet {
+            width: 40px;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            opacity: 1;
+            transition: all 0.3s;
+          }
+          .deals-swiper .swiper-pagination-bullet-active {
+            background: #0b9c09;
+            width: 60px;
+          }
+        `}</style>
       </Container>
     </Section>
   );
 };
 
 export default DealsOfTheDaySection;
-

@@ -17,7 +17,7 @@ const PromoBannerCard = ({
   const isPrimary = buttonVariant === "primary";
   const CardButton = isPrimary ? PrimaryButton : SecondaryButton;
   const minHeight = size === "large" ? "min-h-[340px] md:min-h-[400px] lg:min-h-[440px]" : "min-h-[160px] md:min-h-[180px] lg:min-h-[200px]";
-  const maxWidth = size === "large" ? "max-w-[620px]" : "max-w-[620px]"; // keep width same
+  const maxWidth = size === "large" ? "max-w-[750px]" : "max-w-[620px]"; // increased width for large banners
 
   return (
     <div className={`relative ${bg} rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ${maxWidth}`}>

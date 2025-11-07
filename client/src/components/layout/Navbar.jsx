@@ -165,12 +165,9 @@ export default function CustomNavbar() {
               <span>Call Us : +91 89994 92523</span>
             </div>
             
-            {/* Center: Sign up offer */}
-            <div className="flex items-center space-x-2">
-              <span>Sign up and GET 25% OFF for your first order.</span>
-              <button className="text-yellow-400 underline hover:text-yellow-300 transition-colors">
-                Sign up now
-              </button>
+            {/* Center: Discount code offer */}
+            <div className="flex items-center">
+              <span>Use code FIRST25 to get 25% OFF for your first order.</span>
             </div>
             
             {/* Right: Social Media Icons */}
@@ -233,8 +230,10 @@ export default function CustomNavbar() {
               <Button variant="ghost" size="icon" className="relative">
                 <Icon icon="mdi:magnify" className="h-6 w-6 text-gray-700" />
               </Button>
-              <Button variant="ghost" size="icon" className="relative">
-                <Icon icon="mdi:heart-outline" className="h-6 w-6 text-gray-700" />
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link href="/whishlist">
+                  <Icon icon="mdi:heart-outline" className="h-6 w-6 text-gray-700" />
+                </Link>
               </Button>
               <Button variant="ghost" size="icon" asChild className="relative">
                 <Link href="/cart">
@@ -246,58 +245,12 @@ export default function CustomNavbar() {
                   )}
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" className="relative">
-                <Icon icon="mdi:account-outline" className="h-6 w-6 text-gray-700" />
-              </Button>
-              {/* <Button variant="ghost" size="icon">
-                <HeartIcon className="h-7 w-7" />
-                <span className="sr-only">Wishlist</span>
-              </Button> */}
-              {isSignedIn ? (
-                <div
-                  className="relative"
-                  onMouseEnter={handleDropdownEnter}
-                  onMouseLeave={handleDropdownLeave}
-                  ref={dropdownRef}
-                >
-                  <Button variant="ghost" size="icon" className="relative">
-                    <UserIcon className="h-7 w-7" />
-                  </Button>
-
-                  {/* Dropdown Menu */}
-                  {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                      <div className="py-1" role="menu">
-                        <Link
-                          href="/orders"
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          <PackageIcon className="mr-2 h-4 w-4" />
-                          Orders
-                        </Link>
-                        <Link
-                          href="/account"
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          <UserCircleIcon className="mr-2 h-4 w-4" />
-                          Account
-                        </Link>
-                        <button
-                          onClick={handleLogout}
-                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          <LogOutIcon className="mr-2 h-4 w-4" />
-                          Logout
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <PrimaryButton onClick={openAuthModal} withArrow={false}>
-                  Login
-                </PrimaryButton>
-              )}
+              <PrimaryButton 
+                href="tel:+918999492523" 
+                withArrow={false}
+              >
+                Call Us
+              </PrimaryButton>
             </div>
 
             {/* Mobile Menu Button */}

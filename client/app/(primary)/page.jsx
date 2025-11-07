@@ -13,7 +13,6 @@ import {
   // WhyUs,
   TopSellerProducts,
   SpecialOffer,
-  DealsOfTheDay,
   PromotionalBanners,
   DealsOfTheDaySection,
   InfiniteCategoryMarquee,
@@ -30,10 +29,9 @@ export default function Home() {
       <TopSellerProducts />
       <SpecialOffer />
       {/* <TodayDealsPromo /> */}
-      <DealsOfTheDay />
+      <DealsOfTheDaySection />
       <PromotionalBanners />
       <InfiniteCategoryMarquee />
-      <DealsOfTheDaySection />
       <NewArrivals />
       <ShopServiceSection />
       {/* <WhyUs /> */}

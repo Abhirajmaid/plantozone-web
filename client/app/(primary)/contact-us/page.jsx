@@ -2,101 +2,123 @@
 
 import { useState } from "react";
 import { Container } from "@/src/components/layout/Container";
-import { Section } from "@/src/components/layout/Section";
-import { Mail, Phone } from "lucide-react";
-import InfiniteMarquee from "@/src/components/section/home/InfiniteMarquee";
+import { Icon } from "@iconify/react";
+import { Sparkles } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { ShopServiceSection, NewsletterSection } from "@/src/components";
+import SecondaryButton from "@/src/components/common/SecondaryButton";
 
-const faqs = [
-  {
-    question: "How can I track my order?",
-    answer:
-      "You will receive a tracking link via email after your order is shipped. You can also contact our support for updates.",
-  },
-  {
-    question: "Do you deliver plants outside India?",
-    answer: "Currently, we deliver to 50+ cities across India only.",
-  },
-  {
-    question: "How do I care for my new plant?",
-    answer:
-      "Each plant comes with care instructions. You can also find tips on our blog or contact us for guidance.",
-  },
-  {
-    question: "Can I customize my order?",
-    answer:
-      "Yes, for bulk or custom orders, please contact us directly and our team will assist you.",
-  },
-];
-
+// Hero Section with Breadcrumb
 function ContactHero() {
   return (
-    <div className="relative bg-lightGreen/10 py-16 md:py-24 mb-12">
+    <div 
+      className="relative py-20 md:py-24 bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/images/breadcrumbbg.png')" }}
+    >
+      <div className="absolute inset-0 bg-white/70"></div>
       <Container>
-        <div className="flex flex-col items-center text-center">
-          <h1 className="text-3xl md:text-5xl font-bold text-primary mb-4">
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
             Contact Us
           </h1>
-          <p className="text-gray-600 max-w-xl mx-auto text-lg mb-6">
-            Have a question, feedback, or need help? Our team is here to assist
-            you. Reach out and we’ll get back to you within 24 hours.
-          </p>
-          <Link
-            href="/shop"
-            className="inline-block bg-lightGreen text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-green-700 transition"
-          >
-            Shop Now
-          </Link>
+          <div className="flex items-center gap-2 text-gray-600">
+            <Link href="/" className="hover:text-green-600 transition-colors">
+              Home
+            </Link>
+            <span>/</span>
+            <span className="text-gray-800 font-medium">Contact Us</span>
+          </div>
         </div>
       </Container>
-      <div
-        className="absolute inset-0 pointer-events-none select-none"
-        aria-hidden="true"
-      />
     </div>
   );
 }
 
-function FAQSection() {
+// Contact Info Cards
+function ContactInfoCards() {
+  const contactInfo = [
+    {
+      icon: "mdi:map-marker",
+      iconColor: "text-yellow-400",
+      bgColor: "bg-green-800",
+      title: "Address",
+      description: "8502 Preston Rd. Inglewood, Maine 98380",
+    },
+    {
+      icon: "mdi:phone",
+      iconColor: "text-yellow-400",
+      bgColor: "bg-green-800",
+      title: "Phone",
+      description: "+0123-456-789",
+    },
+    {
+      icon: "mdi:email",
+      iconColor: "text-yellow-400",
+      bgColor: "bg-green-800",
+      title: "Email",
+      description: "example@gmail.com",
+    },
+  ];
+
   return (
-    <Section className="bg-white py-12 md:py-20">
+    <div className="py-16 bg-white">
       <Container>
-        <h2 className="text-2xl md:text-3xl font-bold text-primary mb-8 text-center">
-          Frequently Asked Questions
-        </h2>
-        <div className="max-w-2xl mx-auto divide-y divide-lightGreen/20 rounded-2xl bg-lightGreen/5 shadow-lg">
-          {faqs.map((faq, idx) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {contactInfo.map((info, index) => (
             <div
-              key={idx}
-              className="py-6 px-4 md:px-8 flex flex-col gap-2 transition hover:bg-lightGreen/10"
+              key={index}
+              className="bg-white rounded-3xl shadow-lg p-8 flex flex-col items-center text-center hover:shadow-xl transition-shadow"
             >
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center justify-center bg-lightGreen/10 text-lightGreen font-bold w-8 h-8 rounded-full">
-                  Q
-                </span>
-                <span className="font-semibold text-primary text-base md:text-lg">
-                  {faq.question}
-                </span>
+              <div className={`${info.bgColor} w-16 h-16 rounded-full flex items-center justify-center mb-4`}>
+                <Icon icon={info.icon} className={`w-8 h-8 ${info.iconColor}`} />
               </div>
-              <div className="flex items-center gap-3 mt-1">
-                <span className="inline-flex items-center justify-center bg-lightGreen/10 text-lightGreen font-bold w-8 h-8 rounded-full">
-                  A
-                </span>
-                <span className="text-gray-700 text-base">{faq.answer}</span>
-              </div>
+              <h3 className="text-lg font-bold text-gray-800 mb-2">
+                {info.title}
+              </h3>
+              <p className="text-sm text-gray-600">{info.description}</p>
             </div>
           ))}
         </div>
       </Container>
-    </Section>
+    </div>
+  );
+}
+
+// Map Section
+function MapSection() {
+  return (
+    <div className="relative w-full h-[400px] md:h-[500px] bg-gray-200">
+      {/* Static Map Image - You can replace with actual map embed */}
+      <div className="w-full h-full relative">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.1422937950147!2d-73.98731968459391!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1234567890"
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          allowFullScreen=""
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          className="grayscale"
+        ></iframe>
+        {/* Location Pin Overlay */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full">
+          <div className="bg-green-800 w-14 h-14 rounded-full flex items-center justify-center shadow-lg">
+            <Icon icon="mdi:map-marker" className="w-8 h-8 text-yellow-400" />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
 export default function Page() {
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
+    subject: "",
     message: "",
     _autoresponse:
       "Thank you for contacting us! We have received your message and will get back to you within 24 hours. \n\nBest regards,\nPlantozone Team",
@@ -108,7 +130,6 @@ export default function Page() {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    // Only update user-editable fields
     if (!e.target.name.startsWith("_")) {
       setFormData({ ...formData, [e.target.name]: e.target.value });
     }
@@ -141,9 +162,11 @@ export default function Page() {
       if (data.success) {
         setSubmitted(true);
         setFormData({
-          name: "",
+          firstName: "",
+          lastName: "",
           email: "",
           phone: "",
+          subject: "",
           message: "",
           _autoresponse:
             "Thank you for contacting us! We have received your message and will get back to you within 24 hours. \n\nBest regards,\nPlantozone Team",
@@ -162,123 +185,181 @@ export default function Page() {
   };
 
   return (
-    <>
-      <Section>
-        <ContactHero />
-        <InfiniteMarquee txt="PLANTOZONE" deg="0" />
-        <Container className="pt-[100px]">
-          <div className="container mx-auto px-4 py-12 grid md:grid-cols-2 gap-12">
-            {/* Left Column - Contact Information */}
-            <div className="space-y-8">
-              {/* Call To Us Section */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="bg-[#0B9C09] p-3 rounded-full">
-                    <Phone className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold">Call To Us</h3>
-                </div>
-                <div className="space-y-1 pl-14">
-                  <p className="text-gray-600">
-                    We are available 24/7, 7 days a week.
-                  </p>
-                  <p className="font-medium">
-                    Phone: <br />
-                    +91 9059152555 <br /> +91 9059152666
-                  </p>
-                </div>
-              </div>
+    <div className="pt-[88px]">
+      {/* Hero Section */}
+      <ContactHero />
 
-              {/* Write To Us Section */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="bg-[#0B9C09] p-3 rounded-full">
-                    <Mail className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold">Write To Us</h3>
-                </div>
-                <div className="space-y-1 pl-14">
-                  <p className="text-gray-600">
-                    Fill out our form and we will contact you within 24 hours.
-                  </p>
-                  <p className="font-medium">Emails: info@plantozone.com</p>
-                  <p className="font-medium">
-                    Emails: plantozone.sales@gmail.com
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column - Contact Form */}
+      {/* Contact Form Section */}
+      <div className="py-16 bg-white">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+            {/* Left Column - Form */}
             <div className="w-full">
               {submitted ? (
-                <div className="bg-green-100 text-green-800 p-6 rounded-md text-center">
-                  <h2 className="text-2xl font-semibold">Thank You!</h2>
+                <div className="bg-green-100 text-green-800 p-8 rounded-lg text-center">
+                  <h2 className="text-2xl font-semibold mb-4">Thank You!</h2>
                   <p>
                     We have received your message and will get back to you
                     shortly. Please check your email for a confirmation message.
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   {error && (
-                    <div className="bg-red-100 text-red-800 p-4 rounded-md">
+                    <div className="bg-red-100 text-red-800 p-4 rounded-lg">
                       {error}
                     </div>
                   )}
-                  <div className="grid md:grid-cols-3 gap-4">
+
+                  {/* First Name & Last Name */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col">
+                      <label className="text-sm font-medium text-gray-700 mb-2">
+                        First Name *
+                      </label>
+                      <input
+                        type="text"
+                        name="firstName"
+                        placeholder="Ex. John"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-sm font-medium text-gray-700 mb-2">
+                        Last Name *
+                      </label>
+                      <input
+                        type="text"
+                        name="lastName"
+                        placeholder="Ex. Doe"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Email & Phone */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col">
+                      <label className="text-sm font-medium text-gray-700 mb-2">
+                        Email *
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="example@gmail.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-sm font-medium text-gray-700 mb-2">
+                        Phone *
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        placeholder="Enter Phone Number"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Subject */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-2">
+                      Subject *
+                    </label>
                     <input
                       type="text"
-                      name="name"
-                      placeholder="Your Name *"
-                      value={formData.name}
+                      name="subject"
+                      placeholder="Enter here..."
+                      value={formData.subject}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
-                      required
-                    />
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Your Email *"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
-                      required
-                    />
-                    <input
-                      type="tel"
-                      name="phone"
-                      placeholder="Your Phone *"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                       required
                     />
                   </div>
-                  <textarea
-                    name="message"
-                    placeholder="Your Message"
-                    rows={6}
-                    value={formData.message}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0B9C09]"
-                    required
-                  ></textarea>
-                  <button
+
+                  {/* Message */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-2">
+                      Your Message *
+                    </label>
+                    <textarea
+                      name="message"
+                      placeholder="Enter here..."
+                      rows={6}
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent resize-none"
+                      required
+                    ></textarea>
+                  </div>
+
+                  {/* Submit Button */}
+                  <SecondaryButton
                     type="submit"
-                    className="px-8 py-3 bg-[#0B9C09] text-white rounded-md hover:bg-[#098008] transition-colors disabled:opacity-50"
+                    withArrow={false}
+                    className="px-8 py-3 disabled:opacity-50"
                     disabled={loading}
                   >
-                    {loading ? "Sending..." : "Send Message"}
-                  </button>
+                    {loading ? "Sending..." : "Send a Message"}
+                  </SecondaryButton>
                 </form>
               )}
             </div>
+
+            {/* Right Column - Image */}
+            <div className="relative w-full h-full min-h-[500px] lg:min-h-[600px]">
+              <div className="relative w-full h-full rounded-2xl overflow-hidden">
+                <Image
+                  src="/images/plant.png"
+                  alt="Contact us - Plantozone"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                {/* Decorative Sparkles */}
+                <div className="absolute bottom-6 right-6 text-yellow-400">
+                  <Sparkles className="w-10 h-10 fill-yellow-400" />
+                </div>
+                <div className="absolute bottom-12 right-12 text-yellow-400">
+                  <Sparkles className="w-6 h-6 fill-yellow-400" />
+                </div>
+              </div>
+            </div>
           </div>
         </Container>
-      </Section>
-      <FAQSection />
-      <InfiniteMarquee txt="PLANTOZONE" deg="0" />
-    </>
+      </div>
+
+      {/* Contact Info Cards */}
+      <ContactInfoCards />
+
+      {/* Map Section */}
+      <div className="mb-16">
+        <MapSection />
+      </div>
+
+      {/* Services Section (3 Badge Strip) */}
+      <div className="mb-16">
+        <ShopServiceSection />
+      </div>
+
+      {/* Newsletter Section */}
+      <div className="mb-16">
+        <NewsletterSection />
+      </div>
+    </div>
   );
 }

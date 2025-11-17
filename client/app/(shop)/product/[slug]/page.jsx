@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Star } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
+import { Star, Heart, Share2, Plus, Minus } from "lucide-react";
+import { Icon } from "@iconify/react";
+import PrimaryButton from "@/src/components/common/PrimaryButton";
+import SecondaryButton from "@/src/components/common/SecondaryButton";
 import { Badge } from "@/src/components/ui/badge";
 import {
   Breadcrumb,
@@ -12,7 +14,7 @@ import {
 } from "@/src/components/ui/breadcrumb";
 import { Section } from "@/src/components/layout/Section";
 import { Container } from "@/src/components/layout/Container";
-import { Diver, NewArrivals, TestimonialSwiper } from "@/src/components";
+import { Diver, NewArrivals, TestimonialSwiper, ShopServiceSection } from "@/src/components";
 import plantsAction from "@/src/lib/action/plants.action";
 import { addToCart as addToCartUtil } from "@/src/lib/utils/cartUtils";
 import { toast } from "react-toastify";
@@ -20,10 +22,20 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState("");
-  const [selectedShape, setSelectedShape] = useState("");
+  const [selectedSize, setSelectedSize] = useState("6 Inch");
+  const [selectedShape, setSelectedShape] = useState("Hexagonal");
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewForm, setReviewForm] = useState({
+    name: "",
+    email: "",
+    title: "",
+    review: "",
+    rating: 0
+  });
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [product, setProduct] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState("additional-info");
 
   const params = useParams();
   const router = useRouter();
@@ -85,6 +97,71 @@ export default function ProductPage() {
       ),
     });
     setTimeout(() => setShowSuccess(false), 2000);
+  };
+
+  // Review form handlers
+  const handleReviewInputChange = (field, value) => {
+    setReviewForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleStarClick = (rating) => {
+    setReviewRating(rating);
+    setReviewForm(prev => ({
+      ...prev,
+      rating: rating
+    }));
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!reviewForm.name || !reviewForm.email || !reviewForm.title || !reviewForm.review || reviewForm.rating === 0) {
+      toast.error("Please fill in all required fields and select a rating", {
+        position: "top-right"
+      });
+      return;
+    }
+
+    const reviewData = {
+      name: reviewForm.name,
+      email: reviewForm.email,
+      title: reviewForm.title,
+      review: reviewForm.review,
+      rating: reviewForm.rating,
+      productId: product?.id,
+      productTitle: product?.attributes?.title,
+      date: new Date().toISOString(),
+      status: 'pending' // For moderation
+    };
+
+    // Console log the data
+    console.log("Review Data to be sent to Strapi:", reviewData);
+
+    // TODO: Send to Strapi backend
+    // const response = await fetch('/api/reviews', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(reviewData)
+    // });
+
+    toast.success("Review submitted successfully! Thank you for your feedback.", {
+      position: "top-right"
+    });
+
+    // Reset form
+    setReviewForm({
+      name: "",
+      email: "",
+      title: "",
+      review: "",
+      rating: 0
+    });
+    setReviewRating(0);
   };
 
   const buyNow = () => {
@@ -170,186 +247,683 @@ export default function ProductPage() {
           </div>
         </div>
       )}
-      <Container className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-[100px] py-4 sm:py-6 lg:py-8 pt-16 lg:pt-[100px]">
+      <Container className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-[100px] py-4 sm:py-6 lg:py-8 pt-24 lg:pt-[120px]">
         {/* Breadcrumb */}
-        <Breadcrumb className="mb-4 lg:mb-8 flex gap-1 text-xs sm:text-sm lg:text-base">
+        <Breadcrumb className="mb-4 lg:mb-8 flex items-center gap-2 text-xs sm:text-sm lg:text-base">
           <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            <BreadcrumbLink href="/" className="text-gray-600 hover:text-green-600">Home</BreadcrumbLink>
           </BreadcrumbItem>
+          <span className="text-gray-400">/</span>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/plants">Plants</BreadcrumbLink>
+            <BreadcrumbLink href="/shop" className="text-gray-600 hover:text-green-600">Plants</BreadcrumbLink>
           </BreadcrumbItem>
+          <span className="text-gray-400">/</span>
           <BreadcrumbItem>
-            <BreadcrumbLink>{product.attributes.title}</BreadcrumbLink>
+            <span className="text-gray-800 font-medium">{product.attributes.title}</span>
           </BreadcrumbItem>
         </Breadcrumb>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
-          {/* Product Image */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
+          {/* Product Image Gallery */}
           <div className="w-full">
-            <div className="aspect-square w-full sm:w-[80%] lg:w-full mx-auto bg-gray-100 rounded-lg mb-4">
+            {/* Main Product Image */}
+            <div className="aspect-square w-full bg-white rounded-xl shadow-lg mb-4 overflow-hidden">
               <img
-                src={product.attributes.images.data[0]?.attributes.url}
+                src={product.attributes.images.data[selectedImageIndex]?.attributes.url || product.attributes.images.data[0]?.attributes.url}
                 alt={product.attributes.title}
-                className="w-full h-full object-cover rounded-lg border-2 border-secondary"
+                className="w-full h-full object-cover"
               />
+            </div>
+            
+            {/* Thumbnail Images - Always show, even for single image */}
+            <div className="flex gap-3">
+              {product.attributes.images.data.map((image, index) => (
+                <div 
+                  key={index} 
+                  className={`w-20 h-20 bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 border-2 ${
+                    selectedImageIndex === index ? 'border-yellow-400 shadow-lg' : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setSelectedImageIndex(index)}
+                >
+                  <img
+                    src={image.attributes.url}
+                    alt={`${product.attributes.title} ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Product Details */}
-          <div className="space-y-4 sm:space-y-6">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold">
+          <div className="space-y-6">
+            {/* Category */}
+            <p className="text-sm text-gray-500 uppercase tracking-wide">Indoor Plant</p>
+            
+            {/* Product Name */}
+            <h1 className="text-3xl lg:text-4xl font-bold text-gray-800">
               {product.attributes.title}
             </h1>
 
-            <div className="flex items-center">
+            {/* Dynamic Stock Status Badge */}
+            {/* Logic: Show "In Stock" if >10 items, show exact count if 1-10 items, show "Out of Stock" if 0 */}
+            <div className="flex items-center gap-3">
+              {(() => {
+                const stockQuantity = product.attributes.stock || 0;
+                if (stockQuantity > 10) {
+                  return (
+                    <Badge className="bg-green-100 text-green-800 px-3 py-1 text-sm font-medium">
+                      In Stock
+                    </Badge>
+                  );
+                } else if (stockQuantity > 0) {
+                  return (
+                    <Badge className="bg-orange-100 text-orange-800 px-3 py-1 text-sm font-medium">
+                      Only {stockQuantity} left
+                    </Badge>
+                  );
+                } else {
+                  return (
+                    <Badge className="bg-red-100 text-red-800 px-3 py-1 text-sm font-medium">
+                      Out of Stock
+                    </Badge>
+                  );
+                }
+              })()}
+            </div>
+
+            {/* Rating */}
+            <div className="flex items-center gap-2">
+              <div className="flex">
               {[1, 2, 3, 4, 5].map((i) => (
                 <Star
                   key={i}
-                  className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400"
+                    className="w-5 h-5 fill-yellow-400 text-yellow-400"
                 />
               ))}
-              <span className="ml-2 text-xs sm:text-sm text-gray-600">5.0</span>
+              </div>
+              <span className="text-gray-600">4.9 (245 Review)</span>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-              <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">
-                ₹{selectedSize === "8 Inch" ? "850" : "650"}
-              </span>
-              <span className="text-sm sm:text-base text-gray-500 line-through">
-                ₹{selectedSize === "8 Inch" ? "1,499" : "1,099"}
-              </span>
-              <Badge
-                variant="secondary"
-                className="bg-yellow-100 text-yellow-800 text-xs sm:text-sm"
-              >
-                -50%
-              </Badge>
+            {/* Price */}
+            <div className="flex items-center gap-4">
+              <span className="text-3xl font-bold text-gray-800">₹{selectedSize === "8 Inch" ? "850" : "650"}</span>
+              <span className="text-xl text-gray-400 line-through">₹{selectedSize === "8 Inch" ? "1,499" : "1,099"}</span>
             </div>
 
-            {/* Size Selection */}
-            <div className="flex flex-col items-start">
-              <label className="mb-2 text-xs sm:text-sm font-medium text-gray-700">
-                SELECT PLANT SIZE
-              </label>
-              <div className="flex flex-wrap gap-2 sm:gap-4">
+            {/* Description */}
+            <p className="text-gray-600 leading-relaxed">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+            </p>
+
+            {/* Plant Size Selection */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-3 block">Plant Size</label>
+              <div className="flex gap-2">
+                {["6 Inch", "8 Inch"].map((size) => (
                 <button
-                  onClick={() => handleSizeSelect("6 Inch")}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base border-2 rounded-md ${
-                    selectedSize === "6 Inch"
-                      ? "bg-green-600 text-white"
-                      : "border-green-600 text-green-600"
-                  } hover:bg-green-100`}
-                >
-                  6 Inch
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      selectedSize === size
+                        ? "bg-yellow-400 text-gray-800"
+                        : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    {size}
                 </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Plant Shape Selection */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-3 block">Plant Shape</label>
+              <div className="flex gap-2">
+                {["Hexagonal", "Round"].map((shape) => (
                 <button
-                  onClick={() => handleSizeSelect("8 Inch")}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base border-2 rounded-md ${
-                    selectedSize === "8 Inch"
-                      ? "bg-green-600 text-white"
-                      : "border-green-600 text-green-600"
-                  } hover:bg-green-100`}
+                    key={shape}
+                    onClick={() => setSelectedShape(shape)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      selectedShape === shape
+                        ? "bg-yellow-400 text-gray-800"
+                        : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    {shape}
+                </button>
+                ))}
+              </div>
+            </div>
+
+
+            {/* Quantity Selector */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-3 block">Quantity</label>
+              <div className="flex items-center border border-gray-300 rounded-lg w-fit">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="p-2 hover:bg-gray-50 transition-colors"
                 >
-                  8 Inch
+                  <Minus className="w-4 h-4" />
+                </button>
+                <span className="px-4 py-2 text-lg font-medium">{quantity}</span>
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="p-2 hover:bg-gray-50 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Shape Selection */}
-            <div className="flex flex-col items-start mt-4">
-              <label className="mb-2 text-xs sm:text-sm font-medium text-gray-700">
-                SELECT PLANT SHAPE
-              </label>
-              <div className="flex flex-wrap gap-2 sm:gap-4">
-                <button
-                  onClick={() => handleShapeSelect("Hexagonal")}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base border-2 rounded-md ${
-                    selectedShape === "Hexagonal"
-                      ? "bg-green-600 text-white"
-                      : "border-green-600 text-green-600"
-                  } hover:bg-green-100`}
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+              <SecondaryButton onClick={addToCart} withArrow={false} className="flex-1">
+                Add To Cart
+              </SecondaryButton>
+              <PrimaryButton onClick={buyNow} withArrow={false} className="flex-1">
+                Buy Now
+              </PrimaryButton>
+              <button className="border-2 border-gray-300 hover:border-gray-400 rounded-lg w-12 h-12 inline-flex items-center justify-center">
+                <Heart className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* SKU & Tags */}
+            <div className="space-y-2 text-sm text-gray-600">
+              <p><span className="font-medium">SKU:</span> PLTC87654ABC</p>
+              <p><span className="font-medium">Tags:</span> Indoor Plant, Monstera deliciosa, Plants</p>
+            </div>
+
+            {/* Share Icons */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-700">Share :</span>
+              <div className="flex gap-2">
+                <a
+                  href="https://www.facebook.com/sharer/sharer.php?u=https://plantozone.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 bg-green-600 hover:bg-green-700 rounded-full flex items-center justify-center transition-colors"
                 >
-                  Hexagonal
-                </button>
-                <button
-                  onClick={() => handleShapeSelect("Round")}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base border-2 rounded-md ${
-                    selectedShape === "Round"
-                      ? "bg-green-600 text-white"
-                      : "border-green-600 text-green-600"
-                  } hover:bg-green-100`}
+                  <Icon icon="mdi:facebook" className="w-4 h-4 text-white" />
+                </a>
+                <a
+                  href="https://twitter.com/intent/tweet?url=https://plantozone.com&text=Check out this amazing plant!"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 bg-green-600 hover:bg-green-700 rounded-full flex items-center justify-center transition-colors"
                 >
-                  Round
-                </button>
+                  <Icon icon="mdi:twitter" className="w-4 h-4 text-white" />
+                </a>
+                <a
+                  href="https://pinterest.com/pin/create/button/?url=https://plantozone.com&media=&description=Check out this amazing plant!"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 bg-green-600 hover:bg-green-700 rounded-full flex items-center justify-center transition-colors"
+                >
+                  <Icon icon="mdi:pinterest" className="w-4 h-4 text-white" />
+                </a>
+                <a
+                  href="https://www.instagram.com/plantozone"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 bg-green-600 hover:bg-green-700 rounded-full flex items-center justify-center transition-colors"
+                >
+                  <Icon icon="mdi:instagram" className="w-4 h-4 text-white" />
+                </a>
               </div>
             </div>
 
-            {/* Quantity & Add to Cart - Hidden on mobile, visible on desktop */}
-            <div className="hidden sm:flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <div className="flex items-center border rounded-md">
-                <button
-                  onClick={handleDecrease}
-                  className="px-3 py-2 border-r hover:bg-gray-200"
-                >
-                  -
-                </button>
-                <input
-                  type="text"
-                  value={quantity}
-                  readOnly
-                  className="w-12 text-center text-sm sm:text-base"
-                />
-                <button
-                  onClick={handleIncrease}
-                  className="px-3 py-2 border-l hover:bg-gray-200"
-                >
-                  +
-                </button>
-              </div>
-              <Button
-                onClick={addToCart}
-                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 py-4 sm:py-5 text-sm sm:text-base"
-              >
-                ADD TO CART
-              </Button>
-            </div>
-
-            {/* Mobile Quantity Controls - Only visible on mobile */}
-            <div className="sm:hidden">
-              <label className="mb-2 text-sm font-medium text-gray-700 block">
-                QUANTITY
-              </label>
-              <div className="flex items-center border rounded-md w-fit">
-                <button
-                  onClick={handleDecrease}
-                  className="px-4 py-3 border-r hover:bg-gray-200 text-lg"
-                >
-                  -
-                </button>
-                <input
-                  type="text"
-                  value={quantity}
-                  readOnly
-                  className="w-16 text-center text-base py-3"
-                />
-                <button
-                  onClick={handleIncrease}
-                  className="px-4 py-3 border-l hover:bg-gray-200 text-lg"
-                >
-                  +
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* More Sections */}
-        <Diver className="my-10 sm:my-16 lg:my-20" />
+        {/* Product Information Tabs */}
+        <div className="mb-12">
+          {/* Tab Navigation */}
+          <div className="border-b border-gray-200 mb-8">
+            <nav className="flex space-x-8">
+              {[
+                { id: "description", label: "Description" },
+                { id: "additional-info", label: "Additional Information" },
+                { id: "review", label: "Review" }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`py-4 px-1 text-sm font-medium border-b-2 transition-colors ${
+                    activeTab === tab.id
+                      ? "border-yellow-400 text-gray-900"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* Tab Content */}
+          <div className="min-h-[400px]">
+            {activeTab === "description" && (
+              <div className="prose max-w-none">
+                <p className="text-gray-600 leading-relaxed mb-6">
+                  This beautiful plant brings natural beauty to your home or office. This plant is perfect for India's climate and grows easily.
+                </p>
+                <p className="text-gray-600 leading-relaxed mb-6">
+                  This plant purifies the air and makes your living space healthy. It grows well even in low light, which is ideal for Indian homes.
+                </p>
+                <div className="space-y-3">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-3">Key Features:</h4>
+                  <ul className="space-y-2 text-gray-600">
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      <span>Perfect for Indian climate</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      <span>Grows well in low light</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      <span>Air purifying properties</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      <span>Easy maintenance</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      <span>Beautiful foliage and growth</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      <span>Perfect for Indian homes</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="mt-6 p-4 bg-green-50 rounded-lg">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-3">Care Instructions:</h4>
+                  <ul className="space-y-2 text-gray-600">
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      <span>Water 2-3 times a week</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      <span>4-6 hours of sunlight daily</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                      <span>Fertilize once a month</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "additional-info" && (
+              <div className="overflow-hidden border border-gray-200 rounded-lg">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-yellow-400">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
+                        Attribute
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
+                        Description
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    <tr className="bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Plant Size
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        10-12 inches (25-30 cm)
+                      </td>
+                    </tr>
+                    <tr className="bg-white">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Light Requirements
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        Bright, indirect sunlight
+                      </td>
+                    </tr>
+                    <tr className="bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Watering Needs
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        Water every 1-2 weeks
+                      </td>
+                    </tr>
+                    <tr className="bg-white">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Growth Rate
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        Moderate growth rate indoors
+                      </td>
+                    </tr>
+                    <tr className="bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Pot Material
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        Ceramic pot with drainage hole
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {activeTab === "review" && (
+              <div className="space-y-8">
+                {/* Overall Rating Summary */}
+                <div className="bg-gray-50 p-6 rounded-lg">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="text-4xl font-bold text-gray-800">4.9</div>
+                      <div>
+                        <div className="flex items-center space-x-1 mb-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Icon key={star} icon="material-symbols:star" className="w-5 h-5 text-yellow-400" />
+                          ))}
+                        </div>
+                        <p className="text-sm text-gray-600">245 Reviews</p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      {[5, 4, 3, 2, 1].map((rating) => (
+                        <div key={rating} className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-600 w-8">{rating}</span>
+                          <Icon icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
+                          <div className="w-32 bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-yellow-400 h-2 rounded-full" 
+                              style={{ width: `${rating === 5 ? 85 : rating === 4 ? 10 : rating === 3 ? 3 : rating === 2 ? 1 : 1}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Review List */}
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold text-gray-800">Review List</h3>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-sm text-gray-600">Showing 1-4 of 24 reviews</span>
+                      <select className="border border-gray-300 rounded-md px-3 py-1 text-sm">
+                        <option>Sort by: Newest</option>
+                        <option>Sort by: Oldest</option>
+                        <option>Sort by: Highest Rating</option>
+                        <option>Sort by: Lowest Rating</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Individual Reviews */}
+                  <div className="space-y-6">
+                    {/* Review 1 */}
+                    <div className="border-b border-gray-200 pb-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
+                          P
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-gray-800">Priya Sharma</h4>
+                            <div className="flex items-center space-x-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Icon key={star} icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
+                              ))}
+                              <span className="text-sm text-gray-600 ml-2">5.0</span>
+                            </div>
+                          </div>
+                          <h5 className="font-medium text-gray-700 mb-2">Perfect for my Mumbai apartment!</h5>
+                          <p className="text-gray-600 text-sm leading-relaxed mb-2">
+                            This plant is absolutely beautiful! It's been 2 months and it's thriving in my Mumbai apartment. 
+                            The humidity here is perfect for this plant. Delivery was super fast and packaging was excellent.
+                          </p>
+                          <span className="text-xs text-gray-500">2 weeks ago</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Review 2 */}
+                    <div className="border-b border-gray-200 pb-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                          A
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-gray-800">Arjun Patel</h4>
+                            <div className="flex items-center space-x-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Icon key={star} icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
+                              ))}
+                              <span className="text-sm text-gray-600 ml-2">5.0</span>
+                            </div>
+                          </div>
+                          <h5 className="font-medium text-gray-700 mb-2">Great quality, excellent service</h5>
+                          <p className="text-gray-600 text-sm leading-relaxed mb-2">
+                            Ordered this for my office in Bangalore. The plant arrived in perfect condition. 
+                            Customer service team was very helpful with care instructions. Highly recommend!
+                          </p>
+                          <span className="text-xs text-gray-500">1 month ago</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Review 3 */}
+                    <div className="border-b border-gray-200 pb-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold">
+                          S
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-gray-800">Sneha Reddy</h4>
+                            <div className="flex items-center space-x-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Icon key={star} icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
+                              ))}
+                              <span className="text-sm text-gray-600 ml-2">5.0</span>
+                            </div>
+                          </div>
+                          <h5 className="font-medium text-gray-700 mb-2">Love the plant, love the service!</h5>
+                          <p className="text-gray-600 text-sm leading-relaxed mb-2">
+                            This is my third order from Plantozone. The quality is consistently excellent. 
+                            The plant is growing beautifully in my Delhi home. Thank you for such amazing service!
+                          </p>
+                          <span className="text-xs text-gray-500">3 weeks ago</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Review 4 */}
+                    <div className="border-b border-gray-200 pb-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-red-400 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
+                          R
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-gray-800">Rajesh Kumar</h4>
+                            <div className="flex items-center space-x-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Icon key={star} icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
+                              ))}
+                              <span className="text-sm text-gray-600 ml-2">5.0</span>
+                            </div>
+                          </div>
+                          <h5 className="font-medium text-gray-700 mb-2">Excellent plant, fast delivery</h5>
+                          <p className="text-gray-600 text-sm leading-relaxed mb-2">
+                            Ordered this for my wife's birthday. She absolutely loves it! The plant is healthy and beautiful. 
+                            Delivery was on time and packaging was perfect. Will definitely order again.
+                          </p>
+                          <span className="text-xs text-gray-500">1 week ago</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Add Your Review Form */}
+                <div className="bg-gray-50 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Add your review</h3>
+                  <p className="text-sm text-gray-600 mb-6">* Required fields</p>
+                  
+                  <form onSubmit={handleReviewSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
+                        <input 
+                          type="text" 
+                          value={reviewForm.name}
+                          onChange={(e) => handleReviewInputChange('name', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                          placeholder="Enter your name"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                        <input 
+                          type="email" 
+                          value={reviewForm.email}
+                          onChange={(e) => handleReviewInputChange('email', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                          placeholder="Enter your email"
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Your Rating *</label>
+                      <div className="flex items-center space-x-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button 
+                            key={star} 
+                            type="button" 
+                            onClick={() => handleStarClick(star)}
+                            className="transition-colors"
+                          >
+                            <Icon 
+                              icon="material-symbols:star" 
+                              className={`w-6 h-6 ${
+                                star <= reviewRating 
+                                  ? 'text-yellow-400' 
+                                  : 'text-gray-300 hover:text-yellow-200'
+                              }`} 
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Add Review Title *</label>
+                      <input 
+                        type="text" 
+                        value={reviewForm.title}
+                        onChange={(e) => handleReviewInputChange('title', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                        placeholder="Enter review title"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Add Detailed Review *</label>
+                      <textarea 
+                        rows="4"
+                        value={reviewForm.review}
+                        onChange={(e) => handleReviewInputChange('review', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                        placeholder="Share your experience with this product"
+                        required
+                      ></textarea>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Photo / Video</label>
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <Icon icon="material-symbols:cloud-upload" className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-600 mb-2">Drag and drop your files here, or</p>
+                        <PrimaryButton type="button" withArrow={false} className="!px-4 !py-2 rounded-md bg-white text-yellow-600 hover:text-yellow-700 shadow-none hover:scale-100">
+                          Browse
+                        </PrimaryButton>
+                      </div>
+                    </div>
+                    
+                <SecondaryButton type="submit" withArrow={false} className="px-6 py-2 rounded-md">
+                  Submit
+                </SecondaryButton>
+                  </form>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Related Products Section */}
+        <div className="mb-16">
+          <div className="text-center mb-4">
+            <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">Related Products</p>
+            <h2 className="text-3xl font-bold text-gray-800">Explore Related Products</h2>
+          </div>
         <NewArrivals />
-        <TestimonialSwiper />
+        </div>
+
+        {/* Services Section */}
+        <div className="mb-16">
+          <ShopServiceSection />
+        </div>
+
       </Container>
+
+      {/* Newsletter Section */}
+      <div className="bg-gray-100 py-16 rounded-2xl mx-6">
+        <div className="container mx-auto w-[90%] px-4">
+          <div className="text-center">
+            <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">
+              OUR NEWSLETTER
+            </p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+              Subscribe to Our Newsletter to Get Updates on Our Latest Offers
+            </h2>
+            <p className="text-gray-600 mb-8">
+              Get 25% off on your first order just by subscribing to our newsletter
+            </p>
+            
+            <form className="max-w-md mx-auto">
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  placeholder="Enter Email Address"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
+                />
+                <PrimaryButton type="submit" withArrow={false} className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-3 rounded-lg font-medium transition-colors">
+                  Subscribe
+                </PrimaryButton>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
 
       {/* Mobile Bottom Bar - Only visible on mobile */}
       <div className="sm:hidden fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-[110]">
@@ -369,19 +943,20 @@ export default function ProductPage() {
 
           {/* Action Buttons */}
           <div className="flex gap-3 flex-1">
-            <Button
+            <SecondaryButton
               onClick={addToCart}
-              variant="outline"
-              className="flex-1 border-green-600 text-green-600 hover:bg-green-50 py-3 font-semibold"
+              withArrow={false}
+              className="flex-1"
             >
               ADD TO CART
-            </Button>
-            <Button
+            </SecondaryButton>
+            <PrimaryButton
               onClick={buyNow}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 font-semibold"
+              withArrow={false}
+              className="flex-1"
             >
               BUY NOW
-            </Button>
+            </PrimaryButton>
           </div>
         </div>
 

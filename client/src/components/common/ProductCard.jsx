@@ -63,7 +63,13 @@ const ProductCard = ({ data, onAddToCart }) => {
 
   // Position popup absolutely near the Add to Cart button
   return (
-    <div className="w-full h-auto mb-5 bg-white rounded-lg space-y-1 flex flex-col justify-between relative">
+    <div className="w-full bg-white transition-shadow duration-300 overflow-hidden relative">
+      {/* Discount Tag */}
+      <div className="absolute top-3 left-3 z-10">
+        <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
+          20% off
+        </div>
+      </div>
       {/* Popup for size and shape selection */}
       {showPopup && (
         <div className="absolute z-50 right-0 top-0 bg-white border border-green-600 shadow-2xl rounded-xl p-5 min-w-[230px]">
@@ -129,40 +135,74 @@ const ProductCard = ({ data, onAddToCart }) => {
           </div>
         </div>
       )}
-      <Link href={`/product/${data?.id}`}>
-        <Image
-          width={500}
-          height={220}
-          src={imgUrl}
-          alt="plantozone"
-          className="w-full h-[350px] rounded-lg overflow-hidden object-cover border-2 border-gray-400"
-        />
-      </Link>
-      <div className="p-2 flex justify-between items-center">
+      {/* Image Section - Full Width */}
+      <div className="relative group">
         <Link href={`/product/${data?.id}`}>
-          <h3 className="text-[18px] font-semibold text-gray-800 line-clamp-2">
-            {data?.attributes?.title}
-          </h3>
+          <Image
+            width={500}
+            height={400}
+            src={imgUrl}
+            alt="plantozone"
+            className="w-full h-[300px] rounded-xl object-cover bg-gray-50"
+          />
         </Link>
-        {/* <p className="text-gray-500 text-sm">↕ 20-24cm</p> */}
+        
+        {/* Hover Buttons */}
+        <div className="absolute top-3 right-3 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          {/* Heart Button */}
+          <button className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-50 transition-colors">
+            <Icon icon="material-symbols:favorite-outline" className="w-5 h-5 text-gray-600" />
+          </button>
+          
+          {/* Enlarge Button */}
+          <button className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-50 transition-colors">
+            <Icon icon="material-symbols:zoom-in" className="w-5 h-5 text-gray-600" />
+          </button>
+          
+          {/* Cart Button */}
+          <button className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-green-50 transition-colors">
+            <Icon icon="material-symbols:shopping-cart-outline" className="w-5 h-5 text-gray-600" />
+          </button>
+        </div>
       </div>
+      
+      {/* Content Section with Gap */}
+      <div className="p-4 space-y-2 pl-0">
+        {/* Category and Rating */}
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-gray-500">Indoor Plant</span>
+          <div className="flex items-center space-x-1">
+            <Icon icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
+            <span className="text-sm font-medium text-gray-800">4.9</span>
+          </div>
+        </div>
 
-      <div className="p-2 border-2 border-mediumGray rounded-md flex items-center justify-between">
-        <span className="text-base font-semibold text-gray-800">
-          <span className="font-normal text-sm">From</span> ₹ {getPrice()}
-        </span>
-        <span className="flex items-center gap-3">
-          <Button ref={addBtnRef} onClick={handleAddToCartClick}>
-            <Icon
-              icon="icon-park-outline:shopping-cart-add"
-              width="1.3em"
-              height="1.3em"
-            />
-          </Button>
-          {/* <Button asChild>
-            <Link href={`/product/${data?.id}`}>Buy Now</Link>
-          </Button> */}
-        </span>
+        {/* Plant Name and Price Together */}
+        <div className="space-y-2">
+          <Link href={`/product/${data?.id}`}>
+            <h3 className="text-base font-semibold text-gray-800 line-clamp-2 hover:text-green-600 transition-colors">
+              {data?.attributes?.title}
+            </h3>
+          </Link>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="text-lg font-bold text-gray-800">₹{getPrice()}</span>
+              <span className="text-xl text-gray-400 line-through">₹{Math.round(getPrice() * 1.5)}</span>
+            </div>
+            <Button 
+              ref={addBtnRef} 
+              onClick={handleAddToCartClick} 
+              className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition-colors"
+            >
+              <Icon
+                icon="icon-park-outline:shopping-cart-add"
+                width="1.2em"
+                height="1.2em"
+              />
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

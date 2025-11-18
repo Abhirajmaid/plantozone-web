@@ -1,6 +1,4 @@
 "use client";
-import Image from "next/image";
-import { SectionTitle } from "../..";
 import { Container } from "../../layout/Container";
 import { Section } from "../../layout/Section";
 import { useEffect, useState } from "react";
@@ -15,75 +13,124 @@ const BlogSection = () => {
       .getBlogs()
       .then((resp) => {
         const all = resp?.data?.data || [];
-        setBlogs(all.slice(0, 3));
+        // Filter out incomplete blogs - only include blogs with title, description, date, and slug
+        const completeBlogs = all.filter((blog) => {
+          const attrs = blog?.attributes || {};
+          return (
+            attrs?.title &&
+            attrs?.title.trim() !== "" &&
+            attrs?.title.toLowerCase() !== "duymmy" && // Filter out placeholder titles
+            attrs?.description &&
+            attrs?.description.trim() !== "" &&
+            attrs?.date &&
+            attrs?.slug
+          );
+        });
+        setBlogs(completeBlogs.slice(0, 3));
       })
       .catch((error) => {
         setBlogs([]);
       });
   }, []);
 
+  // Format date to match the single blog page format
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    try {
+      const dateObj = new Date(dateString);
+      if (!isNaN(dateObj.getTime())) {
+        return dateObj.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        });
+      }
+    } catch (e) {
+      return "";
+    }
+    return "";
+  };
+
+  // Calculate read time (simple estimation: ~200 words per minute)
+  const calculateReadTime = (description) => {
+    if (!description) return "5 min read";
+    const wordCount = description.split(/\s+/).length;
+    const readTime = Math.ceil(wordCount / 200);
+    return `${readTime} min read`;
+  };
+
   return (
-    <Section>
+    <Section className="bg-gray-50 py-16">
       <Container>
-        <div className="w-full flex flex-col items-center mb-8">
-          <span className="text-lg md:text-lg mb-1 font-medium">
-            News & Blogs
-          </span>
-          <SectionTitle
-            title={
-              <>
-                Our Latest <span className="text-lightGreen">News & Blogs</span>
-              </>
-            }
-          />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {blogs.map((blog, idx) => (
-            <Link
-              key={blog?.id || idx}
-              href={`/blog/${blog?.attributes?.slug || "#"}`}
-              className="bg-white rounded-2xl shadow-lg border border-lightGreen/20 flex flex-col overflow-hidden hover:shadow-2xl transition"
-            >
-              <div className="relative">
-                <Image
-                  src={
-                    blog?.attributes?.image?.data?.attributes?.url ||
-                    "/images/plant.png"
-                  }
-                  alt={blog?.attributes?.title}
-                  width={400}
-                  height={250}
-                  className="w-full h-[180px] object-cover"
-                />
-                <span className="absolute left-4 top-4 bg-yellow-400 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
-                  {blog?.attributes?.tag || "Blog"}
-                </span>
-              </div>
-              <div className="flex-1 flex flex-col px-5 pt-4 pb-5">
-                <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
-                  <span>
-                    {blog?.attributes?.author?.data?.attributes?.name ||
-                      "Plantozone"}
-                  </span>
-                  <span className="w-1 h-1 bg-gray-400 rounded-full" />
-                  <span>
-                    {blog?.attributes?.date
-                      ? new Date(blog?.attributes?.date).toLocaleDateString()
-                      : ""}
-                  </span>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">Related News & Blogs</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+              Latest Related News & Blogs
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {blogs.map((blog, idx) => {
+              const attributes = blog?.attributes || {};
+              // Handle image URL - check if it's already a full URL
+              let imageUrl = "/images/plant.png";
+              if (attributes?.image?.data?.attributes?.url) {
+                const url = attributes.image.data.attributes.url;
+                if (url.startsWith('http://') || url.startsWith('https://')) {
+                  imageUrl = url;
+                } else {
+                  imageUrl = `https://dashboard.plantozone.com${url}`;
+                }
+              }
+              const authorName = attributes?.author?.data?.attributes?.name || "Jenny Alexander";
+              const category = attributes?.category || "Indoor Plant";
+              const dateStr = formatDate(attributes?.date);
+              const readTime = calculateReadTime(attributes?.description);
+
+              // Truncate description to a few lines (excerpt)
+              const getExcerpt = (text, maxLength = 120) => {
+                if (!text) return "";
+                if (text.length <= maxLength) return text;
+                return text.substring(0, maxLength).trim() + "...";
+              };
+
+              return (
+                <div key={blog?.id || idx} className="rounded-2xl overflow-hidden">
+                  <div className="relative">
+                    <img 
+                      src={imageUrl} 
+                      alt={attributes?.title || "Blog post"}
+                      className="w-full h-48 object-cover rounded-2xl"
+                    />
+                    <div className="absolute bottom-4 left-4">
+                      <span className="bg-yellow-400 text-gray-800 px-3 py-1 rounded-full text-sm font-bold">
+                        {category}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-6 pl-0">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-sm text-gray-600">{authorName}</span>
+                      <span className="text-gray-400">•</span>
+                      <span className="text-sm text-gray-600">{dateStr}</span>
+                      <span className="text-gray-400">•</span>
+                      <span className="text-sm text-gray-600">{readTime}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
+                      {attributes?.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                      {getExcerpt(attributes?.description)}
+                    </p>
+                    <Link href={`/blog/${attributes?.slug}`} className="text-green-600 hover:text-green-700 font-medium">
+                      Read More
+                    </Link>
+                  </div>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold mb-2 text-primary">
-                  {blog?.attributes?.title}
-                </h3>
-                <p className="text-gray-600 text-sm mb-3 line-clamp-3">
-                  {blog?.attributes?.description}
-                </p>
-                <span className="text-lightGreen text-sm font-medium mt-auto hover:underline">
-                  Read More
-                </span>
-              </div>
-            </Link>
-          ))}
+              );
+            })}
+          </div>
         </div>
       </Container>
     </Section>

@@ -1,71 +1,88 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Container } from "../../layout/Container";
 import { Section } from "../../layout/Section";
-import { SectionTitle } from "../..";
 import Link from "next/link";
+import { InfiniteCategoryMarquee } from "@/src/components";
 import Image from "next/image";
+
+// Category banner items
+const categoryBannerItems = [
+  "Outdoor Plants",
+  "Office Desk Plants", 
+  "Pots & Accessories",
+  "Gift Plants & Combos",
+  "Care & Maintenance"
+];
 
 // Update categories to match the image you shared
 const categories = [
   {
-    name: "Flowering",
-    url: "flowering",
-    image: "/images/flowering.jpg", // Update image as needed
+    name: "Indoor Plants",
+    url: "indoor-plants",
+    image: "/images/plant.png",
   },
   {
-    name: "Air Purifying",
-    url: "air-purifying",
-    image: "/images/air_purifying.jpg",
+    name: "Outdoor Plants",
+    url: "outdoor-plants",
+    image: "/images/plant.png",
   },
   {
-    name: "Ornamentals",
-    url: "ornamentals",
-    image: "/images/ornamentals.jpg",
+    name: "Office Desk Plants",
+    url: "office-desk-plants",
+    image: "/images/plant.png",
   },
   {
-    name: "Pot Accessories",
-    url: "pot-accessories",
+    name: "Pots & Accessories",
+    url: "pots-accessories",
     image: "/images/accessories.jpg",
+  },
+  {
+    name: "Gift Plants & Combos",
+    url: "gift-plants-combos",
+    image: "/images/plant.png",
   },
 ];
 
 const CategorySec = () => {
   return (
-    <Section>
-      <Container>
-        <div className="w-full flex flex-col items-center mb-8">
-          <span className="text-lg md:text-lg mb-1 font-medium">
-            Our Categories
-          </span>
-          <SectionTitle
-            title={
-              <>
-                Shop By <span className="text-lightGreen">Category</span>
-              </>
-            }
-          />
-        </div>
-        <div className="flex flex-wrap justify-center gap-6 md:gap-10">
-          {categories.map((item, idx) => (
-            <div className="flex flex-col items-center group" key={idx}>
-              <div className="w-[120px] h-[120px] md:w-[250px] md:h-[250px] rounded-full overflow-hidden shadow-lg border-2 border-lightGreen/30 bg-white flex items-center justify-center mb-3 transition-transform duration-200 group-hover:scale-105">
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  width={350}
-                  height={350}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <span className="text-sm md:text-base font-semibold text-primary text-center">
-                {item.name}
-              </span>
-            </div>
-          ))}
-        </div>
-      </Container>
-    </Section>
+    <>
+      {/* Yellow Category Banner */}
+      <InfiniteCategoryMarquee />
+
+      <Section className="bg-white">
+        <Container>
+          <div className="text-center mb-12">
+            <p className="text-base text-black uppercase tracking-wide mb-2">Our Categories</p>
+            <h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
+              Shop By Category
+            </h2>
+          </div>
+          <div className="flex flex-wrap justify-center gap-8 md:gap-12">
+            {categories.map((item, idx) => (
+              <Link href={`/shop/${item.url}`} key={idx} className="group">
+                <div className="flex flex-col items-center">
+                  <div className="w-[180px] h-[180px] md:w-[200px] md:h-[200px] rounded-full overflow-hidden shadow-lg border-4 border-green-100 bg-white flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl">
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={200}
+                      height={200}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  <span className="text-sm md:text-base font-semibold text-gray-800 text-center group-hover:text-primary transition-colors duration-300">
+                    {item.name}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      <style jsx>{``}</style>
+    </>
   );
 };
 

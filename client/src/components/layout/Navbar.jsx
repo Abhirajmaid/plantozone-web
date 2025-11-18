@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
+import PrimaryButton from "@/src/components/common/PrimaryButton";
 import {
   ShoppingCartIcon,
   HeartIcon,
@@ -14,7 +15,7 @@ import {
   LogOutIcon,
   UserCircleIcon,
 } from "lucide-react";
-import { Logo } from "..";
+import Logo from "../common/Logo";
 import { header, mobileTabs } from "@/src/lib/data/links";
 import { Container } from "./Container";
 import {
@@ -42,17 +43,22 @@ function getCartCount() {
 }
 
 export default function CustomNavbar() {
+  const pathname = usePathname();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("/shop");
+  const [activeTab, setActiveTab] = useState(pathname || "/");
+  
+  // Sync activeTab with pathname changes
+  useEffect(() => {
+    setActiveTab(pathname || "/");
+  }, [pathname]);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const menuRef = useRef(null);
   const dropdownRef = useRef(null);
   const dropdownTimerRef = useRef(null);
-  const pathname = usePathname();
 
   const router = useRouter();
 
@@ -150,24 +156,66 @@ export default function CustomNavbar() {
 
   return (
     <>
-      <header className="fixed w-full bg-white z-[99] border-b">
-        <div className="bg-primary h-5"></div>
+      {/* Top Header Bar */}
+      <div className="fixed w-full bg-green-600 text-white z-[100] py-2 hidden md:block">
+        <Container>
+          <div className="flex items-center justify-between text-sm">
+            {/* Left: Call Us */}
+            <div className="flex items-center">
+              <span>Call Us : +91 89994 92523</span>
+            </div>
+            
+            {/* Center: Discount code offer */}
+            <div className="flex items-center">
+              <span>Use code FIRST25 to get 25% OFF for your first order.</span>
+            </div>
+            
+            {/* Right: Social Media Icons */}
+            <div className="flex items-center space-x-2">
+              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                <Icon icon="mdi:facebook" className="w-3 h-3 text-black" />
+              </a>
+              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                <Icon icon="mdi:twitter" className="w-3 h-3 text-black" />
+              </a>
+              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                <Icon icon="mdi:pinterest" className="w-3 h-3 text-black" />
+              </a>
+              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                <Icon icon="mdi:instagram" className="w-3 h-3 text-black" />
+              </a>
+              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                <Icon icon="mdi:youtube" className="w-3 h-3 text-black" />
+              </a>
+            </div>
+          </div>
+        </Container>
+      </div>
+
+      {/* Main Navigation Bar */}
+      <header className="fixed w-full bg-white z-[99] border-b md:top-10 top-0">
         <Container>
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
-            {/* Left: Logo */}
-            <div className="w-[40px] md:w-[80px]">
-              <Logo />
+            {/* Left: Logo and Brand */}
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center">
+                <Logo />
+              </div>
+              <span className="text-xl font-semibold text-gray-800">
+                Plantozone<span className="text-yellow-400">.</span>
+              </span>
             </div>
+            
             {/* Center: Navigation Links */}
-            <div className="hidden md:flex gap-10 items-center">
-              <nav className="space-x-8 text-[16px] font-medium">
+            <div className="hidden md:flex items-center">
+              <nav className="flex space-x-8 text-[16px] font-medium">
                 {header.map((link, id) => (
                   <Link
                     key={id}
                     href={link.href}
-                    className={`hover:text-[#0b9c09] transition-colors capitalize ${
+                    className={`text-gray-700 hover:text-green-600 transition-colors capitalize ${
                       pathname === link.href
-                        ? "text-[#0b9c09] font-bold underline underline-offset-8"
+                        ? "text-green-600 font-semibold"
                         : ""
                     }`}
                   >
@@ -179,10 +227,17 @@ export default function CustomNavbar() {
 
             {/* Right: Icons */}
             <div className="hidden md:flex items-center space-x-4">
+              <Button variant="ghost" size="icon" className="relative">
+                <Icon icon="mdi:magnify" className="h-6 w-6 text-gray-700" />
+              </Button>
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link href="/whishlist">
+                  <Icon icon="mdi:heart-outline" className="h-6 w-6 text-gray-700" />
+                </Link>
+              </Button>
               <Button variant="ghost" size="icon" asChild className="relative">
                 <Link href="/cart">
-                  <ShoppingCartIcon className="h-7 w-7" />
-                  <span className="sr-only">Shopping Cart</span>
+                  <Icon icon="mdi:cart-outline" className="h-6 w-6 text-gray-700" />
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
                       {cartCount}
@@ -190,53 +245,12 @@ export default function CustomNavbar() {
                   )}
                 </Link>
               </Button>
-              {/* <Button variant="ghost" size="icon">
-                <HeartIcon className="h-7 w-7" />
-                <span className="sr-only">Wishlist</span>
-              </Button> */}
-              {isSignedIn ? (
-                <div
-                  className="relative"
-                  onMouseEnter={handleDropdownEnter}
-                  onMouseLeave={handleDropdownLeave}
-                  ref={dropdownRef}
-                >
-                  <Button variant="ghost" size="icon" className="relative">
-                    <UserIcon className="h-7 w-7" />
-                  </Button>
-
-                  {/* Dropdown Menu */}
-                  {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                      <div className="py-1" role="menu">
-                        <Link
-                          href="/orders"
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          <PackageIcon className="mr-2 h-4 w-4" />
-                          Orders
-                        </Link>
-                        <Link
-                          href="/account"
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          <UserCircleIcon className="mr-2 h-4 w-4" />
-                          Account
-                        </Link>
-                        <button
-                          onClick={handleLogout}
-                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          <LogOutIcon className="mr-2 h-4 w-4" />
-                          Logout
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Button onClick={openAuthModal}>Login</Button>
-              )}
+              <PrimaryButton 
+                href="tel:+918999492523" 
+                withArrow={false}
+              >
+                Call Us
+              </PrimaryButton>
             </div>
 
             {/* Mobile Menu Button */}
@@ -261,7 +275,9 @@ export default function CustomNavbar() {
             className="absolute top-0 left-0 right-0 bg-white shadow-md z-50 md:hidden transform transition-all duration-300 ease-in-out translate-x-0 min-h-screen"
           >
             <div className="flex justify-between items-center p-4">
-              <Logo />
+              <div className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center">
+                <Logo />
+              </div>
               <Button variant="ghost" size="icon" onClick={toggleMenu}>
                 <XIcon className="h-7 w-7" />
                 <span className="sr-only">Close Menu</span>
@@ -321,30 +337,35 @@ export default function CustomNavbar() {
       </header>
 
       {/* Bottom Navigation Tabs */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-md z-[100]">
-        <div className="flex justify-between items-center p-4">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-[100]">
+        <div className="flex justify-around items-center py-2 px-2">
           {mobileTabs
             .filter((link) => link.href !== "/wishlist")
-            .map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`flex flex-col items-center text-sm transition-colors duration-200 p-2 ${
-                  activeTab === link.href
-                    ? "text-[#0b9c09] bg-gray-100 rounded-md"
-                    : "text-gray-600 hover:text-[#0b9c09]"
-                }`}
-                onClick={() => handleTabClick(link.href)}
-              >
-                <Icon icon={link.icon} width="25" height="25" />
-                <span className="text-xs">{link.label}</span>
-                {link.href === "/cart" && cartCount > 0 && (
-                  <span className="absolute top-1 right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
-            ))}
+            .map((link) => {
+              const isActive = pathname === link.href || (link.href === "/" && pathname === "/");
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative flex flex-col items-center justify-center text-sm transition-colors duration-200 px-2 py-1 min-w-[60px] ${
+                    isActive
+                      ? "text-[#0b9c09]"
+                      : "text-gray-600"
+                  }`}
+                  onClick={() => handleTabClick(link.href)}
+                >
+                  <div className={`relative ${isActive ? "bg-green-50 rounded-lg p-1.5" : ""}`}>
+                    <Icon icon={link.icon} width="24" height="24" />
+                    {link.href === "/cart" && cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+                        {cartCount}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`text-xs mt-1 ${isActive ? "font-medium" : ""}`}>{link.label}</span>
+                </Link>
+              );
+            })}
         </div>
       </div>
 

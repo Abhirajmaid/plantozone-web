@@ -1,42 +1,35 @@
 "use client";
 import { Section } from "../../layout/Section";
+import { Container } from "../../layout/Container";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "../../ui/breadcrumb";
+import Link from "next/link";
 
-const PageBanner = () => {
+const PageBanner = ({ title = "Plants", showBreadcrumb = true }) => {
   return (
-    <Section>
-      <div className="relative min-h-[200px] sm:min-h-[300px] md:h-96 mt-[80px] overflow-hidden flex items-center justify-center">
-        {/* Vibrant Moving Gradient Background */}
-        <div className="absolute inset-0 animate-gradient-move bg-gradient-to-r from-[#16a34a] via-[#a3e635] via-40% to-[#0ea5e9] bg-[length:300%_300%] blur-[1.5px]"></div>
-        {/* Optional Overlay */}
-        <div className="absolute inset-0 bg-black/10 md:bg-black/20"></div>
-        {/* Centered Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full w-full">
-          <h1 className="text-white text-3xl md:text-5xl font-bold drop-shadow-lg text-center">
-            Welcome to Plantozone
-          </h1>
-          <p className="mt-3 text-white/90 text-lg md:text-2xl font-medium drop-shadow text-center max-w-2xl">
-            Your trusted partner for green living, healthy plants, and a happier
-            home.
-          </p>
-        </div>
+    <div className="pt-[88px]">
+      <div 
+        className="relative py-20 md:py-24 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/breadcrumbbg.png')" }}
+      >
+        <div className="absolute inset-0 bg-white/70"></div>
+        <Container>
+          <div className="relative z-10 flex flex-col items-center text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+              {title}
+            </h1>
+            {showBreadcrumb && (
+              <div className="flex items-center gap-2 text-gray-600">
+                <Link href="/" className="hover:text-green-600 transition-colors">
+                  Home
+                </Link>
+                <span>/</span>
+                <span className="text-gray-800 font-medium">{title}</span>
+              </div>
+            )}
+          </div>
+        </Container>
       </div>
-      <style jsx global>{`
-        @keyframes gradient-move {
-          0% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
-          }
-        }
-        .animate-gradient-move {
-          animation: gradient-move 8s ease-in-out infinite;
-        }
-      `}</style>
-    </Section>
+    </div>
   );
 };
 

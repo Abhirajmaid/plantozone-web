@@ -1,43 +1,76 @@
 import Link from "next/link";
-import { Leaf } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
+import Navbar from "@/src/components/layout/Navbar";
+import Footer from "@/src/components/layout/Footer";
 
-export default function Custom404() {
+export default function NotFound() {
   return (
-    <div className="min-h-screen bg-green-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8 text-center">
-        <div className="space-y-4">
-          <Leaf className="mx-auto h-12 w-full text-green-500" />
-          <h1 className="text-6xl font-bold text-gray-900">
-            404 - Page Not Found
-          </h1>
-          <p className="text-base text-gray-600">
-            Oops! It looks like this page has gone dormant. Let's get you back
-            to greener pastures.
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50 flex items-center justify-center px-4 py-20">
+        <div className="max-w-2xl w-full text-center">
+          {/* 404 Number - Clean and Modern */}
+          <div className="mb-12">
+            <h1 
+              className="text-[120px] sm:text-[140px] md:text-[160px] lg:text-[180px] font-black leading-none text-gray-900 select-none"
+              style={{
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                letterSpacing: '-0.05em',
+                textShadow: '0px 2px 4px rgba(0,0,0,0.1)'
+              }}
+            >
+              404
+            </h1>
+          </div>
+
+          {/* Heading */}
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+            Oops! Page not Found
+          </h2>
+
+          {/* Description */}
+          <p className="text-lg sm:text-xl text-gray-600 mb-12 max-w-xl mx-auto leading-relaxed">
+            The page you are looking for cannot be found. Take a break before trying again
           </p>
-        </div>
-        <div className="space-y-4">
-          <p className="text-sm text-gray-500">Here are some helpful links:</p>
-          <div className="space-y-2">
-            <Button asChild className="w-full">
-              <Link href="/">Return to Home</Link>
-            </Button>
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/shop">Browse Our Plants</Link>
-            </Button>
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/care-guides">Plant Care Guides</Link>
-            </Button>
+
+          {/* Call to Action Button */}
+          <div className="mb-16">
+            <Link href="/">
+              <Button 
+                className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold text-lg px-8 py-4 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+                size="lg"
+              >
+                Go To Home Page
+              </Button>
+            </Link>
+          </div>
+
+          {/* Additional helpful links */}
+          <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
+            <Link 
+              href="/shop" 
+              className="hover:text-gray-900 transition-colors duration-300 font-medium"
+            >
+              Browse Shop
+            </Link>
+            <span className="text-gray-300">•</span>
+            <Link 
+              href="/contact-us" 
+              className="hover:text-gray-900 transition-colors duration-300 font-medium"
+            >
+              Contact Us
+            </Link>
+            <span className="text-gray-300">•</span>
+            <Link 
+              href="/faq" 
+              className="hover:text-gray-900 transition-colors duration-300 font-medium"
+            >
+              FAQ
+            </Link>
           </div>
         </div>
-        <p className="text-xs text-gray-400">
-          If you believe this is a mistake, please{" "}
-          <Link href="/contact" className="text-green-600 hover:underline">
-            contact our support team
-          </Link>
-          .
-        </p>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }

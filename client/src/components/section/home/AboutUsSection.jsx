@@ -5,76 +5,88 @@ import { SectionTitle } from "../..";
 
 const about = {
   image: "/images/plantozone.png",
-  heading: "About Plantozone",
-  subheading: "Greenery for Every Space",
+  heading: "About Us",
+  subheading: "Bringing Nature Closer to Your Doorstep",
   description:
-    "At Plantozone, we are passionate about making green living easy and accessible. With lot of products and 20+ categories, we help you find the perfect plant for every space. Our mission is to inspire a greener lifestyle, simplify plant care, and deliver happiness to your doorstep in 50+ cities.",
-  signature: "Prabhas Rao Balla",
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+  signature: "Jenny Alexander",
   stats: [
-    { label: "Categories", value: "10+" },
-    { label: "Products", value: "Variety" },
-    { label: "Happy Customers", value: "99%" },
-    { label: "Cities Served", value: "50+" },
+    { label: "Categories", value: "20+" },
+    { label: "Products", value: "6000+" },
+    { label: "Satisfied Customer", value: "99%" },
   ],
 };
 
 const AboutUsSection = () => (
-  <Section className={"bg-lightGray"}>
+  <Section className="bg-gray-100">
     <Container>
-      <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16 py-12 md:py-20 w-full">
-        {/* Left: Image with badge and play button */}
-        <div className="relative flex-shrink-0 flex items-center justify-center w-full md:w-[50%]">
-          <div className="relative bg-white rounded-3xl shadow-xl border border-lightGreen/20 p-0 flex flex-col items-center">
-            <div className="rounded-3xl overflow-hidden w-full h-[320px] md:w-full md:h-[560px] shadow-lg border-2 border-lightGreen">
+      <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-16 py-16 lg:py-20">
+        {/* Left: Image with play button and decorative elements */}
+        <div className="relative flex-shrink-0 w-full lg:w-1/2 flex justify-center">
+          <div className="relative">
+            {/* Main circular image */}
+            <div className="w-80 h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden shadow-2xl border-4 border-white relative">
               <Image
                 src={about.image}
                 alt="About Us"
-                width={1280}
-                height={1360}
+                width={400}
+                height={400}
                 className="object-cover w-full h-full"
               />
+              
+              {/* Play button overlay */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 cursor-pointer">
+                  <svg className="w-6 h-6 text-gray-700 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
-            {/* Decorative badge */}
-            <span className="absolute top-4 left-4 bg-lightGreen text-white text-xs font-semibold px-4 py-1 rounded-full shadow">
-              Since 2018
-            </span>
+            {/* Sparkle decorative elements */}
+            <div className="absolute -bottom-4 -left-4 w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
+            <div className="absolute -top-4 -right-4 w-2 h-2 bg-yellow-300 rounded-full animate-pulse"></div>
           </div>
         </div>
+
         {/* Right: Content */}
-        <div className="flex-1 flex flex-col items-center md:items-start">
-          <span className="text-lg md:text-lg mb-1 font-medium">
-            {about.heading}
-          </span>
-          <SectionTitle
-            title={<span>{about.subheading}</span>}
-            className="mb-2"
-          />
-          <p className="text-gray-600 text-center md:text-left max-w-xl mb-8 md:text-base text-sm font-normal">
-            {about.description}
-          </p>
-          <div className="grid grid-cols-2 gap-4 md:gap-6 mb-8 w-full max-w-xs">
-            {about.stats.map((stat, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col items-center justify-center bg-lightGreen/10 rounded-xl px-6 py-5 shadow"
-              >
-                <span className="text-xl md:text-2xl font-bold text-lightGreen">
-                  {stat.value}
-                </span>
-                <span className="text-xs md:text-sm mt-1 text-gray-700 font-medium text-center">
-                  {stat.label}
-                </span>
+        <div className="flex-1 w-full lg:w-1/2">
+          <div className="text-center lg:text-left">
+            <span className="text-sm md:text-base text-gray-500 mb-2 font-medium">
+              {about.heading}
+            </span>
+            <SectionTitle
+              title={
+                <>
+                  <span className="text-gray-900">{about.subheading.split(' ').slice(0, 2).join(' ')}</span>{' '}
+                  <span className="text-primary">{about.subheading.split(' ').slice(2).join(' ')}</span>
+                </>
+              }
+              className="mb-6"
+            />
+            <p className="text-gray-600 text-base leading-relaxed mb-8 max-w-2xl mx-auto lg:mx-0">
+              {about.description}
+            </p>
+
+            {/* Statistics - unified green pill */}
+            <div className="mb-8 max-w-xl mx-auto lg:mx-0">
+              <div className="bg-primary text-white rounded-xl px-6 md:px-8 py-6 shadow-lg grid grid-cols-3 gap-4 items-center">
+                {about.stats.map((stat, idx) => (
+                  <div key={idx} className="text-center">
+                    <div className="text-xl md:text-3xl font-bold text-secondary mb-1">{stat.value}</div>
+                    <div className="text-xs md:text-sm font-medium opacity-95">{stat.label}</div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div className="mt-2 flex flex-col items-center md:items-start">
-            <span className="font-signature text-base md:text-lg text-gray-700 font-semibold">
-              {about.signature}
-            </span>
-            <span className="text-xs text-gray-400 mt-1">
-              Founder, Plantozone
-            </span>
+            </div>
+
+            {/* Signature */}
+            <div className="text-center lg:text-left">
+              <div className="text-lg font-semibold text-gray-800 mb-1">
+                {about.signature}
+              </div>
+            </div>
           </div>
         </div>
       </div>

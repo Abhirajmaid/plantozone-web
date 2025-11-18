@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Container } from "./Container";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Logo from "../common/Logo";
 
 const aboutLinks = [
   { label: "Our Story", href: "/about" },
@@ -38,134 +39,100 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white py-10">
+    <footer className="bg-primary text-white mx-6 mb-6 rounded-3xl shadow-2xl">
       <Container>
-        <hr className="bg-black w-[80%] mx-auto h-[2px] mb-[50px]" />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 px-4 sm:px-0 text-center md:text-left">
-          {/* About Us */}
-          <div>
-            <h2 className="text-[16px] font-semibold text-gray-800">
-              About Us
-            </h2>
-            <ul className="mt-4 text-[14px] space-y-3 text-gray-600">
-              {aboutLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    onClick={(e) => handleLinkClick(e, link.href)}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Customer Care */}
-          <div>
-            <h2 className="text-[16px] font-semibold text-gray-800">
-              Customer Care
-            </h2>
-            <ul className="mt-4 text-[14px] space-y-3 text-gray-600">
-              {customerCareLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    onClick={(e) => handleLinkClick(e, link.href)}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Nav Links */}
-          <div>
-            <h2 className="text-[16px] font-semibold text-gray-800">
-              Navigation
-            </h2>
-            <ul className="mt-4 text-[14px] space-y-3 text-gray-600">
-              {navLinks.map((link) => (
-                <li key={link.label}>
-                  <Link href={link.href}>{link.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Get in Touch */}
-          <div>
-            <h2 className="text-[16px] font-semibold text-gray-800">
-              Get In Touch
-            </h2>
-            <p className="mt-4 text-[14px] text-gray-600">
-              Call : +91 89994 92523
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 py-8">
+          {/* Brand Info */}
+                 <div className="lg:col-span-1">
+                   <div className="flex items-center mb-4">
+                     <div className="w-8 h-8 mr-3 bg-white rounded-lg p-1">
+                       <Logo />
+                     </div>
+                     <span className="text-xl font-bold text-white">Plantozone</span>
+                   </div>
+            <p className="text-gray-300 text-sm leading-relaxed mb-6">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
-            <p className="text-gray-600">Email : info@plantozone.com</p>
-            <div className="mt-4 flex justify-center md:justify-start space-x-4 text-gray-600">
-              <a
-                href="https://www.facebook.com/plantozone"
-                aria-label="Facebook"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Icon icon="uiw:facebook" width="28" height="28" />
+            <div className="flex space-x-4">
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Icon icon="uiw:facebook" width="20" height="20" />
               </a>
-              <a
-                href="https://www.instagram.com/plantozone"
-                aria-label="Instagram"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Icon
-                  icon="streamline:instagram-solid"
-                  width="28"
-                  height="28"
-                />
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Icon icon="uiw:twitter" width="20" height="20" />
               </a>
-              <a
-                href="https://www.linkedin.com/company/plantozone"
-                aria-label="LinkedIn"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Icon icon="bi:linkedin" width="28" height="28" />
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Icon icon="uiw:pinterest" width="20" height="20" />
+              </a>
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Icon icon="streamline:instagram-solid" width="20" height="20" />
+              </a>
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Icon icon="uiw:youtube" width="20" height="20" />
               </a>
             </div>
           </div>
 
-          {/* Newsletter Signup */}
-          <div className="lg:col-span-2 flex flex-col items-center lg:flex-row lg:items-start gap-6">
-            <Image
-              width={300}
-              height={400}
-              className="w-auto h-[250px] sm:h-[300px] object-cover"
-              alt="plantozone"
-              src="/images/footer.png"
-            />
-            <div className="w-full max-w-sm">
-              <h2 className="text-[18px] tracking-widest font-semibold text-gray-800">
-                Sign up for our newsletter
-              </h2>
-              <p className="mt-4 text-[16px] text-gray-600">
-                For plant care tips, our featured plant of the week, exclusive
-                offers, and discounts.
-              </p>
-              <form className="mt-4 flex">
-                <input
-                  type="email"
-                  placeholder="Enter email address"
-                  className="p-2 border border-gray-300 rounded-l-md w-full focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  className="bg-[#0b9c09] text-white px-4 py-2 rounded-r-md"
-                >
-                  <Icon icon="ep:right" width={20} />
-                </button>
-              </form>
+          {/* Company Links */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-4">Company</h3>
+            <ul className="space-y-3 text-sm">
+              <li><Link href="/about-us" className="text-gray-300 hover:text-white transition-colors">About Us</Link></li>
+              <li><Link href="/blog" className="text-gray-300 hover:text-white transition-colors">Blog</Link></li>
+              <li><Link href="/contact-us" className="text-gray-300 hover:text-white transition-colors">Contact Us</Link></li>
+              <li><Link href="/career" className="text-gray-300 hover:text-white transition-colors">Career</Link></li>
+            </ul>
+          </div>
+
+          {/* Customer Services */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-4">Customer Services</h3>
+            <ul className="space-y-3 text-sm">
+              <li><Link href="/account" className="text-gray-300 hover:text-white transition-colors">My Account</Link></li>
+              <li><Link href="/track-order" className="text-gray-300 hover:text-white transition-colors">Track Your Order</Link></li>
+              <li><Link href="/return" className="text-gray-300 hover:text-white transition-colors">Return</Link></li>
+              <li><Link href="/faq" className="text-gray-300 hover:text-white transition-colors">FAQ</Link></li>
+            </ul>
+          </div>
+
+          {/* Our Information */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-4">Our Information</h3>
+            <ul className="space-y-3 text-sm">
+              <li><Link href="/privacy-policy" className="text-gray-300 hover:text-white transition-colors">Privacy</Link></li>
+              <li><Link href="/terms" className="text-gray-300 hover:text-white transition-colors">User Terms & Condition</Link></li>
+              <li><Link href="/cancellation-and-refund" className="text-gray-300 hover:text-white transition-colors">Return Policy</Link></li>
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-4">Contact Info</h3>
+            <div className="space-y-3 text-sm text-gray-300">
+              <p>Phone: +91 89994 92523</p>
+              <p>Email: info@plantozone.com</p>
+              <p>Address: 8502 Preston Rd. Inglewood, Maine 98380</p>
+            </div>
+          </div>
+        </div>
+        {/* Bottom Bar */}
+        <div className="border-t border-green-500 py-6 rounded-b-3xl">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p className="text-sm text-gray-300 mb-4 md:mb-0">
+              Copyright © 2024 Plantozone. All Rights Reserved.
+            </p>
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-300">Language:</span>
+                <select className="bg-transparent text-white text-sm border-none focus:outline-none">
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-300">Currency:</span>
+                <select className="bg-transparent text-white text-sm border-none focus:outline-none">
+                  <option value="inr">INR</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>

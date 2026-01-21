@@ -123,11 +123,11 @@ const CategorySec = () => {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8 lg:gap-12 justify-items-center">
+            <div className="flex flex-wrap justify-center gap-8 md:gap-12">
               {categories.map((item, idx) => (
                 <Link href={`/shop/${item.slug}`} key={item.id} className="group">
                   <div className="flex flex-col items-center">
-                    <div className={`w-[140px] h-[140px] sm:w-[160px] sm:h-[160px] md:w-[200px] md:h-[200px] rounded-full overflow-hidden shadow-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3 md:mb-4 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl relative`}>
+                    <div className={`w-[180px] h-[180px] md:w-[200px] md:h-[200px] rounded-full overflow-hidden shadow-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl relative`}>
                       {/* Image Display */}
                       <Image
                         src={item.image}
@@ -140,7 +140,7 @@ const CategorySec = () => {
                       {/* Overlay for better text visibility */}
                       <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors duration-300"></div>
                     </div>
-                    <span className="text-xs sm:text-sm md:text-base font-semibold text-gray-800 text-center group-hover:text-primary transition-colors duration-300 max-w-[140px] sm:max-w-[160px] md:max-w-[200px]">
+                    <span className="text-sm md:text-base font-semibold text-gray-800 text-center group-hover:text-primary transition-colors duration-300 max-w-[180px] md:max-w-[200px]">
                       {item.name}
                     </span>
                   </div>

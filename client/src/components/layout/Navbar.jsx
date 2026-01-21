@@ -193,9 +193,9 @@ export default function CustomNavbar() {
       </div>
 
       {/* Main Navigation Bar */}
-      <header className="fixed w-full bg-white z-[99] border-b md:top-10 top-0 overflow-x-hidden max-w-full">
+      <header className="fixed w-full bg-white z-[99] border-b md:top-10 top-0">
         <Container>
-          <div className="flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 py-4 w-full max-w-full">
+          <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
             {/* Left: Logo and Brand */}
             <div className="flex items-center space-x-3">
               <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-lg p-1 flex items-center justify-center">

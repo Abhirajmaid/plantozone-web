@@ -39,13 +39,13 @@ export const mobileTabs = [
     icon: "lucide:shopping-bag"
   },
   {
+    label: "About Us",
+    href: "/about-us",
+    icon: "mdi:information-outline"
+  },
+  {
     label: "Contact",
     href: "/contact-us",
     icon: "mi:call"
-  },
-  {
-    label: "Cart",
-    href: "/cart",
-    icon: "lucide:shopping-cart"
   }
 ]

@@ -125,7 +125,7 @@ export default function WishlistPage() {
 
                 {/* Wishlist Items */}
                 {wishlistItems.map((item, index) => {
-                  const displayPrice = item.price || (item.size === "8 Inch" ? 850 : 650);
+                  const displayPrice = item.price || (item.size === "Medium" ? 850 : 650);
                   const dateAdded = item.dateAdded || new Date().toISOString();
                   
                   return (
@@ -174,13 +174,13 @@ export default function WishlistPage() {
 
                       {/* Add to Cart Button */}
                       <div className="col-span-1">
-                        <SecondaryButton
+                        <button
                           onClick={() => handleAddToCart(item)}
-                          withArrow={false}
-                          className="px-4 py-2 text-xs"
+                          className="w-12 h-12 bg-primary hover:bg-primary/90 text-white rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg"
+                          title="Add to Cart"
                         >
-                          Add to Cart
-                        </SecondaryButton>
+                          <Icon icon="mdi:cart-plus" className="w-5 h-5" />
+                        </button>
                       </div>
                     </div>
                   );

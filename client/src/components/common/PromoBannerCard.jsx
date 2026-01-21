@@ -37,7 +37,7 @@ const PromoBannerCard = ({
             <span className="block">{titleSecondary}</span>
           </h3>
 
-          <p className="text-sm md:text-lg text-gray-600 mb-6 w-[60%]">
+          <p className="text-xs md:text-sm text-gray-600 mb-6 w-[60%]">
             {description}
           </p>
 

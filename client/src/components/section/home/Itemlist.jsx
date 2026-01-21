@@ -7,16 +7,48 @@ import {
   addToCart as addToCartUtil,
   getCartItems,
 } from "@/src/lib/utils/cartUtils";
+import categoriesAction from "@/src/lib/action/categories.action";
 
 const NO_PREVIEW_IMG = "/no-preview.png"; // Place this image in your public folder
 
-const ItemList = ({ data }) => {
+// Helper function to normalize category names for comparison
+const normalizeCategory = (category) => {
+  return category.toLowerCase().trim().replace(/\s+/g, ' ').replace(/[&]/g, 'and');
+};
+
+// Helper function to check if categories match (flexible matching)
+const categoriesMatch = (filterCategory, plantCategory) => {
+  const normalizedFilter = normalizeCategory(filterCategory);
+  const normalizedPlant = normalizeCategory(plantCategory);
+  
+  // Exact match
+  if (normalizedFilter === normalizedPlant) return true;
+  
+  // Check if one contains the other (handles singular/plural variations)
+  if (normalizedFilter.includes(normalizedPlant) || normalizedPlant.includes(normalizedFilter)) {
+    return true;
+  }
+  
+  // Check for common variations (singular/plural, with/without spaces, etc.)
+  // Remove common suffixes for flexible matching
+  const filterBase = normalizedFilter.replace(/s$/, '').replace(/plant$/, '').trim();
+  const plantBase = normalizedPlant.replace(/s$/, '').replace(/plant$/, '').trim();
+  
+  if (filterBase && plantBase && (filterBase === plantBase || filterBase.includes(plantBase) || plantBase.includes(filterBase))) {
+    return true;
+  }
+  
+  return false;
+};
+
+const ItemList = ({ data, initialCategory = null }) => {
   const pageSize = 12;
   const [page, setPage] = useState(1);
   const [cartItems, setCartItems] = useState([]);
   const [sortBy, setSortBy] = useState("default");
+  const [availableCategories, setAvailableCategories] = useState([]);
   const [filters, setFilters] = useState({
-    categories: [],
+    categories: initialCategory ? [initialCategory] : [],
     priceRange: [0, 1000],
     ratings: [],
     lightRequirements: [],
@@ -25,6 +57,34 @@ const ItemList = ({ data }) => {
     availability: []
   });
   const [filteredData, setFilteredData] = useState([]);
+
+  // Sync initialCategory with filters
+  useEffect(() => {
+    if (initialCategory) {
+      // Check if we need to add it to filters
+      if (!filters.categories.includes(initialCategory)) {
+        setFilters(prev => ({
+          ...prev,
+          categories: [initialCategory]
+        }));
+      }
+    }
+  }, [initialCategory]);
+
+  // Fetch categories from backend
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const resp = await categoriesAction.getCategories();
+        const categories = resp.data.data || [];
+        const categoryTitles = categories.map(cat => cat.attributes?.title || '').filter(Boolean);
+        setAvailableCategories(categoryTitles);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Initialize filtered data when data changes
   useEffect(() => {
@@ -42,10 +102,36 @@ const ItemList = ({ data }) => {
 
     // Apply category filters
     if (filters.categories.length > 0) {
-      filtered = filtered.filter(item => 
-        filters.categories.includes(item.attributes?.category || 'Indoor Plant')
-      );
-      console.log('After category filter:', filtered.length, 'items');
+      const beforeFilter = filtered.length;
+      filtered = filtered.filter(item => {
+        // Get plant categories from relation
+        const plantCategories = item.attributes?.categories?.data || [];
+        const plantCategoryTitles = plantCategories.map(cat => cat.attributes?.title || '').filter(Boolean);
+        
+        // If plant has no categories, skip it
+        if (plantCategoryTitles.length === 0) {
+          return false;
+        }
+        
+        // Check if any selected filter category matches any plant category
+        const matches = filters.categories.some(filterCategory => {
+          // First try exact match
+          if (plantCategoryTitles.includes(filterCategory)) {
+            return true;
+          }
+          // Then try flexible matching
+          return plantCategoryTitles.some(plantCat => 
+            categoriesMatch(filterCategory, plantCat)
+          );
+        });
+        
+        if (!matches) {
+          console.log(`Item "${item.attributes?.title}" filtered out. Plant categories:`, plantCategoryTitles, 'Filter categories:', filters.categories);
+        }
+        
+        return matches;
+      });
+      console.log(`After category filter: ${beforeFilter} -> ${filtered.length} items`);
     }
 
     // Apply price filter
@@ -232,19 +318,36 @@ const ItemList = ({ data }) => {
         {/* Category Filter */}
         <div className="mb-6">
           <h4 className="text-lg font-medium text-gray-700 mb-3">Category</h4>
-          <div className="space-y-2">
-            {['Indoor Plants', 'Outdoor Plants', 'Flowering Plants', 'Pet-friendly Plants', 'Air-purifying Plants', 'Herbs & Edibles'].map((category) => (
-              <label key={category} className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={filters.categories.includes(category)}
-                  onChange={() => handleCategoryChange(category)}
-                  className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                />
-                <span className="text-[16px] text-gray-600">{category}</span>
-              </label>
-            ))}
-          </div>
+          {availableCategories.length > 0 ? (
+            <div className="space-y-2">
+              {availableCategories.map((category) => (
+                <label key={category} className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={filters.categories.includes(category)}
+                    onChange={() => handleCategoryChange(category)}
+                    className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span className="text-[16px] text-gray-600">{category}</span>
+                </label>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {/* Fallback to default categories while loading */}
+              {['Indoor Plants', 'Outdoor Plants', 'Flowering Plants', 'Pet-friendly Plants', 'Air-purifying Plants', 'Herbs & Edibles'].map((category) => (
+                <label key={category} className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={filters.categories.includes(category)}
+                    onChange={() => handleCategoryChange(category)}
+                    className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span className="text-[16px] text-gray-600">{category}</span>
+                </label>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Price Filter */}
@@ -346,7 +449,7 @@ const ItemList = ({ data }) => {
         <div className="mb-6">
           <h4 className="text-base font-medium text-gray-700 mb-3">Pot Size</h4>
           <div className="space-y-2">
-            {['6 inch', '8 inch'].map((size) => (
+            {['Small', 'Medium'].map((size) => (
               <label key={size} className="flex items-center space-x-2 cursor-pointer">
                 <input
                   type="checkbox"

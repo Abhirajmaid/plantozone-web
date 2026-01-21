@@ -11,8 +11,7 @@ export default function CancellationRefundPage() {
         <h2 className="text-xl font-semibold mt-6">Order Cancellation</h2>
         <p>
           Orders can be cancelled before they are dispatched. To cancel your
-          order, please contact us at info@plantozone.com or call +91 89994
-          92523 as soon as possible.
+          order, please contact us at info@plantozone.com or call +91 90591 52555, +91 89994 92523 as soon as possible.
         </p>
         <h2 className="text-xl font-semibold mt-6">Refund Policy</h2>
         <p>

@@ -856,7 +856,13 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    title: Attribute.String;
+    title: Attribute.String & Attribute.Required;
+    slug: Attribute.UID<'api::category.category', 'title'>;
+    icon: Attribute.String & Attribute.DefaultTo<'mdi:leaf'>;
+    gradient: Attribute.String &
+      Attribute.DefaultTo<'from-green-400 to-emerald-600'>;
+    description: Attribute.Text;
+    image: Attribute.Media<'images'>;
     plants: Attribute.Relation<
       'api::category.category',
       'manyToMany',

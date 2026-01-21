@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Star, Heart, Share2, Plus, Minus } from "lucide-react";
 import { Icon } from "@iconify/react";
@@ -14,15 +14,22 @@ import {
 } from "@/src/components/ui/breadcrumb";
 import { Section } from "@/src/components/layout/Section";
 import { Container } from "@/src/components/layout/Container";
-import { Diver, NewArrivals, TestimonialSwiper, ShopServiceSection } from "@/src/components";
+import { Diver, TestimonialSwiper, ShopServiceSection, SectionTitle, ProductCard, NewsletterSection } from "@/src/components";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 import plantsAction from "@/src/lib/action/plants.action";
-import { addToCart as addToCartUtil } from "@/src/lib/utils/cartUtils";
+import { addToCart as addToCartUtil, getCartItems } from "@/src/lib/utils/cartUtils";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const OFFER_PLANT_IDS = [64, 47]; // Bonsai plants with 30% off offer
+const OFFER_DISCOUNT = 30;
+
 export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState("6 Inch");
+  const [selectedSize, setSelectedSize] = useState("Small");
   const [selectedShape, setSelectedShape] = useState("Hexagonal");
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewForm, setReviewForm] = useState({
@@ -36,6 +43,11 @@ export default function ProductPage() {
   const [product, setProduct] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState("additional-info");
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loadingRelated, setLoadingRelated] = useState(false);
+  const [relatedSwiper, setRelatedSwiper] = useState(null);
+  const relatedPrevRef = useRef(null);
+  const relatedNextRef = useRef(null);
 
   const params = useParams();
   const router = useRouter();
@@ -52,7 +64,96 @@ export default function ProductPage() {
     };
 
     fetchData();
-  }, []);
+  }, [productId]);
+
+  // Fetch related products when product is loaded
+  useEffect(() => {
+    if (product?.id) {
+      fetchRelatedProducts();
+    }
+  }, [product?.id]);
+
+  // Setup swiper navigation
+  useEffect(() => {
+    if (relatedSwiper && relatedSwiper.params) {
+      relatedSwiper.params.navigation.prevEl = relatedPrevRef.current;
+      relatedSwiper.params.navigation.nextEl = relatedNextRef.current;
+      relatedSwiper.navigation.init();
+      relatedSwiper.navigation.update();
+    }
+  }, [relatedSwiper]);
+
+  const fetchRelatedProducts = async () => {
+    try {
+      setLoadingRelated(true);
+      const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+      const NO_PREVIEW_IMG = "/images/plant.png";
+      
+      const resp = await plantsAction.getPlants();
+      const plants = resp.data.data || [];
+      
+      // Filter out current product and get related products (same category or random)
+      const filtered = plants.filter((plant) => plant.id !== product.id);
+      
+      // Process and map plants data
+      const processedPlants = filtered.slice(0, 12).map((plant) => {
+        const attrs = plant.attributes || {};
+        
+        // Handle image URL - prepend Strapi base URL if relative
+        let imageUrl = NO_PREVIEW_IMG;
+        const strapiImageUrl = attrs?.images?.data?.[0]?.attributes?.url;
+        if (strapiImageUrl) {
+          imageUrl = strapiImageUrl.startsWith('http') 
+            ? strapiImageUrl 
+            : `${STRAPI_BASE_URL}${strapiImageUrl}`;
+        }
+        
+        // Return plant data in expected format
+        return {
+          id: plant.id,
+          attributes: {
+            ...attrs,
+            images: {
+              data: [{
+                attributes: {
+                  url: imageUrl
+                }
+              }]
+            }
+          }
+        };
+      });
+      
+      setRelatedProducts(processedPlants);
+      setLoadingRelated(false);
+    } catch (error) {
+      console.error("Error fetching related products:", error);
+      setLoadingRelated(false);
+    }
+  };
+
+  // Handler for adding to cart from related products
+  const handleRelatedAddToCart = (item, { size, shape, price }) => {
+    const attrs = item.attributes;
+    const NO_PREVIEW_IMG = "/images/plant.png";
+    const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    const strapiImageUrl = attrs?.images?.data?.[0]?.attributes?.url;
+    let imageUrl = NO_PREVIEW_IMG;
+    if (strapiImageUrl) {
+      imageUrl = strapiImageUrl.startsWith('http') 
+        ? strapiImageUrl 
+        : `${STRAPI_BASE_URL}${strapiImageUrl}`;
+    }
+    addToCartUtil({
+      product: item.id,
+      title: attrs.title,
+      price: price,
+      size: size,
+      shape: shape,
+      quantity: 1,
+      image: imageUrl,
+    });
+  };
 
   const addToCart = () => {
     if (!selectedSize) {
@@ -64,7 +165,7 @@ export default function ProductPage() {
       return;
     }
 
-    const price = selectedSize === "8 Inch" ? 850 : 650;
+    const price = selectedSize === "Medium" ? 850 : 650;
     const newItem = {
       product: product.id,
       title: product?.attributes?.title,
@@ -174,7 +275,7 @@ export default function ProductPage() {
       return;
     }
 
-    const price = selectedSize === "8 Inch" ? 850 : 650;
+    const price = selectedSize === "Medium" ? 850 : 650;
     const newItem = {
       product: product.id,
       title: product?.attributes?.title,
@@ -225,6 +326,9 @@ export default function ProductPage() {
     );
   }
 
+  // Check if current product has offer
+  const hasOffer = OFFER_PLANT_IDS.includes(product.id);
+
   return (
     <Section className="min-h-screen relative">
       {showSuccess && (
@@ -266,9 +370,18 @@ export default function ProductPage() {
         {/* Product Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
           {/* Product Image Gallery */}
-          <div className="w-full">
+          <div className="w-full relative">
+            {/* Offer Badge on Image */}
+            {hasOffer && (
+              <div className="absolute top-4 left-4 z-20">
+                <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg shadow-2xl transform rotate-[-5deg]">
+                  <div className="text-2xl font-bold">{OFFER_DISCOUNT}% OFF</div>
+                  <div className="text-xs font-medium">Limited Time</div>
+                </div>
+              </div>
+            )}
             {/* Main Product Image */}
-            <div className="aspect-square w-full bg-white rounded-xl shadow-lg mb-4 overflow-hidden">
+            <div className="aspect-square w-full bg-white rounded-xl shadow-lg mb-4 overflow-hidden relative">
               <img
                 src={product.attributes.images.data[selectedImageIndex]?.attributes.url || product.attributes.images.data[0]?.attributes.url}
                 alt={product.attributes.title}
@@ -302,9 +415,18 @@ export default function ProductPage() {
             <p className="text-sm text-gray-500 uppercase tracking-wide">Indoor Plant</p>
             
             {/* Product Name */}
-            <h1 className="text-3xl lg:text-4xl font-bold text-gray-800">
-              {product.attributes.title}
-            </h1>
+            <div className="flex items-start justify-between gap-4">
+              <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 flex-1">
+                {product.attributes.title}
+              </h1>
+              {/* Offer Badge next to title */}
+              {hasOffer && (
+                <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg shadow-lg">
+                  <div className="text-lg font-bold">{OFFER_DISCOUNT}% OFF</div>
+                  <div className="text-xs font-medium">Special Offer</div>
+                </div>
+              )}
+            </div>
 
             {/* Dynamic Stock Status Badge */}
             {/* Logic: Show "In Stock" if >10 items, show exact count if 1-10 items, show "Out of Stock" if 0 */}
@@ -348,8 +470,25 @@ export default function ProductPage() {
 
             {/* Price */}
             <div className="flex items-center gap-4">
-              <span className="text-3xl font-bold text-gray-800">₹{selectedSize === "8 Inch" ? "850" : "650"}</span>
-              <span className="text-xl text-gray-400 line-through">₹{selectedSize === "8 Inch" ? "1,499" : "1,099"}</span>
+              {hasOffer ? (
+                <>
+                  <div className="flex flex-col">
+                    <span className="text-3xl font-bold text-green-600">
+                      ₹{Math.round((selectedSize === "Medium" ? 850 : 650) * (1 - OFFER_DISCOUNT / 100))}
+                    </span>
+                    <span className="text-sm text-gray-500">After {OFFER_DISCOUNT}% discount</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xl text-gray-400 line-through">₹{selectedSize === "Medium" ? "850" : "650"}</span>
+                    <span className="text-sm text-green-600 font-semibold">Save ₹{Math.round((selectedSize === "Medium" ? 850 : 650) * (OFFER_DISCOUNT / 100))}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span className="text-3xl font-bold text-gray-800">₹{selectedSize === "Medium" ? "850" : "650"}</span>
+                  <span className="text-xl text-gray-400 line-through">₹{selectedSize === "Medium" ? "1,499" : "1,099"}</span>
+                </>
+              )}
             </div>
 
             {/* Description */}
@@ -361,7 +500,7 @@ export default function ProductPage() {
             <div>
               <label className="text-sm font-medium text-gray-700 mb-3 block">Plant Size</label>
               <div className="flex gap-2">
-                {["6 Inch", "8 Inch"].map((size) => (
+                {["Small", "Medium"].map((size) => (
                 <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
@@ -418,8 +557,8 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-4">
+            {/* Action Buttons - Hidden on mobile, shown on desktop */}
+            <div className="hidden md:flex gap-4">
               <SecondaryButton onClick={addToCart} withArrow={false} className="flex-1">
                 Add To Cart
               </SecondaryButton>
@@ -880,11 +1019,95 @@ export default function ProductPage() {
 
         {/* Related Products Section */}
         <div className="mb-16">
-          <div className="text-center mb-4">
-            <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">Related Products</p>
-            <h2 className="text-3xl font-bold text-gray-800">Explore Related Products</h2>
-          </div>
-        <NewArrivals />
+          <SectionTitle 
+            subtitle="Related Products"
+            title="Explore Related Products"
+            className="mb-8 md:mb-12"
+          />
+
+          {/* Loading State */}
+          {loadingRelated ? (
+            <div className="flex justify-center items-center py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+            </div>
+          ) : relatedProducts.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="text-gray-600">No related products available at the moment.</p>
+            </div>
+          ) : (
+            /* Swiper Carousel */
+            <div className="relative">
+              <Swiper
+                modules={[Navigation, Autoplay]}
+                onSwiper={setRelatedSwiper}
+                navigation={{
+                  prevEl: relatedPrevRef.current,
+                  nextEl: relatedNextRef.current,
+                }}
+                spaceBetween={20}
+                slidesPerView={1}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                  },
+                  768: {
+                    slidesPerView: 3,
+                    spaceBetween: 24,
+                  },
+                  1024: {
+                    slidesPerView: 4,
+                    spaceBetween: 24,
+                  },
+                  1280: {
+                    slidesPerView: 4,
+                    spaceBetween: 30,
+                  },
+                }}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                }}
+                loop={relatedProducts.length > 4}
+                className="related-products-swiper"
+              >
+                {relatedProducts.map((product) => (
+                  <SwiperSlide key={product.id}>
+                    <div className="px-1">
+                      <ProductCard
+                        data={product}
+                        onAddToCart={(opts) => handleRelatedAddToCart(product, opts)}
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              {/* Custom Navigation Buttons */}
+              {relatedProducts.length > 4 && (
+                <>
+                  <button 
+                    ref={relatedPrevRef}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+                    aria-label="Previous"
+                  >
+                    <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button 
+                    ref={relatedNextRef}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+                    aria-label="Next"
+                  >
+                    <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Services Section */}
@@ -895,84 +1118,52 @@ export default function ProductPage() {
       </Container>
 
       {/* Newsletter Section */}
-      <div className="bg-gray-100 py-16 rounded-2xl mx-6">
-        <div className="container mx-auto w-[90%] px-4">
-          <div className="text-center">
-            <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">
-              OUR NEWSLETTER
-            </p>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-              Subscribe to Our Newsletter to Get Updates on Our Latest Offers
-            </h2>
-            <p className="text-gray-600 mb-8">
-              Get 25% off on your first order just by subscribing to our newsletter
-            </p>
-            
-            <form className="max-w-md mx-auto">
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder="Enter Email Address"
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                />
-                <PrimaryButton type="submit" withArrow={false} className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-3 rounded-lg font-medium transition-colors">
-                  Subscribe
-                </PrimaryButton>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+      <NewsletterSection />
 
       {/* Mobile Bottom Bar - Only visible on mobile */}
-      <div className="sm:hidden fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-[110]">
-        <div className="flex items-center justify-between p-4 gap-3">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-[110]">
+        <div className="flex items-center justify-between p-3 gap-2">
           {/* Price Display */}
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-500">Price</span>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-green-600">
-                ₹{selectedSize === "8 Inch" ? "850" : "650"}
+          <div className="flex flex-col min-w-[80px]">
+            <span className="text-[10px] text-gray-500 uppercase">Price</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-base font-bold text-green-600">
+                ₹{selectedSize === "Medium" ? "850" : "650"}
               </span>
-              <span className="text-sm text-gray-400 line-through">
-                ₹{selectedSize === "8 Inch" ? "1,499" : "1,099"}
+              <span className="text-xs text-gray-400 line-through">
+                ₹{selectedSize === "Medium" ? "1,499" : "1,099"}
               </span>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 flex-1">
-            <SecondaryButton
+          <div className="flex gap-2 flex-1">
+            <button
               onClick={addToCart}
-              withArrow={false}
-              className="flex-1"
+              className="flex-1 bg-green-700 hover:bg-green-800 text-white font-semibold py-2.5 px-3 rounded-lg text-xs uppercase tracking-wide transition-colors shadow-md"
             >
-              ADD TO CART
-            </SecondaryButton>
-            <PrimaryButton
+              Add To Cart
+            </button>
+            <button
               onClick={buyNow}
-              withArrow={false}
-              className="flex-1"
+              className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2.5 px-3 rounded-lg text-xs uppercase tracking-wide transition-colors shadow-md"
             >
-              BUY NOW
-            </PrimaryButton>
+              Buy Now
+            </button>
           </div>
         </div>
 
         {/* Free Delivery Banner */}
         <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2">
-          <div className="flex items-center justify-center gap-2 text-sm">
+          <div className="flex items-center justify-center gap-2 text-xs font-medium">
             <span>🚚</span>
-            <span className="font-medium">
-              FREE Delivery on Orders Above ₹2000!
-            </span>
+            <span>FREE Delivery on Orders Above ₹2000!</span>
           </div>
         </div>
       </div>
 
       {/* Mobile Bottom Padding - To prevent content from being hidden behind the bottom bar */}
-      <div className="sm:hidden h-[200px]"></div>
+      <div className="md:hidden h-[120px]"></div>
     </Section>
   );
 }

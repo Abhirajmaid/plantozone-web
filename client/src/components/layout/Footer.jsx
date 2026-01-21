@@ -51,7 +51,7 @@ export default function Footer() {
                      <span className="text-xl font-bold text-white">Plantozone</span>
                    </div>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Your trusted destination for premium plants and gardening essentials. We bring nature closer to you with a wide selection of indoor plants, outdoor plants, and expert care guidance to help your green space thrive.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-300 hover:text-white transition-colors">
@@ -108,9 +108,9 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">Contact Info</h3>
             <div className="space-y-3 text-sm text-gray-300">
-              <p>Phone: +91 89994 92523</p>
+              <p>Phone: +91 90591 52555, +91 89994 92523</p>
               <p>Email: info@plantozone.com</p>
-              <p>Address: 8502 Preston Rd. Inglewood, Maine 98380</p>
+              <p>Address: 5th floor, yellareddy guda, Secunderabad, Hyderabad, Telangana - 500016</p>
             </div>
           </div>
         </div>

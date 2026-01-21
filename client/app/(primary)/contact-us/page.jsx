@@ -43,21 +43,21 @@ function ContactInfoCards() {
       iconColor: "text-yellow-400",
       bgColor: "bg-green-800",
       title: "Address",
-      description: "8502 Preston Rd. Inglewood, Maine 98380",
+      description: "5th floor, yellareddy guda, Secunderabad, Hyderabad, Telangana - 500016",
     },
     {
       icon: "mdi:phone",
       iconColor: "text-yellow-400",
       bgColor: "bg-green-800",
       title: "Phone",
-      description: "+0123-456-789",
+      description: "+91 90591 52555, +91 89994 92523",
     },
     {
       icon: "mdi:email",
       iconColor: "text-yellow-400",
       bgColor: "bg-green-800",
       title: "Email",
-      description: "example@gmail.com",
+      description: "info@plantozone.com",
     },
   ];
 
@@ -87,12 +87,14 @@ function ContactInfoCards() {
 
 // Map Section
 function MapSection() {
+  const address = "5th floor, yellareddy guda, Secunderabad, Hyderabad, Telangana 500016";
+  const encodedAddress = encodeURIComponent(address);
+  
   return (
     <div className="relative w-full h-[400px] md:h-[500px] bg-gray-200">
-      {/* Static Map Image - You can replace with actual map embed */}
       <div className="w-full h-full relative">
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.1422937950147!2d-73.98731968459391!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1234567890"
+          src={`https://www.google.com/maps?q=${encodedAddress}&output=embed`}
           width="100%"
           height="100%"
           style={{ border: 0 }}

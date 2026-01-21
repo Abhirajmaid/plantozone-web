@@ -96,7 +96,7 @@ const TestimonialSwiper = () => {
         </p>
       </div>
 
-      <div className="w-full max-w-6xl mx-auto py-12 md:mt-[50px] mt-[0]">
+      <div className="w-full max-w-7xl mx-auto py-12 md:mt-[50px] mt-[0]">
         <Swiper
           slidesPerView={1}
           spaceBetween={30}

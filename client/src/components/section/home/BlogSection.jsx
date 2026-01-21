@@ -1,6 +1,7 @@
 "use client";
 import { Container } from "../../layout/Container";
 import { Section } from "../../layout/Section";
+import { SectionTitle } from "@/src/components";
 import { useEffect, useState } from "react";
 import blogsAction from "@/src/lib/action/blogs.action";
 import Link from "next/link";
@@ -63,12 +64,12 @@ const BlogSection = () => {
     <Section className="bg-gray-50 py-16">
       <Container>
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">Related News & Blogs</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Latest Related News & Blogs
-            </h2>
-          </div>
+          <SectionTitle 
+            subtitle="Related News & Blogs"
+            title="Latest Related News & Blogs"
+            className="mb-12"
+            titleClassName="text-3xl md:text-4xl font-bold"
+          />
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {blogs.map((blog, idx) => {

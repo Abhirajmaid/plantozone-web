@@ -162,7 +162,7 @@ export default function CustomNavbar() {
           <div className="flex items-center justify-between text-sm">
             {/* Left: Call Us */}
             <div className="flex items-center">
-              <span>Call Us : +91 89994 92523</span>
+              <span>Call Us : +91 90591 52555, +91 89994 92523</span>
             </div>
             
             {/* Center: Discount code offer */}
@@ -198,10 +198,10 @@ export default function CustomNavbar() {
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
             {/* Left: Logo and Brand */}
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center">
+              <div className="w-20 h-20 md:w-20 md:h-20 bg-white rounded-lg p-1 flex items-center justify-center">
                 <Logo />
               </div>
-              <span className="text-xl font-semibold text-gray-800">
+              <span className="text-3xl hidden md:block md:text-3xl font-semibold text-gray-800">
                 Plantozone<span className="text-yellow-400">.</span>
               </span>
             </div>
@@ -246,23 +246,29 @@ export default function CustomNavbar() {
                 </Link>
               </Button>
               <PrimaryButton 
-                href="tel:+918999492523" 
+                href="tel:+919059152555" 
                 withArrow={false}
               >
                 Call Us
               </PrimaryButton>
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleMenu}
-                className="transition-all transform duration-300"
-              >
-                <MenuIcon className="h-7 w-7" />
-                <span className="sr-only">Menu</span>
+            {/* Mobile Icons - Wishlist and Cart */}
+            <div className="md:hidden flex items-center space-x-2">
+              <Button variant="ghost" size="icon" asChild>
+                <Link href="/whishlist">
+                  <Icon icon="mdi:heart-outline" className="h-7 w-7 text-gray-700" />
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link href="/cart">
+                  <Icon icon="mdi:cart-outline" className="h-7 w-7 text-gray-700" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
               </Button>
             </div>
           </div>
@@ -356,11 +362,6 @@ export default function CustomNavbar() {
                 >
                   <div className={`relative ${isActive ? "bg-green-50 rounded-lg p-1.5" : ""}`}>
                     <Icon icon={link.icon} width="24" height="24" />
-                    {link.href === "/cart" && cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
-                        {cartCount}
-                      </span>
-                    )}
                   </div>
                   <span className={`text-xs mt-1 ${isActive ? "font-medium" : ""}`}>{link.label}</span>
                 </Link>

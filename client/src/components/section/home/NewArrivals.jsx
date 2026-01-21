@@ -51,7 +51,7 @@ const NewArrivals = () => {
   };
 
   // Carousel functions
-  const itemsPerSlide = 3;
+  const itemsPerSlide = 4;
   const totalSlides = Math.ceil(data.length / itemsPerSlide);
 
   const nextSlide = () => {
@@ -165,7 +165,7 @@ const NewArrivals = () => {
             >
               {Array.from({ length: totalSlides }, (_, slideIndex) => (
                 <div key={slideIndex} className="w-full flex-shrink-0">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-4">
                     {data
                       ?.slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
                       ?.map((item, id) => (
@@ -173,7 +173,6 @@ const NewArrivals = () => {
                           <ProductCard
                             data={item}
                             onAddToCart={(opts) => handleAddToCart(item, opts)}
-                            showAddToCart
                           />
                         </div>
                       ))}

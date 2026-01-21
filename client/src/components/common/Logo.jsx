@@ -4,7 +4,7 @@ import Link from "next/link";
 const Logo = ({ img }) => {
   return (
     <>
-      <Link href="/">
+      <Link href="/" className="w-full h-full">
         <Image
           src={img ? img : `/images/logo_color.png`}
           alt="vedant construction"

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Section } from "../../layout/Section";
 import { Container } from "../../layout/Container";
-import { PrimaryButton } from "@/src/components";
+import { PrimaryButton, SectionTitle } from "@/src/components";
 import Link from "next/link";
 import { InfiniteCategoryMarquee } from "@/src/components";
 import blogsAction from "@/src/lib/action/blogs.action";
@@ -41,12 +41,13 @@ const NewsBlogsSection = () => {
           {/* Section Header */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 md:mb-12 gap-4">
             <div className="flex-1">
-              <span className="text-sm md:text-base text-gray-500 mb-2 block font-medium">
-                News & Blogs
-              </span>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
-                Our Latest <span className="text-primary">News & Blogs</span>
-              </h2>
+              <SectionTitle 
+                subtitle="News & Blogs"
+                title={<>Our Latest <span className="text-primary">News & Blogs</span></>}
+                className="text-left"
+                titleClassName="text-2xl md:text-3xl lg:text-4xl font-bold"
+                subtitleClassName="font-medium"
+              />
             </div>
             <PrimaryButton href="/blog">View All Blogs</PrimaryButton>
           </div>

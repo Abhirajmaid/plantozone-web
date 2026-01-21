@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Section } from "../../layout/Section";
 import { Container } from "../../layout/Container";
-import { PrimaryButton } from "@/src/components";
+import { PrimaryButton, SectionTitle } from "@/src/components";
 import Link from "next/link";
 import { InfiniteCategoryMarquee } from "@/src/components";
 
@@ -92,17 +92,16 @@ const FAQSection = () => {
       <Section className="bg-white py-12 md:py-16">
         <Container>
           {/* Section Header */}
-          <div className="text-center mb-8 md:mb-12">
-            <span className="text-xs md:text-sm text-gray-600 uppercase tracking-wider mb-2 block font-medium">
-              FAQs
-            </span>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
-              Question? <span className="text-primary">Look here.</span>
-            </h2>
-          </div>
+          <SectionTitle 
+            subtitle="FAQs"
+            title={<>Question? <span className="text-primary">Look here.</span></>}
+            className="mb-8 md:mb-12"
+            titleClassName="text-2xl md:text-3xl lg:text-4xl font-bold"
+            subtitleClassName="text-xs md:text-sm text-gray-600 uppercase tracking-wider font-medium"
+          />
 
           {/* Main Content - FAQ and Sidebar */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {/* Left: FAQ Accordion */}
             <div className="lg:col-span-2">
               {faqData.map((item) => (

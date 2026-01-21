@@ -5,6 +5,12 @@ import { Container } from "../../layout/Container";
 import { PrimaryButton } from "@/src/components";
 import Link from "next/link";
 import Image from "next/image";
+import plantsAction from "@/src/lib/action/plants.action";
+
+const OFFER_PLANT_IDS = [64, 47]; // Bonsai plants with 30% off offer
+const OFFER_DISCOUNT = 30;
+const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+const DEFAULT_IMAGE = "/images/plant.png";
 
 const SpecialOffer = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -13,6 +19,12 @@ const SpecialOffer = () => {
     minutes: 48,
     seconds: 18
   });
+  const [offerPlants, setOfferPlants] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchOfferPlants();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -32,6 +44,43 @@ const SpecialOffer = () => {
 
     return () => clearInterval(timer);
   }, []);
+
+  const fetchOfferPlants = async () => {
+    try {
+      setLoading(true);
+      const resp = await plantsAction.getPlants();
+      const allPlants = resp.data.data || [];
+      
+      // Filter plants by IDs 64 and 47
+      const filteredPlants = allPlants
+        .filter(plant => OFFER_PLANT_IDS.includes(plant.id))
+        .map(plant => {
+          const attrs = plant.attributes || {};
+          
+          // Handle image URL
+          let imageUrl = DEFAULT_IMAGE;
+          const strapiImageUrl = attrs?.images?.data?.[0]?.attributes?.url;
+          if (strapiImageUrl) {
+            imageUrl = strapiImageUrl.startsWith('http') 
+              ? strapiImageUrl 
+              : `${STRAPI_BASE_URL}${strapiImageUrl}`;
+          }
+          
+          return {
+            id: plant.id,
+            title: attrs.title || "Bonsai Plant",
+            slug: attrs.slug || `product-${plant.id}`,
+            image: imageUrl
+          };
+        });
+      
+      setOfferPlants(filteredPlants);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching offer plants:", error);
+      setLoading(false);
+    }
+  };
 
   return (
     <Section className="bg-gray-50 py-12 md:py-16">
@@ -82,7 +131,7 @@ const SpecialOffer = () => {
               
               {/* Subtitle */}
               <p className="text-base md:text-lg text-gray-700 mb-8 mt-2">
-                Get 50% off - Limited Time Offer!
+                Get {OFFER_DISCOUNT}% off on Bonsai Plants - Limited Time Offer!
               </p>
               
               {/* Countdown Timer */}
@@ -123,27 +172,69 @@ const SpecialOffer = () => {
 
           {/* Right: Two Horizontal Image Cards */}
           <div className="flex-1 w-full lg:w-1/2 flex flex-row gap-4 items-stretch">
-            {/* Left Card */}
-            <div className="relative rounded-2xl overflow-hidden shadow-lg bg-gray-100 flex-1 h-[360px] md:h-[420px] lg:h-[460px]">
-              <Image
-                src="/images/plant.png"
-                alt="Greenhouse Care"
-                fill
-                sizes="(max-width: 768px) 50vw, 25vw"
-                className="object-cover"
-              />
-            </div>
-
-            {/* Right Card */}
-            <div className="relative rounded-2xl overflow-hidden shadow-lg bg-gray-100 flex-1 h-[360px] md:h-[420px] lg:h-[460px]">
-              <Image
-                src="/images/plant.png"
-                alt="Plant Care"
-                fill
-                sizes="(max-width: 768px) 50vw, 25vw"
-                className="object-cover"
-              />
-            </div>
+            {loading ? (
+              // Loading state
+              <>
+                <div className="relative rounded-2xl overflow-hidden shadow-lg bg-gray-100 flex-1 h-[360px] md:h-[420px] lg:h-[460px] flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                </div>
+                <div className="relative rounded-2xl overflow-hidden shadow-lg bg-gray-100 flex-1 h-[360px] md:h-[420px] lg:h-[460px] flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                </div>
+              </>
+            ) : offerPlants.length > 0 ? (
+              // Display offer plants
+              offerPlants.map((plant, index) => (
+                <Link 
+                  href={`/product/${plant.id}`} 
+                  key={plant.id}
+                  className="relative rounded-2xl overflow-hidden shadow-lg bg-gray-100 flex-1 h-[360px] md:h-[420px] lg:h-[460px] group cursor-pointer"
+                >
+                  <Image
+                    src={plant.image}
+                    alt={plant.title}
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    unoptimized={plant.image.startsWith('http')}
+                  />
+                  {/* Offer Badge */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <div className="bg-green-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg">
+                      {OFFER_DISCOUNT}% OFF
+                    </div>
+                  </div>
+                  {/* Overlay on hover */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                  {/* Plant name overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                    <h3 className="text-white font-semibold text-lg">{plant.title}</h3>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              // Fallback if no plants found
+              <>
+                <div className="relative rounded-2xl overflow-hidden shadow-lg bg-gray-100 flex-1 h-[360px] md:h-[420px] lg:h-[460px]">
+                  <Image
+                    src={DEFAULT_IMAGE}
+                    alt="Bonsai Plant"
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="relative rounded-2xl overflow-hidden shadow-lg bg-gray-100 flex-1 h-[360px] md:h-[420px] lg:h-[460px]">
+                  <Image
+                    src={DEFAULT_IMAGE}
+                    alt="Bonsai Plant"
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover"
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </Container>

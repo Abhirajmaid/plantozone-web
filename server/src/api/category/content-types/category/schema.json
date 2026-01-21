@@ -12,7 +12,29 @@
   "pluginOptions": {},
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "icon": {
+      "type": "string",
+      "default": "mdi:leaf"
+    },
+    "gradient": {
+      "type": "string",
+      "default": "from-green-400 to-emerald-600"
+    },
+    "description": {
+      "type": "text"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
     },
     "plants": {
       "type": "relation",

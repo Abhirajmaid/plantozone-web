@@ -1,12 +1,19 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
-import { NewsletterSection, ShopServiceSection } from "@/src/components";
+import { NewsletterSection, ShopServiceSection, Loader } from "@/src/components";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import PrimaryButton from "@/src/components/common/PrimaryButton";
+import Image from "next/image";
+import blogsAction from "@/src/lib/action/blogs.action";
+import categoriesAction from "@/src/lib/action/categories.action";
 
-// Blog Data Structure
+const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
+const DEFAULT_IMAGE = "/images/plant.png";
+
+// Blog Data Structure (fallback)
 const blogData = [
   {
     id: 1,
@@ -167,6 +174,225 @@ function BlogHero() {
 }
 
 const BlogPage = () => {
+  const searchParams = useSearchParams();
+  const selectedCategory = searchParams.get("category");
+  
+  const [allBlogs, setAllBlogs] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [recentPosts, setRecentPosts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const blogsPerPage = 6;
+
+  useEffect(() => {
+    fetchBlogs();
+    fetchCategories();
+  }, []);
+
+  // Filter blogs when category changes
+  useEffect(() => {
+    if (selectedCategory) {
+      const filtered = allBlogs.filter((blog) => {
+        const category = blog?.attributes?.category || "";
+        return category.toLowerCase() === selectedCategory.toLowerCase();
+      });
+      setBlogs(filtered);
+      setCurrentPage(1); // Reset to first page when filtering
+    } else {
+      setBlogs(allBlogs);
+    }
+  }, [selectedCategory, allBlogs]);
+
+  const fetchBlogs = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await blogsAction.getBlogs();
+      const allBlogs = response?.data?.data || [];
+      
+      // Filter out incomplete blogs
+      const completeBlogs = allBlogs.filter((blog) => {
+        const attrs = blog?.attributes || {};
+        return (
+          attrs?.title &&
+          attrs?.title.trim() !== "" &&
+          attrs?.title.toLowerCase() !== "duymmy" &&
+          attrs?.description &&
+          attrs?.description.trim() !== "" &&
+          attrs?.date &&
+          attrs?.slug
+        );
+      });
+
+      setAllBlogs(completeBlogs);
+      // Set recent posts (latest 3)
+      setRecentPosts(completeBlogs.slice(0, 3));
+      // Reset to first page when blogs are fetched
+      setCurrentPage(1);
+      
+      // Apply category filter if selected
+      if (selectedCategory) {
+        const filtered = completeBlogs.filter((blog) => {
+          const category = blog?.attributes?.category || "";
+          return category.toLowerCase() === selectedCategory.toLowerCase();
+        });
+        setBlogs(filtered);
+      } else {
+        setBlogs(completeBlogs);
+      }
+    } catch (err) {
+      console.error("Error fetching blogs:", err);
+      setError("Failed to load blogs. Please try again later.");
+      setBlogs([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    try {
+      const dateObj = new Date(dateString);
+      if (!isNaN(dateObj.getTime())) {
+        return dateObj.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        });
+      }
+    } catch (e) {
+      return "";
+    }
+    return "";
+  };
+
+  // Calculate read time
+  const calculateReadTime = (description) => {
+    if (!description) return "5 min read";
+    const wordCount = description.split(/\s+/).length;
+    const readTime = Math.ceil(wordCount / 200);
+    return `${readTime} min read`;
+  };
+
+  // Get image URL
+  const getImageUrl = (imageData) => {
+    if (!imageData?.data?.attributes?.url) return DEFAULT_IMAGE;
+    const url = imageData.data.attributes.url;
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return `${STRAPI_BASE_URL}${url}`;
+  };
+
+  // Get excerpt
+  const getExcerpt = (text, maxLength = 200) => {
+    if (!text) return "";
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + "...";
+  };
+
+  // Fetch categories from Strapi
+  const fetchCategories = async () => {
+    try {
+      const response = await categoriesAction.getCategories();
+      const categoriesData = response?.data?.data || [];
+      
+      // Map Strapi categories to the format needed for display
+      const mappedCategories = categoriesData
+        .map((cat) => {
+          const title = cat.attributes?.title || "";
+          const slug = cat.attributes?.slug || title.toLowerCase().replace(/\s+/g, '-');
+          
+          // Count plants in this category (if available)
+          const plantsCount = cat.attributes?.plants?.data?.length || 0;
+          
+          return {
+            id: cat.id,
+            name: title,
+            slug: slug,
+            count: plantsCount
+          };
+        })
+        .filter(cat => cat.name) // Filter out categories without names
+        .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+      
+      setCategories(mappedCategories);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      // Don't set error state here, just log it - categories are not critical for blog page
+      setCategories([]);
+    }
+  };
+
+  // Pagination calculations
+  const totalPages = Math.ceil(blogs.length / blogsPerPage);
+  const startIndex = (currentPage - 1) * blogsPerPage;
+  const endIndex = startIndex + blogsPerPage;
+  const currentBlogs = blogs.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages if total is less than max visible
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+      
+      if (currentPage > 3) {
+        pages.push('...');
+      }
+      
+      // Show pages around current page
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      
+      for (let i = start; i <= end; i++) {
+        if (!pages.includes(i)) {
+          pages.push(i);
+        }
+      }
+      
+      if (currentPage < totalPages - 2) {
+        pages.push('...');
+      }
+      
+      // Always show last page
+      if (!pages.includes(totalPages)) {
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-20">
+        <BlogHero />
+        <div className="flex items-center justify-center py-20">
+          <Loader />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       {/* Hero Section with Breadcrumb */}
@@ -176,68 +402,141 @@ const BlogPage = () => {
       <Section className="bg-white py-16 lg:overflow-visible">
         <Container>
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-green-800 mb-12 text-center">
-              Our Latest News & Blogs
-            </h2>
+            <div className="flex items-center justify-between mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-green-800">
+                Our Latest News & Blogs
+              </h2>
+              {selectedCategory && (
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">Filtered by: <strong>{selectedCategory}</strong></span>
+                  <Link 
+                    href="/blog" 
+                    className="text-green-600 hover:text-green-700 underline text-sm"
+                  >
+                    Clear filter
+                  </Link>
+                </div>
+              )}
+            </div>
             
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-8">
+                {error}
+              </div>
+            )}
+
             {/* Blog Posts Grid */}
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Left Column - Blog Posts */}
               <div className="lg:w-2/3 space-y-8">
-                {/* Map over blog data to render posts */}
-                {blogData.map((post) => (
-                  <article key={post.id} className="bg-white rounded-2xl overflow-hidden transition-shadow duration-300">
-                    <div className="relative">
-                      <img 
-                        src={post.image} 
-                        alt={post.title}
-                        className="w-full h-[400px] object-cover rounded-3xl"
-                      />
-                      <div className="absolute bottom-4 left-4">
-                        <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium">
-                          {post.category}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-6 pl-0">
-                      <div className="flex items-center text-base text-gray-600 mb-3">
-                        <span className="font-medium">{post.author}</span>
-                        <span className="mx-2">•</span>
-                        <span>{post.date}</span>
-                        <span className="mx-2">•</span>
-                        <span>{post.readTime}</span>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-3 leading-tight">
-                        {post.title}
-                      </h3>
-                      <p className="text-gray-600 mb-4 leading-relaxed">
-                        {post.excerpt}
-                      </p>
-                      <Link href={`/blog/${post.slug}`} className="text-primary hover:text-primary/80 font-medium underline">
-                        Read More
-                      </Link>
-                    </div>
-                  </article>
-                ))}
+                {blogs.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-600 text-lg">No blog posts available at the moment.</p>
+                  </div>
+                ) : (
+                  currentBlogs.map((blog) => {
+                    const attributes = blog?.attributes || {};
+                    const imageUrl = getImageUrl(attributes?.image);
+                    const authorName = attributes?.author?.data?.attributes?.name || "Jenny Alexander";
+                    const category = attributes?.category || "Indoor Plant";
+                    const dateStr = formatDate(attributes?.date);
+                    const readTime = calculateReadTime(attributes?.description);
+                    const excerpt = getExcerpt(attributes?.description);
+                    const isExternalImage = imageUrl.startsWith('http');
+
+                    return (
+                      <article key={blog.id} className="bg-white rounded-2xl overflow-hidden transition-shadow duration-300">
+                        <div className="relative">
+                          <Image
+                            src={imageUrl}
+                            alt={attributes?.title || "Blog post"}
+                            width={800}
+                            height={400}
+                            className="w-full h-[400px] object-cover rounded-3xl"
+                            unoptimized={isExternalImage}
+                          />
+                          <div className="absolute bottom-4 left-4">
+                            <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium">
+                              {category}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="p-6 pl-0">
+                          <div className="flex items-center text-base text-gray-600 mb-3">
+                            <span className="font-medium">{authorName}</span>
+                            <span className="mx-2">•</span>
+                            <span>{dateStr}</span>
+                            <span className="mx-2">•</span>
+                            <span>{readTime}</span>
+                          </div>
+                          <h3 className="text-2xl font-bold text-gray-900 mb-3 leading-tight">
+                            {attributes?.title}
+                          </h3>
+                          <p className="text-gray-600 mb-4 leading-relaxed">
+                            {excerpt}
+                          </p>
+                          <Link href={`/blog/${attributes?.slug}`} className="text-primary hover:text-primary/80 font-medium underline">
+                            Read More
+                          </Link>
+                        </div>
+                      </article>
+                    );
+                  })
+                )}
 
                 {/* Pagination */}
-                <div className="flex items-center justify-center space-x-2 mt-12">
-                  <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <button className="w-10 h-10 bg-green-500 text-white rounded-full font-medium">1</button>
-                  <button className="w-10 h-10 text-gray-600 hover:bg-gray-100 rounded-full font-medium">2</button>
-                  <button className="w-10 h-10 text-gray-600 hover:bg-gray-100 rounded-full font-medium">3</button>
-                  <span className="text-gray-400">...</span>
-                  <button className="w-10 h-10 text-gray-600 hover:bg-gray-100 rounded-full font-medium">10</button>
-                  <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center space-x-2 mt-12">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className={`p-2 rounded-full transition-colors ${
+                        currentPage === 1
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-gray-100 cursor-pointer"
+                      }`}
+                    >
+                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    {getPageNumbers().map((page, index) => {
+                      if (page === '...') {
+                        return (
+                          <span key={`ellipsis-${index}`} className="text-gray-400 px-2">
+                            ...
+                          </span>
+                        );
+                      }
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          className={`w-10 h-10 rounded-full font-medium transition-colors ${
+                            currentPage === page
+                              ? "bg-green-500 text-white"
+                              : "text-gray-600 hover:bg-gray-100"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    })}
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className={`p-2 rounded-full transition-colors ${
+                        currentPage === totalPages
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-gray-100 cursor-pointer"
+                      }`}
+                    >
+                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Right Column - Sidebar */}
@@ -263,39 +562,62 @@ const BlogPage = () => {
                 {/* Popular Category Section */}
                 <div className="bg-white rounded-2xl shadow-lg p-6">
                   <h3 className="text-xl font-bold text-gray-900 mb-4">Popular Category</h3>
-                  <ul className="space-y-3">
-                    {categoriesData.map((category) => (
-                      <li key={category.slug}>
-                        <Link href={`/blog/category/${category.slug}`} className="text-gray-700 hover:text-green-600 transition-colors flex justify-between items-center">
-                          <span>{category.name}</span>
-                          <span className="text-sm text-gray-500">({category.count})</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                  {categories.length === 0 ? (
+                    <p className="text-gray-500 text-sm">No categories available.</p>
+                  ) : (
+                    <ul className="space-y-3">
+                      {categories.map((category) => (
+                        <li key={category.id || category.slug}>
+                          <Link 
+                            href={`/shop/${category.slug}`} 
+                            className="text-gray-700 hover:text-green-600 transition-colors flex justify-between items-center"
+                          >
+                            <span>{category.name}</span>
+                            {category.count > 0 && (
+                              <span className="text-sm text-gray-500">({category.count})</span>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
 
                 {/* Recent Post Section */}
                 <div className="bg-white rounded-2xl shadow-lg p-6">
                   <h3 className="text-xl font-bold text-gray-900 mb-4">Recent Post</h3>
                   <div className="space-y-4">
-                    {recentPostsData.map((post) => (
-                      <div key={post.id} className="flex items-start space-x-3">
-                        <div className="flex-shrink-0">
-                          <img 
-                            src={post.image} 
-                            alt={post.title}
-                            className="w-16 h-16 object-cover rounded-lg"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <Link href={`/blog/${post.slug}`} className="text-sm font-medium text-gray-900 hover:text-green-600 transition-colors line-clamp-2">
-                            {post.title}
-                          </Link>
-                          <p className="text-xs text-gray-500 mt-1">{post.date}</p>
-                        </div>
-                      </div>
-                    ))}
+                    {recentPosts.length === 0 ? (
+                      <p className="text-gray-500 text-sm">No recent posts available.</p>
+                    ) : (
+                      recentPosts.map((post) => {
+                        const attributes = post?.attributes || {};
+                        const imageUrl = getImageUrl(attributes?.image);
+                        const dateStr = formatDate(attributes?.date);
+                        const isExternalImage = imageUrl.startsWith('http');
+
+                        return (
+                          <div key={post.id} className="flex items-start space-x-3">
+                            <div className="flex-shrink-0">
+                              <Image
+                                src={imageUrl}
+                                alt={attributes?.title || "Blog post"}
+                                width={64}
+                                height={64}
+                                className="w-16 h-16 object-cover rounded-lg"
+                                unoptimized={isExternalImage}
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <Link href={`/blog/${attributes?.slug}`} className="text-sm font-medium text-gray-900 hover:text-green-600 transition-colors line-clamp-2">
+                                {attributes?.title}
+                              </Link>
+                              <p className="text-xs text-gray-500 mt-1">{dateStr}</p>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
 

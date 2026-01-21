@@ -8,23 +8,25 @@ const PromotionalBanners = () => {
   const banners = [
     {
       id: 1,
-      titlePrimary: "Freshly",
-      titleSecondary: "Green Plants",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+      titlePrimary: "Rare &",
+      titleSecondary: "Exotic Plants",
+      description: "Discover unique and rare plant species that will make your collection stand out. Perfect for plant enthusiasts seeking something extraordinary.",
       discountLabel: "Flat 20% Discount",
       image: "/images/image-Photoroom.png",
       bg: "bg-white",
       buttonVariant: "primary",
+      href: "/shop/rare-&-exotic-plants",
     },
     {
       id: 2,
-      titlePrimary: "Graceful",
-      titleSecondary: "Flower Plant",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+      titlePrimary: "Beautiful",
+      titleSecondary: "Flowering Plants",
+      description: "Add vibrant colors and natural beauty to your space with our stunning collection of flowering plants. Blooming with elegance and charm.",
       discountLabel: "Flat 25% Discount",
       image: "/images/image-Photoroom (1).png",
       bg: "bg-secondary",
       buttonVariant: "secondary",
+      href: "/shop/flowering-plants",
     },
   ];
 
@@ -42,6 +44,7 @@ const PromotionalBanners = () => {
               image={b.image}
               bg={b.bg}
               buttonVariant={b.buttonVariant}
+              href={b.href}
               size="large"
             />
           ))}

@@ -2,6 +2,7 @@
 import React from "react";
 import { Section } from "../../layout/Section";
 import { Container } from "../../layout/Container";
+import { SectionTitle } from "@/src/components";
 import DealCard from "@/src/components/common/DealCard";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
@@ -77,15 +78,15 @@ const DealsOfTheDaySection = () => {
     <Section className="bg-gray-50 py-12 md:py-16">
       <Container>
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <p className="text-base text-gray-500 uppercase tracking-wide mb-2">Today Deals</p>
-          <h2 className="text-4xl md:text-5xl font-semibold text-[#0b9c09]">
-            Deals of the Day
-          </h2>
-        </div>
+        <SectionTitle 
+          subtitle="Today Deals"
+          title="Deals of the Day"
+          className="mb-12"
+          titleClassName="text-[#0b9c09]"
+        />
 
         {/* Carousel Container */}
-        <div className="max-w-6xl mx-auto">
+        <div className="w-full mx-auto">
           <Swiper
             modules={[Pagination, Autoplay]}
             spaceBetween={24}
@@ -100,7 +101,7 @@ const DealsOfTheDaySection = () => {
                 spaceBetween: 24,
               },
               1024: {
-                slidesPerView: 2,
+                slidesPerView: 3,
                 spaceBetween: 30,
               },
             }}
@@ -113,7 +114,7 @@ const DealsOfTheDaySection = () => {
               disableOnInteraction: false,
             }}
             loop={true}
-            className="deals-swiper"
+            className="deals-swiper w-full"
           >
             {dealsProducts.map((product) => (
               <SwiperSlide key={product.id}>

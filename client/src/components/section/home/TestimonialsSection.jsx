@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Section } from "../../layout/Section";
 import { Container } from "../../layout/Container";
+import { SectionTitle } from "@/src/components";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -95,15 +96,15 @@ const TestimonialsSection = () => {
     <Section className="bg-gray-100 py-12 md:py-16">
       <Container>
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <p className="text-base text-black uppercase tracking-wide mb-2">Testimonial</p>
-          <h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
-            What Our Clients Say
-          </h2>
-        </div>
+        <SectionTitle 
+          subtitle="Testimonial"
+          title="What Our Clients Say"
+          className="mb-12"
+          subtitleClassName="text-black"
+        />
 
         {/* Testimonial Carousel */}
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <Swiper
             modules={[Pagination, Autoplay]}
             spaceBetween={24}

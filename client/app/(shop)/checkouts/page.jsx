@@ -21,6 +21,8 @@ export default function CheckoutPage() {
 
   // Discount state
   const [discount, setDiscount] = useState({ code: "", percent: 0 });
+  const [promoCode, setPromoCode] = useState("");
+  const [promoError, setPromoError] = useState("");
 
   // User details state
   const [userDetails, setUserDetails] = useState({
@@ -38,22 +40,11 @@ export default function CheckoutPage() {
   const [touched, setTouched] = useState({});
   const [formError, setFormError] = useState("");
   const [pincodeError, setPincodeError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [isPincodeValidating, setIsPincodeValidating] = useState(false);
 
   useEffect(() => {
     setCartItems(getCartItems());
-    // Read discount info from localStorage
-    if (typeof window !== "undefined") {
-      const d = localStorage.getItem("plantozone_discount");
-      if (d) {
-        try {
-          const parsed = JSON.parse(d);
-          if (parsed && parsed.code && parsed.percent) {
-            setDiscount(parsed);
-          }
-        } catch {}
-      }
-    }
   }, []);
 
   // Calculate subtotal
@@ -71,17 +62,20 @@ export default function CheckoutPage() {
 
   const total = subtotal - discountAmount + deliveryFee;
 
-  // Validation
-  const isValid =
+  // Basic field validation (excluding pincode serviceability)
+  const areBasicFieldsValid =
     userDetails.name.trim() &&
+    userDetails.lastName.trim() &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userDetails.email) &&
     /^[6-9]\d{9}$/.test(userDetails.phone) &&
     userDetails.address.trim() &&
     userDetails.pincode.trim().length === 6 &&
     isValidPincodeFormat(userDetails.pincode) &&
-    isPincodeServiceable(userDetails.pincode) &&
     userDetails.city.trim() &&
     userDetails.state.trim();
+
+  // Full validation including pincode serviceability
+  const isValid = areBasicFieldsValid && isPincodeServiceable(userDetails.pincode);
 
   // Helper to create Shiprocket order after payment
   const createShiprocketOrder = async (orderData) => {
@@ -152,10 +146,12 @@ export default function CheckoutPage() {
 
   // Razorpay handler
   const handleRazorpay = async () => {
-    if (!isValid) {
+    // First check basic fields
+    if (!areBasicFieldsValid) {
       setFormError("Please fill all required fields correctly.");
       setTouched({
         name: true,
+        lastName: true,
         email: true,
         phone: true,
         address: true,
@@ -166,7 +162,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Additional pin code validation
+    // Then check pin code serviceability
     if (userDetails.pincode && !isPincodeServiceable(userDetails.pincode)) {
       setFormError(
         "Sorry, we don't deliver to this pin code yet. Please check our serviceable areas."
@@ -317,17 +313,100 @@ export default function CheckoutPage() {
               "Sorry, we don't deliver to this pin code yet. Coming soon!"
             );
           }
+        } else if (value.length > 0 && value.length < 6) {
+          setPincodeError("Pin code must be 6 digits");
         }
         setIsPincodeValidating(false);
       }, 500);
     }
+
+    // Validate phone number when it changes
+    if (name === "phone") {
+      setPhoneError("");
+      // Clear previous error immediately
+      if (value.length > 0) {
+        // Validate phone format
+        if (!/^[6-9]\d{0,9}$/.test(value)) {
+          if (value.length === 10 && !/^[6-9]\d{9}$/.test(value)) {
+            setPhoneError("Phone number must start with 6, 7, 8, or 9");
+          } else if (value.length > 10) {
+            setPhoneError("Phone number must be exactly 10 digits");
+          } else if (!/^\d+$/.test(value)) {
+            setPhoneError("Phone number must contain only digits");
+          }
+        } else if (value.length === 10 && !/^[6-9]\d{9}$/.test(value)) {
+          setPhoneError("Phone number must start with 6, 7, 8, or 9");
+        }
+      }
+    }
   };
 
   const handleBlur = (e) => {
+    const { name, value } = e.target;
     setTouched((prev) => ({
       ...prev,
-      [e.target.name]: true,
+      [name]: true,
     }));
+
+    // Validate phone on blur if not already validated
+    if (name === "phone" && value.length > 0) {
+      if (!/^[6-9]\d{9}$/.test(value)) {
+        if (value.length !== 10) {
+          setPhoneError("Phone number must be exactly 10 digits");
+        } else if (!/^[6-9]/.test(value)) {
+          setPhoneError("Phone number must start with 6, 7, 8, or 9");
+        } else if (!/^\d+$/.test(value)) {
+          setPhoneError("Phone number must contain only digits");
+        } else {
+          setPhoneError("Please enter a valid 10-digit phone number");
+        }
+      } else {
+        setPhoneError("");
+      }
+    }
+
+    // Validate pincode on blur if not already validated
+    if (name === "pincode" && value.length > 0) {
+      if (value.length !== 6) {
+        setPincodeError("Pin code must be exactly 6 digits");
+      } else if (!isValidPincodeFormat(value)) {
+        setPincodeError("Please enter a valid 6-digit pin code");
+      } else if (!isPincodeServiceable(value)) {
+        setPincodeError(
+          "Sorry, we don't deliver to this pin code yet. Coming soon!"
+        );
+      }
+    }
+  };
+
+  // Apply promo code
+  const applyPromoCode = () => {
+    setPromoError("");
+    const code = promoCode.trim().toUpperCase();
+    
+    if (!code) {
+      setPromoError("Please enter a promo code");
+      return;
+    }
+
+    // Valid promo codes
+    if (code === "FIRST25") {
+      setDiscount({ code: "FIRST25", percent: 25 });
+      setPromoError("");
+    } else if (code === "OXY30") {
+      setDiscount({ code: "OXY30", percent: 30 });
+      setPromoError("");
+    } else {
+      setPromoError("Invalid promo code. Please try again.");
+      setDiscount({ code: "", percent: 0 });
+    }
+  };
+
+  // Remove promo code
+  const removePromoCode = () => {
+    setPromoCode("");
+    setDiscount({ code: "", percent: 0 });
+    setPromoError("");
   };
 
   return (
@@ -516,10 +595,24 @@ export default function CheckoutPage() {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       maxLength={6}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                      className={`w-full border rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 ${
+                        pincodeError
+                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                          : "border-gray-300 focus:ring-green-600 focus:border-transparent"
+                      }`}
                       required
                       placeholder="Enter Zip Code"
                     />
+                    {pincodeError && (
+                      <p className="text-red-600 text-sm mt-1">
+                        {pincodeError}
+                      </p>
+                    )}
+                    {isPincodeValidating && (
+                      <p className="text-gray-500 text-sm mt-1">
+                        Validating pincode...
+                      </p>
+                    )}
                   </div>
 
                   {/* Phone */}
@@ -533,10 +626,25 @@ export default function CheckoutPage() {
                       value={userDetails.phone}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                      maxLength={10}
+                      className={`w-full border rounded-lg px-4 py-3 bg-white focus:outline-none focus:ring-2 ${
+                        phoneError
+                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                          : "border-gray-300 focus:ring-green-600 focus:border-transparent"
+                      }`}
                       required
                       placeholder="Enter Phone Number"
                     />
+                    {phoneError && (
+                      <p className="text-red-600 text-sm mt-1">
+                        {phoneError}
+                      </p>
+                    )}
+                    {!phoneError && touched.phone && userDetails.phone && /^[6-9]\d{9}$/.test(userDetails.phone) && (
+                      <p className="text-green-600 text-sm mt-1">
+                        ✓ Valid phone number
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -557,34 +665,6 @@ export default function CheckoutPage() {
                   />
                 </div>
 
-                {/* Delivery Address Section */}
-                <div>
-                  <label className="block text-sm font-medium mb-3 text-gray-700">
-                    Delivery Address *
-                  </label>
-                  <div className="space-y-3">
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="deliveryAddress"
-                        value="same"
-                        defaultChecked
-                        className="w-5 h-5 text-green-600 focus:ring-green-600"
-                      />
-                      <span className="text-gray-700">Same as shipping address</span>
-                    </label>
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="deliveryAddress"
-                        value="different"
-                        className="w-5 h-5 text-green-600 focus:ring-green-600"
-                      />
-                      <span className="text-gray-700">Use a different billing address</span>
-                    </label>
-                  </div>
-                </div>
-
                 {formError && (
                   <div className="text-red-600 text-sm font-medium bg-red-50 p-4 rounded-lg">
                     {formError}
@@ -598,6 +678,67 @@ export default function CheckoutPage() {
                   <h2 className="text-2xl font-bold text-gray-800 mb-6">
                     Order Summary
                   </h2>
+                  
+                  {/* Promo Code Section */}
+                  <div className="mb-6 pb-6 border-b border-gray-300">
+                    {discount.percent > 0 ? (
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <p className="text-sm font-medium text-green-800">
+                              Promo Code Applied
+                            </p>
+                            <p className="text-xs text-green-600">
+                              {discount.code} - {discount.percent}% OFF
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={removePromoCode}
+                            className="text-red-600 hover:text-red-700 text-sm font-medium"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-700">
+                          Promo Code
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={promoCode}
+                            onChange={(e) => {
+                              setPromoCode(e.target.value.toUpperCase());
+                              setPromoError("");
+                            }}
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                applyPromoCode();
+                              }
+                            }}
+                            placeholder="Enter promo code"
+                            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                          />
+                          <button
+                            type="button"
+                            onClick={applyPromoCode}
+                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                          >
+                            Apply
+                          </button>
+                        </div>
+                        {promoError && (
+                          <p className="text-red-600 text-sm mt-1">
+                            {promoError}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
                   
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between text-gray-700">
@@ -632,16 +773,21 @@ export default function CheckoutPage() {
 
                   <PrimaryButton
                     onClick={handleRazorpay}
-                    disabled={loading || !isValid}
+                    disabled={loading || !areBasicFieldsValid}
                     withArrow={false}
                     className="w-full py-4 text-lg font-semibold"
                   >
                     {loading ? "Processing..." : "Proceed to Payment"}
                   </PrimaryButton>
 
-                  {!isValid && (
+                  {!areBasicFieldsValid && (
                     <p className="text-red-600 text-sm mt-3 text-center">
                       Please fill all required fields
+                    </p>
+                  )}
+                  {areBasicFieldsValid && !isPincodeServiceable(userDetails.pincode) && userDetails.pincode && (
+                    <p className="text-orange-600 text-sm mt-3 text-center">
+                      This pincode may not be serviceable
                     </p>
                   )}
                 </div>

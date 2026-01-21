@@ -7,7 +7,7 @@ import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import Image from "next/image";
-import { PlantGridCard } from "@/src/components";
+import { PlantGridCard, SectionTitle } from "@/src/components";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 
@@ -97,12 +97,12 @@ const DealsOfTheDay = () => {
     <Section className="bg-white py-12 md:py-16">
       <Container>
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <p className="text-base text-black uppercase tracking-wide mb-2">Today Deals</p>
-          <h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
-            Deals of the Day
-          </h2>
-        </div>
+        <SectionTitle 
+          subtitle="Today Deals"
+          title="Deals of the Day"
+          className="mb-12"
+          subtitleClassName="text-black"
+        />
 
         {/* Swiper Carousel */}
         <div className="relative">

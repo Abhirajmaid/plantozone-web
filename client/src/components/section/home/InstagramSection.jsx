@@ -2,6 +2,7 @@
 import React from "react";
 import { Section } from "../../layout/Section";
 import { Container } from "../../layout/Container";
+import { SectionTitle } from "@/src/components";
 import Image from "next/image";
 import { InfiniteCategoryMarquee } from "@/src/components";
 
@@ -24,17 +25,16 @@ const InstagramSection = () => {
     <Section className="bg-gray-100 py-12 md:py-16">
       <Container>
         {/* Section Header */}
-        <div className="text-center mb-8 md:mb-12">
-          <span className="text-sm md:text-base text-gray-500 mb-2 block font-medium">
-            Follow Us
-          </span>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
-            Follow Us On <span className="text-primary">Instagram</span>
-          </h2>
-        </div>
+        <SectionTitle 
+          subtitle="Follow Us"
+          title={<>Follow Us On <span className="text-primary">Instagram</span></>}
+          className="mb-8 md:mb-12"
+          titleClassName="text-2xl md:text-3xl lg:text-4xl font-bold"
+          subtitleClassName="font-medium"
+        />
 
         {/* Instagram Grid - Left 2x2, Center Large, Right 2x2 */}
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-4 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-4 max-w-7xl mx-auto">
           {/* Left Side: 2x2 Grid (4 small images) */}
           <div className="col-span-2 grid grid-cols-2 gap-3 md:gap-4">
             {/* Top Left */}

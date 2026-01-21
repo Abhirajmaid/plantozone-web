@@ -10,12 +10,11 @@ const axiosClient = axios.create({
     }
 })
 
-const getPlants = () => axiosClient.get('/plants?populate=*&pagination[pageSize]=100')
+const getCategories = () => axiosClient.get('/categories?populate=*&pagination[pageSize]=100')
 
-const getPlantById = (id) => axiosClient.get(`/plants/${id}?populate=*`)
-
+const getCategoryById = (id) => axiosClient.get(`/categories/${id}?populate=*`)
 
 export default {
-    getPlants,
-    getPlantById
+    getCategories,
+    getCategoryById
 }

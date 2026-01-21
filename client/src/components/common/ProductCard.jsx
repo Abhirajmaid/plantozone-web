@@ -7,12 +7,12 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const SIZES = ["6 Inch", "8 Inch"];
+const SIZES = ["Small", "Medium"];
 const SHAPES = ["Hex", "Round"];
 
 const ProductCard = ({ data, onAddToCart }) => {
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedSize, setSelectedSize] = useState("6 Inch");
+  const [selectedSize, setSelectedSize] = useState("Small");
   const [selectedShape, setSelectedShape] = useState("");
   const addBtnRef = useRef(null);
 
@@ -25,7 +25,7 @@ const ProductCard = ({ data, onAddToCart }) => {
       toast.error("Please select size and shape.", { position: "top-right" });
       return;
     }
-    const price = selectedSize === "8 Inch" ? 850 : 650;
+    const price = selectedSize === "Medium" ? 850 : 650;
     if (onAddToCart) {
       onAddToCart({
         size: selectedSize,
@@ -53,11 +53,18 @@ const ProductCard = ({ data, onAddToCart }) => {
   const imgUrl =
     imgArr && imgArr[0]?.attributes?.url
       ? imgArr[0].attributes.url
-      : "/images/default-featured-image.png.jpg";
+      : "/images/plant.png";
+  
+  // Check if image is external (Strapi URL)
+  const isExternalImage = imgUrl.startsWith('http');
+
+  // Get category and rating from data or use defaults
+  const category = data?.attributes?.category || "Indoor Plant";
+  const rating = data?.attributes?.rating || 4.9;
 
   // Price logic
   const getPrice = () => {
-    if (selectedSize === "8 Inch") return 850;
+    if (selectedSize === "Medium") return 850;
     return 650;
   };
 
@@ -142,8 +149,9 @@ const ProductCard = ({ data, onAddToCart }) => {
             width={500}
             height={400}
             src={imgUrl}
-            alt="plantozone"
+            alt={data?.attributes?.title || "plantozone"}
             className="w-full h-[300px] rounded-xl object-cover bg-gray-50"
+            unoptimized={isExternalImage}
           />
         </Link>
         
@@ -170,10 +178,10 @@ const ProductCard = ({ data, onAddToCart }) => {
       <div className="p-4 space-y-2 pl-0">
         {/* Category and Rating */}
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-500">Indoor Plant</span>
+          <span className="text-sm text-gray-500">{category}</span>
           <div className="flex items-center space-x-1">
             <Icon icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
-            <span className="text-sm font-medium text-gray-800">4.9</span>
+            <span className="text-sm font-medium text-gray-800">{rating}</span>
           </div>
         </div>
 

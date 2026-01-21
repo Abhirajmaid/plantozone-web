@@ -10,13 +10,13 @@ import {
   TestimonialSwiper,
   TestimonialsSection,
   // VideoSec,
-  // WhyUs,
+  WhyUs,
   TopSellerProducts,
   SpecialOffer,
   PromotionalBanners,
-  DealsOfTheDaySection,
+  // DealsOfTheDaySection,
   InfiniteCategoryMarquee,
-  // TodayDealsPromo,
+  
 } from "@/src/components";
 import Image from "next/image";
 
@@ -28,13 +28,12 @@ export default function Home() {
       <AboutUsSection />
       <TopSellerProducts />
       <SpecialOffer />
-      {/* <TodayDealsPromo /> */}
-      <DealsOfTheDaySection />
+      {/* <DealsOfTheDaySection /> */}
       <PromotionalBanners />
       <InfiniteCategoryMarquee />
       <NewArrivals />
       <ShopServiceSection />
-      {/* <WhyUs /> */}
+      <WhyUs />
       {/* <VideoSec /> */}
       <div className="w-full h-[100px]">
         <Diver />

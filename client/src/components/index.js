@@ -15,7 +15,6 @@ export { default as PlantGridCard } from "./common/PlantGridCard"
 export { default as PrimaryButton } from "./common/PrimaryButton"
 export { default as SecondaryButton } from "./common/SecondaryButton"
 export { default as PromoBannerCard } from "./common/PromoBannerCard"
-export { default as TodayDealsPromo } from "./section/home/TodayDealsPromo"
 export { default as AboutUsSection } from "./common/AboutUsSection"
 
 export { default as Hero } from "./section/home/Hero"

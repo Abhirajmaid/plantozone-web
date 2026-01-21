@@ -25,7 +25,7 @@ const DealCard = ({
       product: id,
       title: title,
       price: currentPrice,
-      size: "6 Inch",
+      size: "Small",
       shape: "Round",
       quantity: 1,
       image: image,
@@ -40,7 +40,7 @@ const DealCard = ({
       product: id,
       title: title,
       price: currentPrice,
-      size: "6 Inch",
+      size: "Small",
       shape: "Round",
       quantity: 1,
       image: image,
@@ -54,7 +54,7 @@ const DealCard = ({
 
   return (
     <Link href={slug || `/product/${title.toLowerCase().replace(/\s+/g, '-')}`}>
-      <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 w-full max-w-[580px] flex h-[220px]">
+      <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 w-full flex h-[220px]">
         {/* Left Section - Image Area */}
         <div className="relative w-1/2 flex-shrink-0 h-[220px]">
           <Image

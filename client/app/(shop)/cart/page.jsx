@@ -14,7 +14,7 @@ import { Section } from "@/src/components/layout/Section";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
-import { PageBanner, ShopServiceSection } from "@/src/components";
+import { PageBanner, ShopServiceSection, NewsletterSection } from "@/src/components";
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -72,7 +72,7 @@ export default function CartPage() {
   const subtotal = cartItems.reduce((sum, item) => {
     let price = item.price;
     if (!price) {
-      price = item.size === "8 Inch" ? 850 : 650;
+      price = item.size === "Medium" ? 850 : 650;
     }
     return sum + price * item.quantity;
   }, 0);
@@ -119,7 +119,7 @@ export default function CartPage() {
 
                 {/* Cart Items */}
                 {cartItems.map((item, index) => {
-                  const displayPrice = item.price || (item.size === "8 Inch" ? 850 : 650);
+                  const displayPrice = item.price || (item.size === "Medium" ? 850 : 650);
                   const itemSubtotal = displayPrice * item.quantity;
                   
                   return (
@@ -273,35 +273,7 @@ export default function CartPage() {
       </Section>
 
       {/* Newsletter Section */}
-      <div className="bg-gray-100 py-16 rounded-2xl mx-6 mb-16">
-        <Container>
-          <div className="text-center">
-            <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">
-              OUR NEWSLETTER
-            </p>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-              Subscribe to Our Newsletter to Get Updates on Our Latest Offers
-            </h2>
-            <p className="text-gray-600 mb-8">
-              Get 25% off on your first order just by subscribing to our newsletter
-            </p>
-            
-            <form className="max-w-md mx-auto">
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder="Enter Email Address"
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                />
-                <PrimaryButton type="submit" withArrow={false} className="px-6 py-3">
-                  Subscribe
-                </PrimaryButton>
-              </div>
-            </form>
-          </div>
-        </Container>
-      </div>
+      <NewsletterSection />
     </>
   );
 }

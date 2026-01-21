@@ -54,8 +54,8 @@ export default function RootLayout({ children }) {
   return (
     <>
       <Providers>
-        <html lang="en">
-          <body className={`${playfair.className} ${montserrat.className}`}>
+        <html lang="en" className="overflow-x-hidden">
+          <body className={`${playfair.className} ${montserrat.className} overflow-x-hidden`}>
             {/* Google tag (gtag.js) */}
             <Script
               src="https://www.googletagmanager.com/gtag/js?id=G-YX3P9HKCQK"
@@ -69,7 +69,7 @@ export default function RootLayout({ children }) {
                 gtag('config', 'G-YX3P9HKCQK');
               `}
             </Script>
-            <main>{children}</main>
+            <main className="overflow-x-hidden max-w-full w-full">{children}</main>
             <ToastContainer position="top-right" />
           </body>
         </html>

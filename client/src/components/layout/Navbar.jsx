@@ -193,12 +193,12 @@ export default function CustomNavbar() {
       </div>
 
       {/* Main Navigation Bar */}
-      <header className="fixed w-full bg-white z-[99] border-b md:top-10 top-0">
+      <header className="fixed w-full bg-white z-[99] border-b md:top-10 top-0 overflow-x-hidden max-w-full">
         <Container>
-          <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 py-4 w-full max-w-full">
             {/* Left: Logo and Brand */}
             <div className="flex items-center space-x-3">
-              <div className="w-20 h-20 md:w-20 md:h-20 bg-white rounded-lg p-1 flex items-center justify-center">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-lg p-1 flex items-center justify-center">
                 <Logo />
               </div>
               <span className="text-3xl hidden md:block md:text-3xl font-semibold text-gray-800">

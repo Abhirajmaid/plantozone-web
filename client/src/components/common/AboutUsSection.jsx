@@ -50,15 +50,15 @@ const AboutUsSection = () => {
               <div className="bg-green-800 rounded-2xl p-6">
                 <div className="grid grid-cols-3 gap-6 text-center">
                   <div>
-                    <div className="text-3xl text-secondary font-bold text-white mb-1">20+</div>
+                    <div className="text-3xl font-bold text-white mb-1">20+</div>
                     <div className="text-green-200 text-sm">Collections</div>
                   </div>
                   <div>
-                    <div className="text-3xl text-secondary font-bold text-white mb-1">6000+</div>
+                    <div className="text-3xl font-bold text-white mb-1">6000+</div>
                     <div className="text-green-200 text-sm">Products</div>
                   </div>
                   <div>
-                    <div className="text-3xl text-secondary font-bold text-white mb-1">99%</div>
+                    <div className="text-3xl font-bold text-white mb-1">99%</div>
                     <div className="text-green-200 text-sm">Satisfied Customers</div>
                   </div>
                 </div>

@@ -120,7 +120,7 @@ const Hero = () => {
   }
 
   return (
-    <Section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/30 via-white to-green-50/20 min-h-[auto] md:min-h-screen pt-20 md:pt-40">
+    <Section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/30 via-white to-green-50/20 min-h-[auto] md:min-h-screen pt-20 md:pt-40 w-full max-w-full">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 md:top-20 right-5 md:right-20 w-48 md:w-72 h-48 md:h-72 bg-green-200/20 rounded-full blur-3xl"></div>
@@ -136,8 +136,8 @@ const Hero = () => {
         }}></div>
       </div>
 
-      <div className="relative z-10 pb-4 md:pb-8 lg:pb-12 px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 w-full">
-        <div className="grid lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 xl:gap-16 items-center w-full">
+      <div className="relative z-10 pb-4 md:pb-8 lg:pb-12 px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 w-full max-w-full overflow-x-hidden">
+        <div className="grid lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 xl:gap-16 items-center w-full max-w-full">
           {/* Left: Featured Plant - Shows below content on mobile, left side on desktop */}
           <motion.div 
             initial={{ opacity: 0, x: -50 }}
@@ -219,34 +219,34 @@ const Hero = () => {
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.3, duration: 0.4 }}
-                      className="absolute bottom-0 left-0 right-0 p-2 md:p-2.5 lg:p-4 xl:p-6 2xl:p-8 space-y-1 md:space-y-1.5 lg:space-y-2 xl:space-y-3 2xl:space-y-4 z-20"
+                      className="absolute bottom-0 left-0 right-0 p-3 md:p-2.5 lg:p-4 xl:p-6 2xl:p-8 space-y-1.5 md:space-y-1.5 lg:space-y-2 xl:space-y-3 2xl:space-y-4 z-20"
                     >
                       {/* Category */}
                       <div className="flex items-center justify-between">
-                        <span className="text-[9px] md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-white/90">{selectedPlant.category}</span>
+                        <span className="text-sm md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-white/90">{selectedPlant.category}</span>
                         <div className="flex items-center space-x-0.5 xl:space-x-1">
-                          <svg className="w-2 h-2 md:w-2.5 md:h-2.5 lg:w-3 lg:h-3 xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                          <svg className="w-3.5 h-3.5 md:w-2.5 md:h-2.5 lg:w-3 lg:h-3 xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                           </svg>
-                          <span className="text-[9px] md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium text-white">{selectedPlant.rating}</span>
+                          <span className="text-sm md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium text-white">{selectedPlant.rating}</span>
                         </div>
                       </div>
 
                       {/* Name */}
-                      <h2 className="text-xs md:text-sm lg:text-base xl:text-2xl 2xl:text-3xl font-bold text-white line-clamp-2 xl:line-clamp-3 drop-shadow-lg">
+                      <h2 className="text-lg md:text-sm lg:text-base xl:text-2xl 2xl:text-3xl font-bold text-white line-clamp-2 xl:line-clamp-3 drop-shadow-lg">
                         {selectedPlant.name}
                       </h2>
 
                       {/* Description */}
-                      <p className="text-white/90 text-[9px] md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base leading-normal md:leading-relaxed xl:leading-relaxed line-clamp-2 xl:line-clamp-3 drop-shadow-md">
+                      <p className="text-white/90 text-sm md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base leading-normal md:leading-relaxed xl:leading-relaxed line-clamp-2 xl:line-clamp-3 drop-shadow-md">
                         {selectedPlant.description}
                       </p>
 
                       {/* Know More Text */}
-                      <div className="inline-flex items-center gap-1 xl:gap-2 text-white hover:text-green-200 font-medium transition-colors group pt-1 md:pt-1 lg:pt-1.5 xl:pt-2 text-[9px] md:text-[10px] lg:text-xs xl:text-base 2xl:text-lg pointer-events-none">
+                      <div className="inline-flex items-center gap-1 xl:gap-2 text-white hover:text-green-200 font-medium transition-colors group pt-1 md:pt-1 lg:pt-1.5 xl:pt-2 text-sm md:text-[10px] lg:text-xs xl:text-base 2xl:text-lg pointer-events-none">
                         <span>Know more</span>
                         <svg
-                          className="w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 group-hover:translate-x-1 transition-transform"
+                          className="w-4 h-4 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 group-hover:translate-x-1 transition-transform"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -325,7 +325,7 @@ const Hero = () => {
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 lg:gap-5 xl:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-5 xl:gap-6 w-full max-w-full">
                 {allPlants.map((plant, index) => (
                   <motion.div
                     key={plant.id}

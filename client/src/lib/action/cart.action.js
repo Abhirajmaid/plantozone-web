@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const baseUrl = 'https://dashboard.plantozone.com/api';
+const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://dashboard.plantozone.com';
+const baseUrl = `${STRAPI_BASE_URL}/api`;
 
 // Transform Strapi response to our cart item format
 const transformCartItem = (item) => ({

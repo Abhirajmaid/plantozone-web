@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import { NewsletterSection, ShopServiceSection, Loader } from "@/src/components";
@@ -173,7 +173,8 @@ function BlogHero() {
     );
 }
 
-const BlogPage = () => {
+// Component that uses useSearchParams - needs to be wrapped in Suspense
+const BlogContent = () => {
   const searchParams = useSearchParams();
   const selectedCategory = searchParams.get("category");
   
@@ -384,17 +385,17 @@ const BlogPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20">
+      <>
         <BlogHero />
         <div className="flex items-center justify-center py-20">
           <Loader />
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <>
       {/* Hero Section with Breadcrumb */}
       <BlogHero />
 
@@ -652,6 +653,24 @@ const BlogPage = () => {
 
       {/* Newsletter Section */}
       <NewsletterSection />
+    </>
+  );
+};
+
+// Main component wrapped with Suspense
+const BlogPage = () => {
+  return (
+    <div className="min-h-screen bg-gray-50 pt-20">
+      <Suspense fallback={
+        <>
+          <BlogHero />
+          <div className="flex items-center justify-center py-20">
+            <Loader />
+          </div>
+        </>
+      }>
+        <BlogContent />
+      </Suspense>
     </div>
   );
 };

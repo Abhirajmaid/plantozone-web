@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import plantsAction from "@/src/lib/action/plants.action";
 
 const NO_PREVIEW_IMG = "/images/plant.png";
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
 
 const Hero = () => {
   const [allPlants, setAllPlants] = useState([]);

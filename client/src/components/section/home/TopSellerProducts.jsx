@@ -14,7 +14,7 @@ import {
 import plantsAction from "@/src/lib/action/plants.action";
 
 const NO_PREVIEW_IMG = "/images/plant.png";
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
 
 const TopSellerProducts = () => {
   const [swiper, setSwiper] = useState(null);

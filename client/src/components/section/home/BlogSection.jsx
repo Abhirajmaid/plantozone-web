@@ -75,13 +75,14 @@ const BlogSection = () => {
             {blogs.map((blog, idx) => {
               const attributes = blog?.attributes || {};
               // Handle image URL - check if it's already a full URL
+              const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
               let imageUrl = "/images/plant.png";
               if (attributes?.image?.data?.attributes?.url) {
                 const url = attributes.image.data.attributes.url;
                 if (url.startsWith('http://') || url.startsWith('https://')) {
                   imageUrl = url;
                 } else {
-                  imageUrl = `https://dashboard.plantozone.com${url}`;
+                  imageUrl = `${STRAPI_BASE_URL}${url}`;
                 }
               }
               const authorName = attributes?.author?.data?.attributes?.name || "Jenny Alexander";

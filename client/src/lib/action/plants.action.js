@@ -11,7 +11,13 @@ const axiosClient = axios.create({
     }
 })
 
-const getPlants = () => axiosClient.get('/plants?populate=*&pagination[pageSize]=100')
+const getPlants = (params = {}) => {
+  const sp = new URLSearchParams({ populate: "*", "pagination[pageSize]": 100 });
+  if (params.search != null && String(params.search).trim()) {
+    sp.set("filters[title][$containsi]", String(params.search).trim());
+  }
+  return axiosClient.get(`/plants?${sp}`);
+};
 
 const getPlantById = (id) => axiosClient.get(`/plants/${id}?populate=*`)
 

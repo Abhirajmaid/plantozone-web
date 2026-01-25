@@ -2,6 +2,8 @@ import React from "react";
 import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import { NewsletterSection, ShopServiceSection, InfiniteCategoryMarquee } from "@/src/components";
+import StatsBar from "@/src/components/common/StatsBar";
+import { testimonials } from "@/src/lib/data/testimonials";
 import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
@@ -129,8 +131,8 @@ const page = () => {
                 <div className="relative w-full max-w-[300px] sm:max-w-[400px] md:max-w-[450px] lg:max-w-[550px] h-[300px] sm:h-[400px] md:h-[450px] lg:h-[550px] mx-auto">
                   <div className="w-full h-full bg-gray-200 rounded-full overflow-hidden">
                     <Image
-                      src="/images/plant.png"
-                      alt="About Us Video"
+                      src="/images/abou-us.jpeg"
+                      alt="Plantozone – community and plant gifting"
                       width={550}
                       height={550}
                       className="w-full h-full object-cover"
@@ -164,23 +166,8 @@ const page = () => {
                   </p>
                 </div>
 
-                {/* Statistics Bar */}
-                <div className="bg-green-800 rounded-2xl p-4 md:p-6">
-                  <div className="grid grid-cols-3 gap-4 md:gap-6 text-center">
-                    <div>
-                      <div className="text-2xl sm:text-3xl font-bold text-white mb-1">20+</div>
-                      <div className="text-green-200 text-xs sm:text-sm">Collections</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl sm:text-3xl font-bold text-white mb-1">6000+</div>
-                      <div className="text-green-200 text-xs sm:text-sm">Products</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl sm:text-3xl font-bold text-white mb-1">99%</div>
-                      <div className="text-green-200 text-xs sm:text-sm">Satisfied Customers</div>
-                    </div>
-                  </div>
-                </div>
+                {/* Statistics Bar – real counts from API, 98% satisfaction */}
+                <StatsBar compact />
 
               </div>
             </div>
@@ -279,69 +266,37 @@ const page = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              
-              {/* Testimonial Card 1 */}
-              <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 hover:shadow-xl transition-shadow">
-                <div className="flex items-center gap-1 mb-3 md:mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                  ))}
-                  <span className="text-base md:text-lg font-bold text-gray-900 ml-2">5.0</span>
-                </div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">Gorgeous Plants!</h3>
-                <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4 md:mb-6">
-                  The plants I received from Plantozone are absolutely beautiful and healthy. The packaging was excellent, and they arrived in perfect condition. Highly recommend!
-                </p>
-                <div className="flex items-center gap-3 md:gap-4">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
-                    <Image
-                      src="/images/plant.png"
-                      alt="Leslie Alexander"
-                      width={48}
-                      height={48}
-                      className="w-full h-full object-cover"
-                    />
+              {testimonials.map((t) => (
+                <div key={t.id} className="bg-white rounded-2xl shadow-lg p-6 md:p-8 hover:shadow-xl transition-shadow">
+                  <div className="flex items-center gap-1 mb-3 md:mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    ))}
+                    <span className="text-base md:text-lg font-bold text-gray-900 ml-2">5.0</span>
                   </div>
-                  <div>
-                    <h4 className="text-sm md:text-base font-bold text-gray-900">Leslie Alexander</h4>
-                    <p className="text-xs md:text-sm text-gray-600">Plant Lover</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Testimonial Card 2 */}
-              <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 hover:shadow-xl transition-shadow">
-                <div className="flex items-center gap-1 mb-3 md:mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                  ))}
-                  <span className="text-base md:text-lg font-bold text-gray-900 ml-2">5.0</span>
-                </div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">Excellent Service!</h3>
-                <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4 md:mb-6">
-                  Outstanding customer service and quality plants! The team was very helpful in choosing the right plants for my space. Delivery was fast and the plants are thriving.
-                </p>
-                <div className="flex items-center gap-3 md:gap-4">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
-                    <Image
-                      src="/images/plant.png"
-                      alt="Robert Fox"
-                      width={48}
-                      height={48}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h4 className="text-sm md:text-base font-bold text-gray-900">Robert Fox</h4>
-                    <p className="text-xs md:text-sm text-gray-600">Plant Enthusiast</p>
+                  <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">{t.title}</h3>
+                  <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4 md:mb-6">
+                    {t.text}
+                  </p>
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
+                      <Image
+                        src={t.image}
+                        alt={t.name}
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-sm md:text-base font-bold text-gray-900">{t.name}</h4>
+                      <p className="text-xs md:text-sm text-gray-600">{t.role}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-
+              ))}
             </div>
           </div>
         </Container>

@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/src/components/ui/dialog";
+import { Input } from "@/src/components/ui/input";
 import SignInForm from "../common/SignInForm";
 import SignUpForm from "../common/SignUpForm";
 import { Icon } from "@iconify/react";
@@ -56,11 +57,32 @@ export default function CustomNavbar() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
   const menuRef = useRef(null);
   const dropdownRef = useRef(null);
   const dropdownTimerRef = useRef(null);
+  const searchInputRef = useRef(null);
 
   const router = useRouter();
+
+  const openSearch = () => {
+    setIsSearchOpen(true);
+    setSearchInput("");
+  };
+
+  const closeSearch = () => {
+    setIsSearchOpen(false);
+    setSearchInput("");
+  };
+
+  const handleSearchSubmit = () => {
+    const q = searchInput.trim();
+    if (q) {
+      router.push(`/shop?search=${encodeURIComponent(q)}`);
+    }
+    closeSearch();
+  };
 
   const openAuthModal = () => {
     setIsAuthModalOpen(true);
@@ -227,7 +249,7 @@ export default function CustomNavbar() {
 
             {/* Right: Icons */}
             <div className="hidden md:flex items-center space-x-4">
-              <Button variant="ghost" size="icon" className="relative">
+              <Button variant="ghost" size="icon" className="relative" onClick={openSearch} aria-label="Search">
                 <Icon icon="mdi:magnify" className="h-6 w-6 text-gray-700" />
               </Button>
               <Button variant="ghost" size="icon" asChild className="relative">
@@ -246,15 +268,18 @@ export default function CustomNavbar() {
                 </Link>
               </Button>
               <PrimaryButton 
-                href="tel:+919059152555" 
+                href="/contact-us" 
                 withArrow={false}
               >
-                Call Us
+                Contact Us
               </PrimaryButton>
             </div>
 
-            {/* Mobile Icons - Wishlist and Cart */}
+            {/* Mobile Icons - Search, Wishlist and Cart */}
             <div className="md:hidden flex items-center space-x-2">
+              <Button variant="ghost" size="icon" onClick={openSearch} aria-label="Search">
+                <Icon icon="mdi:magnify" className="h-7 w-7 text-gray-700" />
+              </Button>
               <Button variant="ghost" size="icon" asChild>
                 <Link href="/whishlist">
                   <Icon icon="mdi:heart-outline" className="h-7 w-7 text-gray-700" />
@@ -369,6 +394,34 @@ export default function CustomNavbar() {
             })}
         </div>
       </div>
+
+      {/* Search Modal */}
+      <Dialog open={isSearchOpen} onOpenChange={(open) => { setIsSearchOpen(open); if (!open) setSearchInput(""); }}>
+        <DialogContent className="bg-white w-[90%] sm:w-[420px] mx-auto">
+          <DialogHeader>
+            <DialogTitle>Search plants</DialogTitle>
+            <p className="text-sm text-gray-600">Find plants by name</p>
+          </DialogHeader>
+          <div className="mt-4 flex gap-2">
+            <Input
+              ref={searchInputRef}
+              type="search"
+              placeholder="e.g. Monstera, Bonsai…"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+              className="flex-1"
+              autoFocus
+            />
+            <Button onClick={handleSearchSubmit} className="bg-green-600 hover:bg-green-700">
+              Search
+            </Button>
+          </div>
+          <DialogClose asChild>
+            <Button variant="ghost" className="mt-2">Cancel</Button>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
 
       {/* Auth Modal */}
       <Dialog open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen}>

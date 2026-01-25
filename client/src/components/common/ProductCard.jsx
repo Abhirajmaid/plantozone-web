@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
@@ -7,17 +7,62 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const SIZES = ["Small", "Medium"];
-const SHAPES = ["Hex", "Round"];
+const SHAPES = ["Hexagonal", "Round"];
+
+function buildSizeOptions(attrs) {
+  if (!attrs) return [];
+  const opts = [];
+  const add = (size, val) => {
+    const p = parseFloat(val);
+    if (val != null && !isNaN(p) && p >= 0) opts.push({ size, price: p });
+  };
+  add("Small", attrs.priceSmall);
+  add("Medium", attrs.priceMedium);
+  add("Large", attrs.priceLarge);
+  return opts;
+}
+
+function isOfferActive(attrs) {
+  if (!attrs?.discountPercent || parseFloat(attrs.discountPercent) <= 0) return false;
+  const start = attrs.offerStart ? new Date(attrs.offerStart) : null;
+  const end = attrs.offerEnd ? new Date(attrs.offerEnd) : null;
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  if (!start && !end) return true;
+  if (start) start.setHours(0, 0, 0, 0);
+  if (end) end.setHours(23, 59, 59, 999);
+  if (start && now < start) return false;
+  if (end && now > end) return false;
+  return true;
+}
+
+const DEFAULT_IMAGE = "/images/plant.png";
 
 const ProductCard = ({ data, onAddToCart }) => {
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedSize, setSelectedSize] = useState("Small");
+  const [selectedSize, setSelectedSize] = useState("");
   const [selectedShape, setSelectedShape] = useState("");
+  const [imgError, setImgError] = useState(false);
   const addBtnRef = useRef(null);
 
+  const attrs = data?.attributes || {};
+  const sizeOptions = useMemo(() => buildSizeOptions(attrs), [attrs.priceSmall, attrs.priceMedium, attrs.priceLarge]);
+  const offerActive = isOfferActive(attrs);
+  const discountPercent = parseFloat(attrs.discountPercent) || 0;
+
   const handleAddToCartClick = () => {
+    if (sizeOptions.length === 0) {
+      toast.info("Price on request", { position: "top-right" });
+      return;
+    }
+    setSelectedSize(sizeOptions[0].size);
+    setSelectedShape("");
     setShowPopup(true);
+  };
+
+  const getEffectivePrice = (basePrice) => {
+    if (offerActive && discountPercent > 0) return Math.round(basePrice * (1 - discountPercent / 100));
+    return Math.round(basePrice);
   };
 
   const handleConfirm = () => {
@@ -25,13 +70,11 @@ const ProductCard = ({ data, onAddToCart }) => {
       toast.error("Please select size and shape.", { position: "top-right" });
       return;
     }
-    const price = selectedSize === "Medium" ? 850 : 650;
+    const opt = sizeOptions.find((o) => o.size === selectedSize);
+    const basePrice = opt?.price ?? 0;
+    const effectivePrice = getEffectivePrice(basePrice);
     if (onAddToCart) {
-      onAddToCart({
-        size: selectedSize,
-        shape: selectedShape,
-        price: price,
-      });
+      onAddToCart({ size: selectedSize, shape: selectedShape, price: effectivePrice });
     }
     setShowPopup(false);
     setSelectedSize("");
@@ -50,42 +93,58 @@ const ProductCard = ({ data, onAddToCart }) => {
   };
 
   const imgArr = data?.attributes?.images?.data;
-  const imgUrl =
-    imgArr && imgArr[0]?.attributes?.url
-      ? imgArr[0].attributes.url
-      : "/images/plant.png";
-  
+  const rawUrl = imgArr?.[0]?.attributes?.url;
+  const hasValidUrl = rawUrl != null && String(rawUrl).trim() !== "";
+  const imgUrl = hasValidUrl ? rawUrl : DEFAULT_IMAGE;
+  const displaySrc = imgError ? DEFAULT_IMAGE : imgUrl;
+
+  useEffect(() => setImgError(false), [imgUrl]);
+
   // Check if image is external (Strapi URL)
-  const isExternalImage = imgUrl.startsWith('http');
+  const isExternalImage = displaySrc.startsWith("http");
 
-  // Get category and rating from data or use defaults
-  const category = data?.attributes?.category || "Indoor Plant";
-  const rating = data?.attributes?.rating || 4.9;
+  // Get category from categories relation (Strapi); fallback when unset
+  const category =
+    data?.attributes?.categories?.data?.[0]?.attributes?.title ||
+    data?.attributes?.categories?.data?.[0]?.attributes?.name ||
+    data?.attributes?.category ||
+    "Plant";
+  const rating = data?.attributes?.rating ?? 4.9;
 
-  // Price logic
-  const getPrice = () => {
-    if (selectedSize === "Medium") return 850;
-    return 650;
-  };
+  // Display price: first size; with discount when offer active
+  const firstBase = sizeOptions[0]?.price ?? 0;
+  const displayPrice = getEffectivePrice(firstBase);
+  const showStrikethrough = offerActive && discountPercent > 0 && firstBase > 0;
 
   // Position popup absolutely near the Add to Cart button
   return (
     <div className="w-full bg-white transition-shadow duration-300 overflow-hidden relative">
-      {/* Discount Tag */}
-      <div className="absolute top-3 left-3 z-10">
+      {/* Discount Tags: 20% off (always) + extra offer when discount % is set in CMS */}
+      <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
         <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
           20% off
         </div>
+        {(() => {
+          const p = parseFloat(data?.attributes?.discountPercent);
+          if (p > 0 && !isNaN(p)) {
+            return (
+              <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
+                Extra {Math.round(p)}% off
+              </div>
+            );
+          }
+          return null;
+        })()}
       </div>
-      {/* Popup for size and shape selection */}
+      {/* Popup: dynamic sizes from CMS, shapes Hexagonal/Round */}
       {showPopup && (
         <div className="absolute z-50 right-0 top-0 bg-white border border-green-600 shadow-2xl rounded-xl p-5 min-w-[230px]">
           <div className="mb-3">
             <div className="font-semibold mb-2 text-green-700 text-sm tracking-wide uppercase">
               Select Size
             </div>
-            <div className="flex gap-3">
-              {SIZES.map((size) => (
+            <div className="flex flex-wrap gap-3">
+              {sizeOptions.map(({ size, price }) => (
                 <button
                   key={size}
                   type="button"
@@ -97,7 +156,7 @@ const ProductCard = ({ data, onAddToCart }) => {
                         : "bg-white text-green-700 border-green-300 hover:bg-green-50"
                     }`}
                 >
-                  {size}
+                  {size} — ₹{Math.round(price).toLocaleString("en-IN")}
                 </button>
               ))}
             </div>
@@ -148,10 +207,11 @@ const ProductCard = ({ data, onAddToCart }) => {
           <Image
             width={500}
             height={400}
-            src={imgUrl}
+            src={displaySrc}
             alt={data?.attributes?.title || "plantozone"}
             className="w-full h-[300px] rounded-xl object-cover bg-gray-50"
             unoptimized={isExternalImage}
+            onError={() => setImgError(true)}
           />
         </Link>
         
@@ -195,13 +255,24 @@ const ProductCard = ({ data, onAddToCart }) => {
           
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <span className="text-lg font-bold text-gray-800">₹{getPrice()}</span>
-              <span className="text-xl text-gray-400 line-through">₹{Math.round(getPrice() * 1.5)}</span>
+              {sizeOptions.length > 0 ? (
+                <>
+                  <span className="text-lg font-bold text-gray-800">
+                    {sizeOptions.length > 1 ? "From " : ""}₹{displayPrice.toLocaleString("en-IN")}
+                  </span>
+                  {showStrikethrough && (
+                    <span className="text-base text-gray-400 line-through">₹{Math.round(firstBase).toLocaleString("en-IN")}</span>
+                  )}
+                </>
+              ) : (
+                <span className="text-base font-medium text-gray-500">Price on request</span>
+              )}
             </div>
-            <Button 
-              ref={addBtnRef} 
-              onClick={handleAddToCartClick} 
-              className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition-colors"
+            <Button
+              ref={addBtnRef}
+              onClick={handleAddToCartClick}
+              disabled={sizeOptions.length === 0}
+              className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 rounded-lg transition-colors"
             >
               <Icon
                 icon="icon-park-outline:shopping-cart-add"

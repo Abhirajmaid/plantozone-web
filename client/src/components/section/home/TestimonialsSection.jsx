@@ -8,37 +8,7 @@ import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import Image from "next/image";
-
-// Testimonial data
-const testimonials = [
-  {
-    id: 1,
-    title: "Gorgeous Plants!",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.",
-    name: "Leslie Alexander",
-    role: "Plant Lover",
-    rating: 5.0,
-    image: "/images/plant.png"
-  },
-  {
-    id: 2,
-    title: "Amazing Plants!",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.",
-    name: "Leslie Alexander",
-    role: "Plant Passionate",
-    rating: 5.0,
-    image: "/images/plant.png"
-  },
-  {
-    id: 3,
-    title: "Beautiful Plants!",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.",
-    name: "Emily Johnson",
-    role: "Plant Enthusiast",
-    rating: 5.0,
-    image: "/images/plant.png"
-  }
-];
+import { testimonials } from "@/src/lib/data/testimonials";
 
 const TestimonialCard = ({ testimonial }) => {
   return (

@@ -120,7 +120,7 @@ const Hero = () => {
   }
 
   return (
-    <Section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/30 via-white to-green-50/20 min-h-[auto] md:min-h-screen pt-20 md:pt-40">
+    <Section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/30 via-white to-green-50/20 min-h-[auto] md:min-h-screen pt-28 md:pt-44">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 md:top-20 right-5 md:right-20 w-48 md:w-72 h-48 md:h-72 bg-green-200/20 rounded-full blur-3xl"></div>
@@ -146,8 +146,8 @@ const Hero = () => {
             className="flex items-center justify-center order-2 lg:order-1"
           >
             <Link 
-              href="/shop"
-              className="bg-white/80 backdrop-blur-sm rounded-lg md:rounded-xl lg:rounded-[2rem] xl:rounded-[2.5rem] 2xl:rounded-[3rem] shadow-lg md:shadow-xl lg:shadow-2xl xl:shadow-3xl overflow-hidden w-full relative border border-green-100/50 hover:shadow-green-200/50 hover:shadow-3xl transition-all duration-500 h-[400px] md:h-[500px] lg:h-[600px] xl:h-[600px] 2xl:h-[700px] block cursor-pointer"
+              href={`/product/${selectedPlant.id}`}
+              className="bg-white/80 backdrop-blur-sm rounded-lg md:rounded-xl lg:rounded-[2rem] xl:rounded-[2.5rem] 2xl:rounded-[3rem] shadow-lg md:shadow-xl lg:shadow-2xl xl:shadow-3xl overflow-hidden w-full relative border border-green-100/50 hover:shadow-green-200/50 hover:shadow-3xl transition-all duration-500 h-[400px] md:h-[500px] lg:h-[620px]  block cursor-pointer"
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -203,12 +203,12 @@ const Hero = () => {
                     </div>
 
                     {/* Featured Badge */}
-                    <div className="absolute top-1.5 md:top-2 lg:top-3 xl:top-5 2xl:top-6 left-1.5 md:left-2 lg:left-3 xl:left-5 2xl:left-6 z-20">
+                    <div className="absolute top-2 md:top-2 lg:top-3 xl:top-5 2xl:top-6 left-2 md:left-2 lg:left-3 xl:left-5 2xl:left-6 z-20">
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                        className="bg-green-600 text-white px-1.5 md:px-2 lg:px-3 xl:px-5 2xl:px-6 py-0.5 md:py-0.5 lg:py-1 xl:py-1.5 2xl:py-2 rounded text-[9px] md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold shadow-md md:shadow-lg xl:shadow-xl"
+                        className="bg-green-600 text-white px-3 md:px-2 lg:px-3 xl:px-5 2xl:px-6 py-1.5 md:py-0.5 lg:py-1 xl:py-1.5 2xl:py-2 rounded text-sm md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold shadow-md md:shadow-lg xl:shadow-xl"
                       >
                         Featured
                       </motion.div>
@@ -219,34 +219,34 @@ const Hero = () => {
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.3, duration: 0.4 }}
-                      className="absolute bottom-0 left-0 right-0 p-2 md:p-2.5 lg:p-4 xl:p-6 2xl:p-8 space-y-1 md:space-y-1.5 lg:space-y-2 xl:space-y-3 2xl:space-y-4 z-20"
+                      className="absolute bottom-0 left-0 right-0 p-4 md:p-2.5 lg:p-4 xl:p-6 2xl:p-8 space-y-2 md:space-y-1.5 lg:space-y-2 xl:space-y-3 2xl:space-y-4 z-20"
                     >
                       {/* Category */}
                       <div className="flex items-center justify-between">
-                        <span className="text-[9px] md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-white/90">{selectedPlant.category}</span>
-                        <div className="flex items-center space-x-0.5 xl:space-x-1">
-                          <svg className="w-2 h-2 md:w-2.5 md:h-2.5 lg:w-3 lg:h-3 xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                        <span className="text-base md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-white/90">{selectedPlant.category}</span>
+                        <div className="flex items-center space-x-1 md:space-x-0.5 xl:space-x-1">
+                          <svg className="w-4 h-4 md:w-2.5 md:h-2.5 lg:w-3 lg:h-3 xl:w-4 xl:h-4 2xl:w-5 2xl:h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                           </svg>
-                          <span className="text-[9px] md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium text-white">{selectedPlant.rating}</span>
+                          <span className="text-base md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium text-white">{selectedPlant.rating}</span>
                         </div>
                       </div>
 
                       {/* Name */}
-                      <h2 className="text-xs md:text-sm lg:text-base xl:text-2xl 2xl:text-3xl font-bold text-white line-clamp-2 xl:line-clamp-3 drop-shadow-lg">
+                      <h2 className="text-xl md:text-sm lg:text-base xl:text-2xl 2xl:text-3xl font-bold text-white line-clamp-2 xl:line-clamp-3 drop-shadow-lg">
                         {selectedPlant.name}
                       </h2>
 
                       {/* Description */}
-                      <p className="text-white/90 text-[9px] md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base leading-normal md:leading-relaxed xl:leading-relaxed line-clamp-2 xl:line-clamp-3 drop-shadow-md">
+                      <p className="text-white/90 text-sm md:text-[10px] lg:text-xs xl:text-sm 2xl:text-base leading-relaxed md:leading-normal xl:leading-relaxed line-clamp-2 xl:line-clamp-3 drop-shadow-md">
                         {selectedPlant.description}
                       </p>
 
                       {/* Know More Text */}
-                      <div className="inline-flex items-center gap-1 xl:gap-2 text-white hover:text-green-200 font-medium transition-colors group pt-1 md:pt-1 lg:pt-1.5 xl:pt-2 text-[9px] md:text-[10px] lg:text-xs xl:text-base 2xl:text-lg pointer-events-none">
+                      <div className="inline-flex items-center gap-2 md:gap-1 xl:gap-2 text-white hover:text-green-200 font-medium transition-colors group pt-1 md:pt-1 lg:pt-1.5 xl:pt-2 text-base md:text-[10px] lg:text-xs xl:text-base 2xl:text-lg pointer-events-none">
                         <span>Know more</span>
                         <svg
-                          className="w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 group-hover:translate-x-1 transition-transform"
+                          className="w-5 h-5 md:w-3 md:h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6 group-hover:translate-x-1 transition-transform"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -275,15 +275,6 @@ const Hero = () => {
           >
             {/* Hero Content */}
             <div className="space-y-4 md:space-y-5 lg:space-y-6 xl:space-y-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <span className="inline-block text-green-600 text-xs md:text-sm lg:text-base font-semibold tracking-wide uppercase px-3 md:px-4 lg:px-5 py-1 md:py-1.5 lg:py-2 bg-green-50 rounded-full">
-                  Go green.
-                </span>
-              </motion.div>
               
               <motion.h1 
                 initial={{ opacity: 0, y: 20 }}
@@ -291,7 +282,7 @@ const Hero = () => {
                 transition={{ delay: 0.5 }}
                 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-6xl font-bold bg-gradient-to-br from-gray-900 via-gray-800 to-green-900 bg-clip-text text-transparent leading-tight max-w-2xl"
               >
-                The world of plants
+                Breath Oxygen Only
               </motion.h1>
               
               <motion.p 
@@ -312,16 +303,9 @@ const Hero = () => {
               className="w-full"
             >
               <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-5 lg:mb-6 xl:mb-8">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg lg:rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
-                    <svg className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                    </svg>
-                  </div>
-                </div>
+                
                 <div>
                   <h3 className="text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-gray-900">Top 5 of the week</h3>
-                  <p className="text-xs md:text-sm lg:text-base text-gray-500">Most popular plants this week</p>
                 </div>
               </div>
               

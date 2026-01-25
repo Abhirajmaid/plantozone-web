@@ -3,7 +3,7 @@ import { Container } from "@/src/components/layout/Container";
 
 export default function CancellationRefundPage() {
   return (
-    <Container className="py-12 max-w-3xl mx-auto">
+    <Container className="py-12 max-w-3xl mx-auto pt-[170px]">
       <h1 className="text-3xl font-bold mb-6 text-green-700">
         Cancellation and Refund Policy
       </h1>

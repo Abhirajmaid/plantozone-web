@@ -1,7 +1,10 @@
+"use client";
+
 import React from "react";
 import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import Image from "next/image";
+import StatsBar from "@/src/components/common/StatsBar";
 
 const AboutUsSection = () => {
   return (
@@ -15,10 +18,10 @@ const AboutUsSection = () => {
               <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-[450px] lg:h-[450px] mx-auto">
                 <div className="w-full h-full bg-gray-200 rounded-full overflow-hidden">
                   <Image
-                    src="/images/plant.png"
-                    alt="About Us Video"
-                    width={400}
-                    height={400}
+                    src="/images/abou-us.jpeg"
+                    alt="Plantozone – community and plant gifting"
+                    width={450}
+                    height={450}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -46,23 +49,8 @@ const AboutUsSection = () => {
                 </p>
               </div>
 
-              {/* Statistics Bar */}
-              <div className="bg-green-800 rounded-2xl p-6">
-                <div className="grid grid-cols-3 gap-6 text-center">
-                  <div>
-                    <div className="text-3xl font-bold text-white mb-1">20+</div>
-                    <div className="text-green-200 text-sm">Collections</div>
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-white mb-1">6000+</div>
-                    <div className="text-green-200 text-sm">Products</div>
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-white mb-1">99%</div>
-                    <div className="text-green-200 text-sm">Satisfied Customers</div>
-                  </div>
-                </div>
-              </div>
+              {/* Statistics Bar – real counts from API, 98% satisfaction */}
+              <StatsBar />
 
             </div>
           </div>

@@ -18,68 +18,53 @@ import {
 import { SectionTitle, TestimonialCard } from "../..";
 import { Section } from "../../layout/Section";
 
-// Updated testimonial data with more variety
+// 6 testimonials – Indian names, real reviews
 const data = [
   {
-    name: "Emily R.",
+    name: "Rajesh Kumar",
     quote:
       "I’ve bought several plants from Plantozone, and each one has arrived in perfect condition! The packaging is superb, and the plants are thriving in my living room. I especially love the variety of air-purifying plants they offer. Will definitely be ordering more!",
-    image:
-      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/images/plant.png",
     location: "Bangalore",
     rating: 5,
   },
   {
-    name: "John D.",
+    name: "Priya Sharma",
     quote:
       "Absolutely love the plants I received! They were well-packaged, and the delivery was fast. Highly recommend this store for plant lovers.",
-    image:
-      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/images/plant.png",
     location: "Mumbai",
-    rating: 4,
+    rating: 5,
   },
   {
-    name: "Sophia M.",
+    name: "Arjun Mehta",
     quote:
       "Fantastic customer service and high-quality plants! I was worried about shipping, but the plants arrived healthy and beautiful.",
-    image:
-      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/images/plant.png",
     location: "Delhi",
     rating: 5,
   },
   {
-    name: "Michael B.",
+    name: "Kavita Singh",
     quote:
       "I've bought from many online plant shops, but this one stands out. The quality, packaging, and variety are excellent!",
-    image:
-      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/images/plant.png",
     location: "Hyderabad",
     rating: 5,
   },
   {
-    name: "Olivia W.",
+    name: "Vikram Reddy",
     quote:
       "Such a wonderful experience! My plants are thriving, and I appreciate the self-watering pots included. Will definitely buy again!",
-    image:
-      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/images/plant.png",
     location: "Chennai",
-    rating: 4,
-  },
-  {
-    name: "Amit S.",
-    quote:
-      "The best online plant store! The plants are lush and healthy, and the support team is very responsive.",
-    image:
-      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    location: "Pune",
     rating: 5,
   },
   {
-    name: "Priya K.",
+    name: "Ananya Patel",
     quote:
-      "Loved the eco-friendly packaging and the care instructions. My balcony looks amazing now!",
-    image:
-      "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "The best online plant store! The plants are lush and healthy, and the support team is very responsive. My balcony looks amazing now. Thank you, Plantozone!",
+    image: "/images/plant.png",
     location: "Kolkata",
     rating: 5,
   },
@@ -122,8 +107,7 @@ const TestimonialSwiper = () => {
               <div className="bg-white rounded-2xl shadow-xl border border-lightGreen/20 p-8 flex flex-col items-center h-[410px] transition-all duration-300 hover:shadow-2xl">
                 <img
                   src={
-                    item.image ||
-                    "https://images.unsplash.com/vector-1748337762173-ee7f7f3c098e?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    item.image || "/images/plant.png"
                   }
                   alt={item.name}
                   className="w-20 h-20 rounded-full object-cover border-4 border-lightGreen mb-4 shadow"

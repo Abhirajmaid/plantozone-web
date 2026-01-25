@@ -24,12 +24,40 @@ import { addToCart as addToCartUtil, getCartItems } from "@/src/lib/utils/cartUt
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const OFFER_PLANT_IDS = [64, 47]; // Bonsai plants with 30% off offer
-const OFFER_DISCOUNT = 30;
+const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.NEXT_PUBLIC_API_URL || "https://dashboard.plantozone.com";
+
+const getImageUrl = (url) => !url ? "" : (url.startsWith("http") ? url : `${STRAPI_BASE_URL}${url}`);
+
+function buildSizeOptions(attrs) {
+  if (!attrs) return [];
+  const opts = [];
+  const add = (size, val) => {
+    const p = parseFloat(val);
+    if (val != null && !isNaN(p) && p >= 0) opts.push({ size, price: p });
+  };
+  add("Small", attrs.priceSmall);
+  add("Medium", attrs.priceMedium);
+  add("Large", attrs.priceLarge);
+  return opts;
+}
+
+function isOfferActive(attrs) {
+  if (!attrs?.discountPercent || parseFloat(attrs.discountPercent) <= 0) return false;
+  const start = attrs.offerStart ? new Date(attrs.offerStart) : null;
+  const end = attrs.offerEnd ? new Date(attrs.offerEnd) : null;
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  if (!start && !end) return true;
+  if (start) start.setHours(0, 0, 0, 0);
+  if (end) end.setHours(23, 59, 59, 999);
+  if (start && now < start) return false;
+  if (end && now > end) return false;
+  return true;
+}
 
 export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState("Small");
+  const [selectedSize, setSelectedSize] = useState(null);
   const [selectedShape, setSelectedShape] = useState("Hexagonal");
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewForm, setReviewForm] = useState({
@@ -65,6 +93,22 @@ export default function ProductPage() {
 
     fetchData();
   }, [productId]);
+
+  const attrs = product?.attributes || {};
+  const sizeOptions = buildSizeOptions(attrs);
+  const offerActive = isOfferActive(attrs);
+  const discountPercent = parseFloat(attrs.discountPercent) || 0;
+  const selectedSizeOption = sizeOptions.find((o) => o.size === selectedSize);
+  const basePrice = selectedSizeOption?.price ?? 0;
+  const effectivePrice = offerActive && discountPercent > 0
+    ? Math.round(basePrice * (1 - discountPercent / 100))
+    : Math.round(basePrice);
+
+  useEffect(() => {
+    if (sizeOptions.length > 0 && (selectedSize === null || !sizeOptions.some((o) => o.size === selectedSize))) {
+      setSelectedSize(sizeOptions[0].size);
+    }
+  }, [product?.id]);
 
   // Fetch related products when product is loaded
   useEffect(() => {
@@ -156,24 +200,24 @@ export default function ProductPage() {
   };
 
   const addToCart = () => {
-    if (!selectedSize) {
-      alert("Please select a plant size");
+    if (!selectedSize || !selectedSizeOption) {
+      toast.error("Please select a plant size");
       return;
     }
     if (!selectedShape) {
-      alert("Please select a plant shape");
+      toast.error("Please select a plant shape");
       return;
     }
 
-    const price = selectedSize === "Medium" ? 850 : 650;
+    const imgUrl = product?.attributes?.images?.data?.[0]?.attributes?.url;
     const newItem = {
       product: product.id,
       title: product?.attributes?.title,
-      price: price,
+      price: effectivePrice,
       size: selectedSize,
       shape: selectedShape,
       quantity: quantity,
-      image: product?.attributes?.images?.data[0]?.attributes?.url || "",
+      image: getImageUrl(imgUrl) || "/images/plant.png",
     };
 
     addToCartUtil(newItem);
@@ -266,24 +310,24 @@ export default function ProductPage() {
   };
 
   const buyNow = () => {
-    if (!selectedSize) {
-      alert("Please select a plant size");
+    if (!selectedSize || !selectedSizeOption) {
+      toast.error("Please select a plant size");
       return;
     }
     if (!selectedShape) {
-      alert("Please select a plant shape");
+      toast.error("Please select a plant shape");
       return;
     }
 
-    const price = selectedSize === "Medium" ? 850 : 650;
+    const imgUrl = product?.attributes?.images?.data?.[0]?.attributes?.url;
     const newItem = {
       product: product.id,
       title: product?.attributes?.title,
-      price: price,
+      price: effectivePrice,
       size: selectedSize,
       shape: selectedShape,
       quantity: quantity,
-      image: product?.attributes?.images?.data[0]?.attributes?.url || "",
+      image: getImageUrl(imgUrl) || "/images/plant.png",
     };
 
     addToCartUtil(newItem);
@@ -325,9 +369,6 @@ export default function ProductPage() {
       </div>
     );
   }
-
-  // Check if current product has offer
-  const hasOffer = OFFER_PLANT_IDS.includes(product.id);
 
   return (
     <Section className="min-h-screen relative">
@@ -372,10 +413,10 @@ export default function ProductPage() {
           {/* Product Image Gallery */}
           <div className="w-full relative">
             {/* Offer Badge on Image */}
-            {hasOffer && (
+            {offerActive && discountPercent > 0 && (
               <div className="absolute top-4 left-4 z-20">
                 <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg shadow-2xl transform rotate-[-5deg]">
-                  <div className="text-2xl font-bold">{OFFER_DISCOUNT}% OFF</div>
+                  <div className="text-2xl font-bold">{Math.round(discountPercent)}% OFF</div>
                   <div className="text-xs font-medium">Limited Time</div>
                 </div>
               </div>
@@ -383,36 +424,43 @@ export default function ProductPage() {
             {/* Main Product Image */}
             <div className="aspect-square w-full bg-white rounded-xl shadow-lg mb-4 overflow-hidden relative">
               <img
-                src={product.attributes.images.data[selectedImageIndex]?.attributes.url || product.attributes.images.data[0]?.attributes.url}
+                src={getImageUrl(
+                  product.attributes.images?.data?.[selectedImageIndex]?.attributes?.url ||
+                  product.attributes.images?.data?.[0]?.attributes?.url
+                ) || "/images/plant.png"}
                 alt={product.attributes.title}
                 className="w-full h-full object-cover"
               />
             </div>
             
             {/* Thumbnail Images - Always show, even for single image */}
-            <div className="flex gap-3">
-              {product.attributes.images.data.map((image, index) => (
-                <div 
-                  key={index} 
-                  className={`w-20 h-20 bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 border-2 ${
-                    selectedImageIndex === index ? 'border-yellow-400 shadow-lg' : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setSelectedImageIndex(index)}
-                >
-                  <img
-                    src={image.attributes.url}
-                    alt={`${product.attributes.title} ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+            {(product.attributes.images?.data?.length ?? 0) > 0 && (
+              <div className="flex gap-3">
+                {product.attributes.images.data.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`w-20 h-20 bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 border-2 ${
+                      selectedImageIndex === index ? "border-yellow-400 shadow-lg" : "border-gray-200 hover:border-gray-300"
+                    }`}
+                    onClick={() => setSelectedImageIndex(index)}
+                  >
+                    <img
+                      src={getImageUrl(image.attributes?.url)}
+                      alt={`${product.attributes.title} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Details */}
           <div className="space-y-6">
             {/* Category */}
-            <p className="text-sm text-gray-500 uppercase tracking-wide">Indoor Plant</p>
+            <p className="text-sm text-gray-500 uppercase tracking-wide">
+              {attrs.categories?.data?.[0]?.attributes?.title || attrs.categories?.data?.[0]?.attributes?.name || "Plant"}
+            </p>
             
             {/* Product Name */}
             <div className="flex items-start justify-between gap-4">
@@ -420,9 +468,9 @@ export default function ProductPage() {
                 {product.attributes.title}
               </h1>
               {/* Offer Badge next to title */}
-              {hasOffer && (
+              {offerActive && discountPercent > 0 && (
                 <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg shadow-lg">
-                  <div className="text-lg font-bold">{OFFER_DISCOUNT}% OFF</div>
+                  <div className="text-lg font-bold">{Math.round(discountPercent)}% OFF</div>
                   <div className="text-xs font-medium">Special Offer</div>
                 </div>
               )}
@@ -458,63 +506,61 @@ export default function ProductPage() {
             {/* Rating */}
             <div className="flex items-center gap-2">
               <div className="flex">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Star
-                  key={i}
-                    className="w-5 h-5 fill-yellow-400 text-yellow-400"
-                />
-              ))}
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Star
+                    key={i}
+                    className={`w-5 h-5 ${i <= (attrs.rating ?? 0) ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"}`}
+                  />
+                ))}
               </div>
-              <span className="text-gray-600">4.9 (245 Review)</span>
+              <span className="text-gray-600">
+                {attrs.rating != null ? Number(attrs.rating).toFixed(1) : "—"}
+                {attrs.rating != null ? " (Rating)" : ""}
+              </span>
             </div>
 
-            {/* Price */}
+            {/* Price - only for sizes with prices; no base/strikethrough */}
             <div className="flex items-center gap-4">
-              {hasOffer ? (
-                <>
-                  <div className="flex flex-col">
-                    <span className="text-3xl font-bold text-green-600">
-                      ₹{Math.round((selectedSize === "Medium" ? 850 : 650) * (1 - OFFER_DISCOUNT / 100))}
+              {sizeOptions.length > 0 ? (
+                <div className="flex flex-col">
+                  <span className="text-3xl font-bold text-gray-800">₹{effectivePrice.toLocaleString("en-IN")}</span>
+                  {offerActive && discountPercent > 0 && (
+                    <span className="text-sm text-green-600 font-medium">
+                      After {Math.round(discountPercent)}% off (was ₹{Math.round(basePrice).toLocaleString("en-IN")})
                     </span>
-                    <span className="text-sm text-gray-500">After {OFFER_DISCOUNT}% discount</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xl text-gray-400 line-through">₹{selectedSize === "Medium" ? "850" : "650"}</span>
-                    <span className="text-sm text-green-600 font-semibold">Save ₹{Math.round((selectedSize === "Medium" ? 850 : 650) * (OFFER_DISCOUNT / 100))}</span>
-                  </div>
-                </>
+                  )}
+                </div>
               ) : (
-                <>
-                  <span className="text-3xl font-bold text-gray-800">₹{selectedSize === "Medium" ? "850" : "650"}</span>
-                  <span className="text-xl text-gray-400 line-through">₹{selectedSize === "Medium" ? "1,499" : "1,099"}</span>
-                </>
+                <span className="text-xl font-medium text-gray-500">Price on request</span>
               )}
             </div>
 
-            {/* Description */}
-            <p className="text-gray-600 leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+            {/* Description - dynamic from Strapi */}
+            <p className="text-gray-600 leading-relaxed line-clamp-4">
+              {attrs.description || "No description available."}
             </p>
 
-            {/* Plant Size Selection */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-3 block">Plant Size</label>
-              <div className="flex gap-2">
-                {["Small", "Medium"].map((size) => (
-                <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      selectedSize === size
-                        ? "bg-yellow-400 text-gray-800"
-                        : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    {size}
-                </button>
-                ))}
+            {/* Plant Size - only sizes that have prices in Strapi */}
+            {sizeOptions.length > 0 && (
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-3 block">Plant Size</label>
+                <div className="flex flex-wrap gap-2">
+                  {sizeOptions.map(({ size, price }) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        selectedSize === size
+                          ? "bg-yellow-400 text-gray-800"
+                          : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      {size} — ₹{Math.round(price).toLocaleString("en-IN")}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Plant Shape Selection */}
             <div>
@@ -557,12 +603,22 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Action Buttons - Hidden on mobile, shown on desktop */}
+            {/* Action Buttons - Hidden on mobile, shown on desktop; disabled when no sizes */}
             <div className="hidden md:flex gap-4">
-              <SecondaryButton onClick={addToCart} withArrow={false} className="flex-1">
+              <SecondaryButton
+                onClick={addToCart}
+                withArrow={false}
+                className={`flex-1 ${sizeOptions.length === 0 ? "opacity-60 cursor-not-allowed" : ""}`}
+                disabled={sizeOptions.length === 0}
+              >
                 Add To Cart
               </SecondaryButton>
-              <PrimaryButton onClick={buyNow} withArrow={false} className="flex-1">
+              <PrimaryButton
+                onClick={buyNow}
+                withArrow={false}
+                className={`flex-1 ${sizeOptions.length === 0 ? "opacity-60 cursor-not-allowed" : ""}`}
+                disabled={sizeOptions.length === 0}
+              >
                 Buy Now
               </PrimaryButton>
               <button className="border-2 border-gray-300 hover:border-gray-400 rounded-lg w-12 h-12 inline-flex items-center justify-center">
@@ -647,59 +703,27 @@ export default function ProductPage() {
           <div className="min-h-[400px]">
             {activeTab === "description" && (
               <div className="prose max-w-none">
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  This beautiful plant brings natural beauty to your home or office. This plant is perfect for India's climate and grows easily.
+                <p className="text-gray-600 leading-relaxed">
+                  This beautiful plant brings natural beauty to your home or office. With its vibrant foliage and easy-to-care-for nature, it is perfect for both beginners and experienced plant enthusiasts.
                 </p>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  This plant purifies the air and makes your living space healthy. It grows well even in low light, which is ideal for Indian homes.
+                <p className="text-gray-600 leading-relaxed mt-4">
+                  This plant purifies the air and creates a calming atmosphere. It thrives in indoor conditions and adds a touch of greenery to any space.
                 </p>
-                <div className="space-y-3">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-3">Key Features:</h4>
-                  <ul className="space-y-2 text-gray-600">
-                    <li className="flex items-start">
-                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                      <span>Perfect for Indian climate</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                      <span>Grows well in low light</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                      <span>Air purifying properties</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                      <span>Easy maintenance</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                      <span>Beautiful foliage and growth</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                      <span>Perfect for Indian homes</span>
-                    </li>
-                  </ul>
-                </div>
-                
-                <div className="mt-6 p-4 bg-green-50 rounded-lg">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-3">Care Instructions:</h4>
-                  <ul className="space-y-2 text-gray-600">
-                    <li className="flex items-start">
-                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                      <span>Water 2-3 times a week</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                      <span>4-6 hours of sunlight daily</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                      <span>Fertilize once a month</span>
-                    </li>
-                  </ul>
-                </div>
+                <h4 className="text-lg font-semibold text-gray-800 mt-6 mb-3">Key Features</h4>
+                <ul className="list-disc list-inside text-gray-600 space-y-2">
+                  <li>Perfect for Indian climate</li>
+                  <li>Grows well in low light</li>
+                  <li>Air purifying properties</li>
+                  <li>Easy maintenance</li>
+                  <li>Beautiful foliage and growth</li>
+                  <li>Perfect for Indian homes</li>
+                </ul>
+                <h4 className="text-lg font-semibold text-gray-800 mt-6 mb-3">Care Instructions</h4>
+                <ul className="list-disc list-inside text-gray-600 space-y-2">
+                  <li>Water 2-3 times a week</li>
+                  <li>4-6 hours of sunlight daily</li>
+                  <li>Fertilize once a month</li>
+                </ul>
               </div>
             )}
 
@@ -717,14 +741,20 @@ export default function ProductPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    <tr className="bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        Plant Size
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        10-12 inches (25-30 cm)
-                      </td>
-                    </tr>
+                    {sizeOptions.length > 0 && (
+                      <tr className="bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          Sizes & Prices
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-700">
+                          {sizeOptions.map(({ size, price }) => (
+                            <span key={size} className="mr-3">
+                              {size}: ₹{Math.round(price).toLocaleString("en-IN")}
+                            </span>
+                          ))}
+                        </td>
+                      </tr>
+                    )}
                     <tr className="bg-white">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         Light Requirements
@@ -1120,33 +1150,30 @@ export default function ProductPage() {
       {/* Newsletter Section */}
       <NewsletterSection />
 
-      {/* Mobile Bottom Bar - Only visible on mobile */}
+      {/* Mobile Bottom Bar - Only visible on mobile; no base/strikethrough price */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-[110]">
         <div className="flex items-center justify-between p-3 gap-2">
           {/* Price Display */}
           <div className="flex flex-col min-w-[80px]">
             <span className="text-[10px] text-gray-500 uppercase">Price</span>
-            <div className="flex items-center gap-1.5">
-              <span className="text-base font-bold text-green-600">
-                ₹{selectedSize === "Medium" ? "850" : "650"}
-              </span>
-              <span className="text-xs text-gray-400 line-through">
-                ₹{selectedSize === "Medium" ? "1,499" : "1,099"}
-              </span>
-            </div>
+            <span className="text-base font-bold text-green-600">
+              {sizeOptions.length > 0 ? `₹${effectivePrice.toLocaleString("en-IN")}` : "—"}
+            </span>
           </div>
 
           {/* Action Buttons */}
           <div className="flex gap-2 flex-1">
             <button
               onClick={addToCart}
-              className="flex-1 bg-green-700 hover:bg-green-800 text-white font-semibold py-2.5 px-3 rounded-lg text-xs uppercase tracking-wide transition-colors shadow-md"
+              disabled={sizeOptions.length === 0}
+              className="flex-1 bg-green-700 hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-2.5 px-3 rounded-lg text-xs uppercase tracking-wide transition-colors shadow-md"
             >
               Add To Cart
             </button>
             <button
               onClick={buyNow}
-              className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2.5 px-3 rounded-lg text-xs uppercase tracking-wide transition-colors shadow-md"
+              disabled={sizeOptions.length === 0}
+              className="flex-1 bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed text-black font-semibold py-2.5 px-3 rounded-lg text-xs uppercase tracking-wide transition-colors shadow-md"
             >
               Buy Now
             </button>

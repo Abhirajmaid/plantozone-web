@@ -15,12 +15,8 @@ export const header = [
     label: "Blog",
     href: "/blog"
   },
-  {
-    label: "Contact Us",
-    href: "/contact-us"
-  },
-
 ]
+
 
 export const mobileTabs = [
   {

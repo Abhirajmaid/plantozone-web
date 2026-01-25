@@ -50,23 +50,23 @@ export default function Footer() {
                      </div>
                      <span className="text-xl font-bold text-white">Plantozone</span>
                    </div>
-            <p className="text-gray-300 text-sm leading-relaxed mb-6">
+            <p className="text-gray-100 text-sm leading-relaxed mb-6">
               Your trusted destination for premium plants and gardening essentials. We bring nature closer to you with a wide selection of indoor plants, outdoor plants, and expert care guidance to help your green space thrive.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+              <a href="#" className="text-gray-100 hover:text-white transition-colors">
                 <Icon icon="uiw:facebook" width="20" height="20" />
               </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+              <a href="#" className="text-gray-100 hover:text-white transition-colors">
                 <Icon icon="uiw:twitter" width="20" height="20" />
               </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+              <a href="#" className="text-gray-100 hover:text-white transition-colors">
                 <Icon icon="uiw:pinterest" width="20" height="20" />
               </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+              <a href="#" className="text-gray-100 hover:text-white transition-colors">
                 <Icon icon="streamline:instagram-solid" width="20" height="20" />
               </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+              <a href="#" className="text-gray-100 hover:text-white transition-colors">
                 <Icon icon="uiw:youtube" width="20" height="20" />
               </a>
             </div>
@@ -76,10 +76,10 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">Company</h3>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/about-us" className="text-gray-300 hover:text-white transition-colors">About Us</Link></li>
-              <li><Link href="/blog" className="text-gray-300 hover:text-white transition-colors">Blog</Link></li>
-              <li><Link href="/contact-us" className="text-gray-300 hover:text-white transition-colors">Contact Us</Link></li>
-              <li><Link href="/career" className="text-gray-300 hover:text-white transition-colors">Career</Link></li>
+              <li><Link href="/about-us" className="text-gray-100 hover:text-white transition-colors">About Us</Link></li>
+              <li><Link href="/blog" className="text-gray-100 hover:text-white transition-colors">Blog</Link></li>
+              <li><Link href="/contact-us" className="text-gray-100 hover:text-white transition-colors">Contact Us</Link></li>
+              <li><Link href="/career" className="text-gray-100 hover:text-white transition-colors">Career</Link></li>
             </ul>
           </div>
 
@@ -87,10 +87,10 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">Customer Services</h3>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/account" className="text-gray-300 hover:text-white transition-colors">My Account</Link></li>
-              <li><Link href="/track-order" className="text-gray-300 hover:text-white transition-colors">Track Your Order</Link></li>
-              <li><Link href="/return" className="text-gray-300 hover:text-white transition-colors">Return</Link></li>
-              <li><Link href="/faq" className="text-gray-300 hover:text-white transition-colors">FAQ</Link></li>
+              <li><Link href="/account" className="text-gray-100 hover:text-white transition-colors">My Account</Link></li>
+              <li><Link href="/track-order" className="text-gray-100 hover:text-white transition-colors">Track Your Order</Link></li>
+              <li><Link href="/return" className="text-gray-100 hover:text-white transition-colors">Return</Link></li>
+              <li><Link href="/faq" className="text-gray-100 hover:text-white transition-colors">FAQ</Link></li>
             </ul>
           </div>
 
@@ -98,17 +98,17 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">Our Information</h3>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/privacy-policy" className="text-gray-300 hover:text-white transition-colors">Privacy</Link></li>
-              <li><Link href="/terms" className="text-gray-300 hover:text-white transition-colors">User Terms & Condition</Link></li>
-              <li><Link href="/cancellation-and-refund" className="text-gray-300 hover:text-white transition-colors">Return Policy</Link></li>
+              <li><Link href="/privacy-policy" className="text-gray-100 hover:text-white transition-colors">Privacy</Link></li>
+              <li><Link href="/terms" className="text-gray-100 hover:text-white transition-colors">User Terms & Condition</Link></li>
+              <li><Link href="/cancellation-and-refund" className="text-gray-100 hover:text-white transition-colors">Return Policy</Link></li>
             </ul>
           </div>
 
           {/* Contact Info */}
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">Contact Info</h3>
-            <div className="space-y-3 text-sm text-gray-300">
-              <p>Phone: +91 90591 52555, +91 89994 92523</p>
+            <div className="space-y-3 text-sm text-gray-100">
+              <p>Phone: +91 90591 52555, <br /> +91 89994 92523</p>
               <p>Email: info@plantozone.com</p>
               <p>Address: 5th floor, yellareddy guda, Secunderabad, Hyderabad, Telangana - 500016</p>
             </div>
@@ -117,8 +117,8 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-green-500 py-6 rounded-b-3xl">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-300 mb-4 md:mb-0">
-              Copyright © 2024 Plantozone. All Rights Reserved.
+            <p className="text-sm text-gray-200 mb-4 md:mb-0">
+              Copyright © 2025 Plantozone. All Rights Reserved.
             </p>
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-2">

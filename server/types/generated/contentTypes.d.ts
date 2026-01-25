@@ -886,49 +886,6 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
   };
 }
 
-export interface ApiOrderOrder extends Schema.CollectionType {
-  collectionName: 'orders';
-  info: {
-    singularName: 'order';
-    pluralName: 'orders';
-    displayName: 'Order';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    orderId: Attribute.String & Attribute.Required & Attribute.Unique;
-    userName: Attribute.String;
-    userEmail: Attribute.Email;
-    userPhone: Attribute.String;
-    address: Attribute.Text;
-    pincode: Attribute.String;
-    city: Attribute.String;
-    state: Attribute.String;
-    items: Attribute.JSON;
-    total: Attribute.Decimal;
-    paymentId: Attribute.String;
-    status: Attribute.Enumeration<['pending', 'paid', 'failed']> &
-      Attribute.DefaultTo<'pending'>;
-    name: Attribute.String;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::order.order',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::order.order',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface ApiOrderDetailOrderDetail extends Schema.CollectionType {
   collectionName: 'order_details';
   info: {
@@ -993,7 +950,17 @@ export interface ApiPlantPlant extends Schema.CollectionType {
       'manyToMany',
       'api::category.category'
     >;
-    price: Attribute.BigInteger;
+    price: Attribute.Float;
+    stock: Attribute.Integer & Attribute.DefaultTo<0>;
+    rating: Attribute.Float & Attribute.DefaultTo<0>;
+    enableSizeOptions: Attribute.Boolean & Attribute.DefaultTo<false>;
+    priceSmall: Attribute.Float;
+    priceMedium: Attribute.Float;
+    priceLarge: Attribute.Float;
+    discountPercent: Attribute.Float;
+    offerStart: Attribute.Date;
+    offerEnd: Attribute.Date;
+    extraOfferLabel: Attribute.String;
     cart: Attribute.Relation<'api::plant.plant', 'oneToOne', 'api::cart.cart'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -1034,7 +1001,6 @@ declare module '@strapi/types' {
       'api::blog.blog': ApiBlogBlog;
       'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
-      'api::order.order': ApiOrderOrder;
       'api::order-detail.order-detail': ApiOrderDetailOrderDetail;
       'api::plant.plant': ApiPlantPlant;
     }

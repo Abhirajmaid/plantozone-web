@@ -8,6 +8,7 @@ const PlantGridCard = ({
   href = "#",
   imageUrl = "/images/plant.png",
   discountLabel = "20% off",
+  discountPercent,
   category = "Indoor Plant",
   rating = 4.9,
   title = "",
@@ -15,13 +16,20 @@ const PlantGridCard = ({
   originalPrice = 975,
   onAddToCart,
 }) => {
+  const p = typeof discountPercent === "number" ? discountPercent : parseFloat(discountPercent);
+  const showExtra = !isNaN(p) && p > 0;
   return (
     <div className="w-full transition-shadow duration-300 overflow-hidden relative">
-      {/* Discount Tag */}
-      <div className="absolute top-3 left-3 z-10">
+      {/* Discount Tags: 20% off (always) + extra when discount % set */}
+      <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
         <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
           {discountLabel}
         </div>
+        {showExtra && (
+          <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
+            Extra {Math.round(p)}% off
+          </div>
+        )}
       </div>
 
       {/* Image Section - Full Width */}

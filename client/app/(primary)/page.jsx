@@ -12,7 +12,6 @@ import {
   // VideoSec,
   WhyUs,
   TopSellerProducts,
-  SpecialOffer,
   PromotionalBanners,
   // DealsOfTheDaySection,
   InfiniteCategoryMarquee,
@@ -27,7 +26,7 @@ export default function Home() {
       <CategorySec />
       <AboutUsSection />
       <TopSellerProducts />
-      <SpecialOffer />
+      {/* <SpecialOffer /> – Nature's Special Offer section + 30% OFF plants (IDs 64, 47) commented out */}
       {/* <DealsOfTheDaySection /> */}
       <PromotionalBanners />
       <InfiniteCategoryMarquee />

@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import plantsAction from "@/src/lib/action/plants.action";
 
-const OFFER_PLANT_IDS = [64, 47]; // Bonsai plants with 30% off offer
+const OFFER_PLANT_IDS = []; // was [64, 47] – Bonsai plants (Ficus Bonsai, Bonsai) removed from offer
 const OFFER_DISCOUNT = 30;
 const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
 const DEFAULT_IMAGE = "/images/plant.png";

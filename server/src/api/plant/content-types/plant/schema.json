@@ -40,7 +40,41 @@
       "inversedBy": "plants"
     },
     "price": {
-      "type": "biginteger"
+      "type": "float"
+    },
+    "stock": {
+      "type": "integer",
+      "default": 0
+    },
+    "rating": {
+      "type": "float",
+      "default": 0
+    },
+    "enableSizeOptions": {
+      "type": "boolean",
+      "default": false
+    },
+    "priceSmall": {
+      "type": "float"
+    },
+    "priceMedium": {
+      "type": "float"
+    },
+    "priceLarge": {
+      "type": "float"
+    },
+    "discountPercent": {
+      "type": "float"
+    },
+    "offerStart": {
+      "type": "date"
+    },
+    "offerEnd": {
+      "type": "date"
+    },
+    "extraOfferLabel": {
+      "type": "string",
+      "description": "Extra offer tag on plant card (e.g. 'Extra 10% off', 'Buy 1 Get 1'). Shown next to 20% off when set."
     },
     "cart": {
       "type": "relation",

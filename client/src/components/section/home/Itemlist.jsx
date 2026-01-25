@@ -9,7 +9,7 @@ import {
 } from "@/src/lib/utils/cartUtils";
 import categoriesAction from "@/src/lib/action/categories.action";
 
-const NO_PREVIEW_IMG = "/no-preview.png"; // Place this image in your public folder
+const DEFAULT_IMAGE = "/images/plant.png";
 
 // Helper function to normalize category names for comparison
 const normalizeCategory = (category) => {
@@ -41,7 +41,7 @@ const categoriesMatch = (filterCategory, plantCategory) => {
   return false;
 };
 
-const ItemList = ({ data, initialCategory = null }) => {
+const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
   const pageSize = 12;
   const [page, setPage] = useState(1);
   const [cartItems, setCartItems] = useState([]);
@@ -161,6 +161,7 @@ const ItemList = ({ data, initialCategory = null }) => {
     }
 
     // Apply sorting
+    const isDiscounted = (item) => (parseFloat(item?.attributes?.discountPercent) || 0) > 0;
     switch (sortBy) {
       case 'price-low':
         filtered.sort((a, b) => (a.attributes?.price || 0) - (b.attributes?.price || 0));
@@ -172,10 +173,16 @@ const ItemList = ({ data, initialCategory = null }) => {
         filtered.sort((a, b) => (b.attributes?.rating || 0) - (a.attributes?.rating || 0));
         break;
       case 'name':
-        filtered.sort((a, b) => (a.attributes?.title || '').localeCompare(b.attributes?.title || ''));
+        filtered.sort((a, b) => (a.attributes?.title || '').localeCompare(b.attributes?.title || '', undefined, { sensitivity: 'base' }));
         break;
       default:
-        // Keep original order
+        // Discounted first, then A–Z by title
+        filtered.sort((a, b) => {
+          const aDisc = isDiscounted(a) ? 1 : 0;
+          const bDisc = isDiscounted(b) ? 1 : 0;
+          if (aDisc !== bDisc) return bDisc - aDisc;
+          return (a.attributes?.title || '').localeCompare(b.attributes?.title || '', undefined, { sensitivity: 'base' });
+        });
         break;
     }
 
@@ -193,7 +200,9 @@ const ItemList = ({ data, initialCategory = null }) => {
   // Helper to inject default image if missing
   const getCardData = (item) => {
     const imgArr = item?.attributes?.images?.data;
-    if (!imgArr || !imgArr[0]?.attributes?.url) {
+    const url = imgArr?.[0]?.attributes?.url;
+    const hasValidUrl = url != null && String(url).trim() !== "";
+    if (!imgArr || !hasValidUrl) {
       return {
         ...item,
         attributes: {
@@ -201,10 +210,8 @@ const ItemList = ({ data, initialCategory = null }) => {
           images: {
             data: [
               {
-                id: "no-preview",
-                attributes: {
-                  url: NO_PREVIEW_IMG,
-                },
+                id: "default",
+                attributes: { url: DEFAULT_IMAGE },
               },
             ],
           },
@@ -217,7 +224,7 @@ const ItemList = ({ data, initialCategory = null }) => {
   // Handler for adding to cart (like cart page)
   const handleAddToCart = (item, { size, shape, price }) => {
     const attrs = item.attributes;
-    const img = attrs?.images?.data?.[0]?.attributes?.url || NO_PREVIEW_IMG;
+    const img = attrs?.images?.data?.[0]?.attributes?.url || DEFAULT_IMAGE;
     addToCartUtil({
       product: item.id,
       title: attrs.title,
@@ -502,6 +509,15 @@ const ItemList = ({ data, initialCategory = null }) => {
 
       {/* Main Content */}
       <div className="flex-1">
+        {/* Search query header */}
+        {searchQuery && (
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">
+              Search results for &quot;{searchQuery}&quot;
+            </h2>
+          </div>
+        )}
+
         {/* Results and Sort Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
           <div className="text-gray-600 mb-2 sm:mb-0">
@@ -514,7 +530,7 @@ const ItemList = ({ data, initialCategory = null }) => {
               onChange={(e) => setSortBy(e.target.value)}
               className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             >
-              <option value="default">Default Sorting</option>
+              <option value="default">Discounted first, then A–Z</option>
               <option value="price-low">Price: Low to High</option>
               <option value="price-high">Price: High to Low</option>
               <option value="rating">Rating</option>

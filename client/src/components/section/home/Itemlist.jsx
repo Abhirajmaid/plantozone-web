@@ -46,6 +46,7 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
   const [page, setPage] = useState(1);
   const [cartItems, setCartItems] = useState([]);
   const [sortBy, setSortBy] = useState("default");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [availableCategories, setAvailableCategories] = useState([]);
   const [filters, setFilters] = useState({
     categories: initialCategory ? [initialCategory] : [],
@@ -319,9 +320,29 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       {/* Filter Sidebar */}
-      <div className="w-full lg:w-80 bg-white rounded-lg shadow-lg p-6 h-fit">
-        <h3 className="text-3xl font-semibold text-gray-800 mb-6">Filter Options</h3>
+      <div className="w-full lg:w-80 bg-white rounded-lg shadow-lg overflow-hidden h-fit">
+        {/* Toggle header - visible on mobile, clickable to expand/collapse */}
+        <button
+          type="button"
+          onClick={() => setIsFilterOpen(!isFilterOpen)}
+          className="lg:hidden w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
+          aria-expanded={isFilterOpen}
+          aria-controls="filter-options-content"
+        >
+          <h3 className="text-xl font-semibold text-gray-800">Filter Options</h3>
+          <Icon
+            icon={isFilterOpen ? "mdi:chevron-up" : "mdi:chevron-down"}
+            className="w-6 h-6 text-gray-600"
+          />
+        </button>
+        {/* Static header - visible on desktop only */}
+        <h3 className="hidden lg:block text-3xl font-semibold text-gray-800 p-6 pt-6 pb-0">Filter Options</h3>
         
+        {/* Filter content - collapsible on mobile, always visible on desktop */}
+        <div
+          id="filter-options-content"
+          className={`lg:block ${isFilterOpen ? "block" : "hidden"} p-6 pt-4 lg:pt-6`}
+        >
         {/* Category Filter */}
         <div className="mb-6">
           <h4 className="text-lg font-medium text-gray-700 mb-3">Category</h4>
@@ -504,6 +525,7 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
               </label>
             ))}
           </div>
+        </div>
         </div>
       </div>
 

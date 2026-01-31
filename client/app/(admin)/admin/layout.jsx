@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   FileText,
+  Users,
 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ const menuItems = [
   { href: "/admin/plants", label: "Plants", icon: Package },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/blogs", label: "Blogs", icon: FileText },
+  { href: "/admin/team", label: "Team", icon: Users },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/stats", label: "Statistics", icon: BarChart3 },
 ];

@@ -4,7 +4,6 @@ import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import { NewsletterSection, ShopServiceSection } from "@/src/components";
 import Link from "next/link";
-import PrimaryButton from "@/src/components/common/PrimaryButton";
 
 // Related Blogs Data
 const relatedBlogsData = [
@@ -369,29 +368,6 @@ const BlogDetailPage = () => {
                     </div>
                   </div>
 
-                  {/* Summer Sale Advertisement */}
-                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <div className="relative">
-                      <img 
-                        src="/images/plant.png" 
-                        alt="Summer Sale"
-                        className="w-full h-48 object-cover"
-                      />
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-yellow-400 text-gray-800 px-3 py-1 rounded-full text-sm font-bold">
-                          Summer Sale
-                        </span>
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                        <h3 className="text-white font-bold text-lg mb-3">
-                          25% Off on Best-Selling Indoor Plants!
-                        </h3>
-                        <PrimaryButton withArrow={false} className="px-6 py-2">
-                          Buy Now
-                        </PrimaryButton>
-                      </div>
-                    </div>
-                  </div>
 
                 </div>
               </div>

@@ -1,16 +1,31 @@
 // app/layout.js
 
 import "./globals.css"; // Import global styles (Tailwind CSS)
-import { Playfair, Montserrat } from "next/font/google"; // Import Google Fonts
+import { Poppins, Playfair_Display } from "next/font/google"; // Import Google Fonts
 import { Providers } from "./provider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Script from "next/script";
 
-// Import the common components
+// Body text: Poppins. Headings: Playfair Display. CSS variables used in globals.css for consistency.
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
+  display: "swap",
+});
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-heading",
+  display: "swap",
+});
 
-const playfair = Playfair({ subsets: ["latin"] });
-const montserrat = Montserrat({ subsets: ["latin"] });
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata = {
   title: {
@@ -55,7 +70,7 @@ export default function RootLayout({ children }) {
     <>
       <Providers>
         <html lang="en">
-          <body className={`${playfair.className} ${montserrat.className}`}>
+          <body className={`${poppins.variable} ${playfair.variable}`}>
             {/* Google tag (gtag.js) */}
             <Script
               src="https://www.googletagmanager.com/gtag/js?id=G-YX3P9HKCQK"

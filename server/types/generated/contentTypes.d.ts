@@ -980,6 +980,41 @@ export interface ApiPlantPlant extends Schema.CollectionType {
   };
 }
 
+export interface ApiTeamMemberTeamMember extends Schema.CollectionType {
+  collectionName: 'team_members';
+  info: {
+    singularName: 'team-member';
+    pluralName: 'team-members';
+    displayName: 'Team Member';
+    description: 'Team members shown on the About Us page (name, role, image, bio).';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    role: Attribute.String & Attribute.Required;
+    image: Attribute.Media<'images'>;
+    bio: Attribute.Text;
+    order: Attribute.Integer & Attribute.DefaultTo<0>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::team-member.team-member',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::team-member.team-member',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -1003,6 +1038,7 @@ declare module '@strapi/types' {
       'api::category.category': ApiCategoryCategory;
       'api::order-detail.order-detail': ApiOrderDetailOrderDetail;
       'api::plant.plant': ApiPlantPlant;
+      'api::team-member.team-member': ApiTeamMemberTeamMember;
     }
   }
 }

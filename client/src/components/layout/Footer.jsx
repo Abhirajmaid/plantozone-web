@@ -25,7 +25,7 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-const comingSoonLinks = ["/updates", "/stores", "/track-order"];
+const comingSoonLinks = ["/updates", "/stores", "/track-order", "/career"];
 
 export default function Footer() {
   const router = useRouter();
@@ -39,34 +39,31 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-primary text-white mx-6 mb-6 rounded-3xl shadow-2xl">
+    <footer className="bg-primary text-white mx-6 mb-24 md:mb-6 rounded-3xl shadow-2xl">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 py-8">
           {/* Brand Info */}
                  <div className="lg:col-span-1">
-                   <div className="flex items-center mb-4">
+                   <Link href="/" className="inline-flex items-center mb-4 hover:opacity-90 transition-opacity">
                      <div className="w-8 h-8 mr-3 bg-white rounded-lg p-1">
                        <Logo />
                      </div>
                      <span className="text-xl font-bold text-white">Plantozone</span>
-                   </div>
+                   </Link>
             <p className="text-gray-100 text-sm leading-relaxed mb-6">
               Your trusted destination for premium plants and gardening essentials. We bring nature closer to you with a wide selection of indoor plants, outdoor plants, and expert care guidance to help your green space thrive.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-100 hover:text-white transition-colors">
+              <a href="https://www.facebook.com/plantozoneindia/" target="_blank" rel="noopener noreferrer" className="text-gray-100 hover:text-white transition-colors" aria-label="Facebook">
                 <Icon icon="uiw:facebook" width="20" height="20" />
               </a>
-              <a href="#" className="text-gray-100 hover:text-white transition-colors">
-                <Icon icon="uiw:twitter" width="20" height="20" />
+              <a href="https://x.com/PLANTOZONEINDIA" target="_blank" rel="noopener noreferrer" className="text-gray-100 hover:text-white transition-colors" aria-label="X">
+                <Icon icon="simple-icons:x" width="20" height="20" />
               </a>
-              <a href="#" className="text-gray-100 hover:text-white transition-colors">
-                <Icon icon="uiw:pinterest" width="20" height="20" />
-              </a>
-              <a href="#" className="text-gray-100 hover:text-white transition-colors">
+              <a href="https://www.instagram.com/plantozone/?hl=en" target="_blank" rel="noopener noreferrer" className="text-gray-100 hover:text-white transition-colors" aria-label="Instagram">
                 <Icon icon="streamline:instagram-solid" width="20" height="20" />
               </a>
-              <a href="#" className="text-gray-100 hover:text-white transition-colors">
+              <a href="https://www.youtube.com/channel/UCCCPPdaOp1zociKZYiNsvHg" target="_blank" rel="noopener noreferrer" className="text-gray-100 hover:text-white transition-colors" aria-label="YouTube">
                 <Icon icon="uiw:youtube" width="20" height="20" />
               </a>
             </div>
@@ -79,7 +76,7 @@ export default function Footer() {
               <li><Link href="/about-us" className="text-gray-100 hover:text-white transition-colors">About Us</Link></li>
               <li><Link href="/blog" className="text-gray-100 hover:text-white transition-colors">Blog</Link></li>
               <li><Link href="/contact-us" className="text-gray-100 hover:text-white transition-colors">Contact Us</Link></li>
-              <li><Link href="/career" className="text-gray-100 hover:text-white transition-colors">Career</Link></li>
+              <li><Link href="/career" onClick={(e) => handleLinkClick(e, "/career")} className="text-gray-100 hover:text-white transition-colors">Career</Link></li>
             </ul>
           </div>
 
@@ -109,7 +106,7 @@ export default function Footer() {
             <h3 className="text-lg font-semibold text-white mb-4">Contact Info</h3>
             <div className="space-y-3 text-sm text-gray-100">
               <p>Phone: +91 90591 52555, <br /> +91 89994 92523</p>
-              <p>Email: info@plantozone.com</p>
+              <p>Email: <a href="mailto:info@plantozone.com" className="text-gray-100 hover:text-white transition-colors underline underline-offset-2">info@plantozone.com</a></p>
               <p>Address: 5th floor, yellareddy guda, Secunderabad, Hyderabad, Telangana - 500016</p>
             </div>
           </div>

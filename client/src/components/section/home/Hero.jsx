@@ -5,7 +5,11 @@ import { Section } from "../../layout/Section";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import plantsAction from "@/src/lib/action/plants.action";
+import { addToWishlist } from "@/src/lib/utils/wishlistUtils";
+import { Dialog, DialogContent } from "../../ui/dialog";
 
 const NO_PREVIEW_IMG = "/images/plant.png";
 const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
@@ -16,6 +20,7 @@ const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showZoomModal, setShowZoomModal] = useState(false);
 
   // Fetch plants from backend
   useEffect(() => {
@@ -80,6 +85,28 @@ const Hero = () => {
   const handlePlantClick = (plant, index) => {
     setSelectedPlant(plant);
     setCurrentIndex(index);
+  };
+
+  const handleAddToWishlist = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!selectedPlant) return;
+    addToWishlist({
+      product: selectedPlant.id,
+      title: selectedPlant.name,
+      price: 0,
+      size: "Small",
+      shape: "Round",
+      quantity: 1,
+      image: selectedPlant.image,
+    });
+    toast.success("Added to wishlist!", { position: "top-right" });
+  };
+
+  const handleZoomClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowZoomModal(true);
   };
 
   // Show loading state
@@ -179,22 +206,26 @@ const Hero = () => {
                     {/* Gradient Overlay from Bottom */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
                     
-                    {/* Hover Buttons */}
-                    <div className="absolute top-1.5 md:top-2 lg:top-4 xl:top-5 2xl:top-6 right-1.5 md:right-2 lg:right-4 xl:right-5 2xl:right-6 flex flex-col space-y-1 md:space-y-1.5 lg:space-y-2 xl:space-y-2.5 2xl:space-y-3 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                      {/* Heart Button */}
-                      <button 
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                    {/* Hover Buttons - visible on mobile, hover on desktop */}
+                    <div className="absolute top-1.5 md:top-2 lg:top-4 xl:top-5 2xl:top-6 right-1.5 md:right-2 lg:right-4 xl:right-5 2xl:right-6 flex flex-col space-y-1 md:space-y-1.5 lg:space-y-2 xl:space-y-2.5 2xl:space-y-3 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none [&_button]:pointer-events-auto">
+                      {/* Wishlist Button */}
+                      <button
+                        type="button"
+                        onClick={handleAddToWishlist}
                         className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 bg-white rounded-full shadow-md lg:shadow-lg xl:shadow-xl flex items-center justify-center hover:bg-red-50 transition-colors"
+                        aria-label="Add to wishlist"
                       >
                         <svg className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 2xl:w-7 2xl:h-7 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                       </button>
                       
-                      {/* View Button */}
-                      <button 
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      {/* Zoom Button */}
+                      <button
+                        type="button"
+                        onClick={handleZoomClick}
                         className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 2xl:w-14 2xl:h-14 bg-white rounded-full shadow-md lg:shadow-lg xl:shadow-xl flex items-center justify-center hover:bg-blue-50 transition-colors"
+                        aria-label="Zoom image"
                       >
                         <svg className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 2xl:w-7 2xl:h-7 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
@@ -386,6 +417,24 @@ const Hero = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Zoom Modal */}
+      {selectedPlant && (
+        <Dialog open={showZoomModal} onOpenChange={setShowZoomModal}>
+          <DialogContent className="max-w-4xl p-0 overflow-hidden bg-transparent border-0 shadow-none">
+            <div className="relative w-full max-h-[85vh] flex items-center justify-center">
+              <Image
+                src={selectedPlant.image}
+                alt={selectedPlant.name}
+                width={800}
+                height={600}
+                className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-lg"
+                unoptimized={selectedPlant.image?.startsWith("http")}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </Section>
   );
 };

@@ -10,9 +10,9 @@ module.exports = {
   theme: {
   	extend: {
   		fontFamily: {
-  			body: ['Poppins', 'sans-serif'],
-  			heading: ['Playfair Display', 'serif'],
-  			accent: ['Montserrat', 'sans-serif']
+  			body: ['var(--font-body)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+  			heading: ['var(--font-heading)', 'ui-serif', 'Georgia', 'serif'],
+  			accent: ['var(--font-body)', 'ui-sans-serif', 'sans-serif']
   		},
   		fontSize: {
   			sm: 'clamp(0.8rem, 0.17vw + 0.76rem, 0.89rem)',

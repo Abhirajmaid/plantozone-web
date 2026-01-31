@@ -248,6 +248,56 @@ const deleteBlog = (id, token) => {
   return client.delete(`/blogs/${id}`);
 };
 
+// Team Members CRUD (About Us page)
+const getTeamMembers = (token, params = {}) => {
+  const authToken = token || API_TOKEN;
+  const client = axios.create({
+    baseURL: `${STRAPI_BASE_URL}/api`,
+    headers: {
+      "Content-Type": "application/json",
+      ...(authToken && { Authorization: `Bearer ${authToken}` }),
+    },
+  });
+  const queryParams = new URLSearchParams({
+    populate: "image",
+    "pagination[pageSize]": params.pageSize || 100,
+    ...(params.page && { "pagination[page]": params.page }),
+    ...(params.search && { "filters[name][$containsi]": params.search }),
+    sort: params.sort || "order:asc",
+    publicationState: "preview",
+  });
+  if (params.statusFilter === "published") queryParams.set("filters[publishedAt][$notNull]", "true");
+  if (params.statusFilter === "draft") queryParams.set("filters[publishedAt][$null]", "true");
+  return client.get(`/team-members?${queryParams}`);
+};
+
+const getTeamMemberById = (id, token) => {
+  const authToken = token || API_TOKEN;
+  const client = axios.create({
+    baseURL: `${STRAPI_BASE_URL}/api`,
+    headers: {
+      "Content-Type": "application/json",
+      ...(authToken && { Authorization: `Bearer ${authToken}` }),
+    },
+  });
+  return client.get(`/team-members/${id}?populate=image&publicationState=preview`);
+};
+
+const createTeamMember = (data, token) => {
+  const client = axiosClient(token);
+  return client.post("/team-members", { data });
+};
+
+const updateTeamMember = (id, data, token) => {
+  const client = axiosClient(token);
+  return client.put(`/team-members/${id}`, { data });
+};
+
+const deleteTeamMember = (id, token) => {
+  const client = axiosClient(token);
+  return client.delete(`/team-members/${id}`);
+};
+
 const updateOrderStatus = (id, status, token) => {
   const client = axiosClient(token);
   return client.put(`/order-details/${id}`, { data: { status } });
@@ -297,6 +347,11 @@ export default {
   createBlog,
   updateBlog,
   deleteBlog,
+  getTeamMembers,
+  getTeamMemberById,
+  createTeamMember,
+  updateTeamMember,
+  deleteTeamMember,
   getOrders,
   getOrderById,
   updateOrderStatus,

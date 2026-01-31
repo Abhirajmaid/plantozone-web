@@ -36,7 +36,7 @@ const TestimonialCard = ({ testimonial }) => {
           {testimonial.text}
         </p>
         {/* Large Quotation Mark in Background */}
-        <div className="absolute top-0 left-0 text-8xl md:text-9xl text-gray-100 font-serif -z-0" style={{ lineHeight: '1' }}>
+        <div className="absolute top-0 left-0 text-8xl md:text-9xl text-gray-100 font-heading -z-0" style={{ lineHeight: '1' }}>
           "
         </div>
       </div>

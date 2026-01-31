@@ -184,7 +184,9 @@ export default function CustomNavbar() {
           <div className="flex items-center justify-between text-sm">
             {/* Left: Call Us */}
             <div className="flex items-center">
-              <span>Call Us : +91 90591 52555, +91 89994 92523</span>
+              <a href="tel:+919059152555" className="hover:underline cursor-pointer">
+                Call Us : +91 90591 52555, +91 89994 92523
+              </a>
             </div>
             
             {/* Center: Discount code offer */}
@@ -194,19 +196,16 @@ export default function CustomNavbar() {
             
             {/* Right: Social Media Icons */}
             <div className="flex items-center space-x-2">
-              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+              <a href="https://www.facebook.com/plantozoneindia/" target="_blank" rel="noopener noreferrer" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors" aria-label="Facebook">
                 <Icon icon="mdi:facebook" className="w-3 h-3 text-black" />
               </a>
-              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
-                <Icon icon="mdi:twitter" className="w-3 h-3 text-black" />
+              <a href="https://x.com/PLANTOZONEINDIA" target="_blank" rel="noopener noreferrer" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors" aria-label="X">
+                <Icon icon="simple-icons:x" className="w-3 h-3 text-black" />
               </a>
-              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
-                <Icon icon="mdi:pinterest" className="w-3 h-3 text-black" />
-              </a>
-              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+              <a href="https://www.instagram.com/plantozone/?hl=en" target="_blank" rel="noopener noreferrer" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors" aria-label="Instagram">
                 <Icon icon="mdi:instagram" className="w-3 h-3 text-black" />
               </a>
-              <a href="#" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+              <a href="https://www.youtube.com/channel/UCCCPPdaOp1zociKZYiNsvHg" target="_blank" rel="noopener noreferrer" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors" aria-label="YouTube">
                 <Icon icon="mdi:youtube" className="w-3 h-3 text-black" />
               </a>
             </div>
@@ -219,14 +218,14 @@ export default function CustomNavbar() {
         <Container>
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
             {/* Left: Logo and Brand */}
-            <div className="flex items-center space-x-3">
+            <Link href="/" className="flex items-center space-x-3 hover:opacity-90 transition-opacity">
               <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-lg p-1 flex items-center justify-center">
                 <Logo />
               </div>
               <span className="text-3xl hidden md:block md:text-3xl font-semibold text-gray-800">
                 Plantozone<span className="text-yellow-400">.</span>
               </span>
-            </div>
+            </Link>
             
             {/* Center: Navigation Links */}
             <div className="hidden md:flex items-center">
@@ -306,9 +305,9 @@ export default function CustomNavbar() {
             className="absolute top-0 left-0 right-0 bg-white shadow-md z-50 md:hidden transform transition-all duration-300 ease-in-out translate-x-0 min-h-screen"
           >
             <div className="flex justify-between items-center p-4">
-              <div className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center">
+              <Link href="/" onClick={toggleMenu} className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center">
                 <Logo />
-              </div>
+              </Link>
               <Button variant="ghost" size="icon" onClick={toggleMenu}>
                 <XIcon className="h-7 w-7" />
                 <span className="sr-only">Close Menu</span>
@@ -368,7 +367,10 @@ export default function CustomNavbar() {
       </header>
 
       {/* Bottom Navigation Tabs */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-[100]">
+      <div 
+        className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-[100]"
+        style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
+      >
         <div className="flex justify-around items-center py-2 px-2">
           {mobileTabs
             .filter((link) => link.href !== "/wishlist")

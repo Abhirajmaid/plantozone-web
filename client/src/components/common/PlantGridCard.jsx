@@ -1,10 +1,16 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { addToWishlist } from "@/src/lib/utils/wishlistUtils";
+import { addToCart } from "@/src/lib/utils/cartUtils";
+import { Dialog, DialogContent } from "../ui/dialog";
 
 const PlantGridCard = ({
+  id,
   href = "#",
   imageUrl = "/images/plant.png",
   discountLabel = "20% off",
@@ -16,8 +22,53 @@ const PlantGridCard = ({
   originalPrice = 975,
   onAddToCart,
 }) => {
+  const [showZoomModal, setShowZoomModal] = useState(false);
   const p = typeof discountPercent === "number" ? discountPercent : parseFloat(discountPercent);
   const showExtra = !isNaN(p) && p > 0;
+
+  const priceNum = typeof price === "string" ? parseFloat(price.replace(/,/g, "")) : Number(price);
+  const isExternalImage = String(imageUrl).startsWith("http");
+
+  const handleAddToWishlist = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToWishlist({
+      product: id ?? title,
+      title: title,
+      price: priceNum,
+      size: "Small",
+      shape: "Round",
+      quantity: 1,
+      image: imageUrl,
+    });
+    toast.success("Added to wishlist!", { position: "top-right" });
+  };
+
+  const handleZoomClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowZoomModal(true);
+  };
+
+  const handleAddToCartClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onAddToCart) {
+      onAddToCart();
+    } else {
+      addToCart({
+        product: id ?? title,
+        title: title,
+        price: priceNum,
+        size: "Small",
+        shape: "Round",
+        quantity: 1,
+        image: imageUrl,
+      });
+      toast.success("Added to cart!", { position: "top-right" });
+    }
+  };
+
   return (
     <div className="w-full transition-shadow duration-300 overflow-hidden relative">
       {/* Discount Tags: 20% off (always) + extra when discount % set */}
@@ -32,9 +83,9 @@ const PlantGridCard = ({
         )}
       </div>
 
-      {/* Image Section - Full Width */}
+      {/* Image Section - Full Width: clicking image opens product details */}
       <div className="relative group">
-        <Link href={href}>
+        <Link href={href} className="block cursor-pointer">
           <Image
             width={500}
             height={400}
@@ -44,20 +95,35 @@ const PlantGridCard = ({
           />
         </Link>
         
-        {/* Hover Buttons */}
-        <div className="absolute top-3 right-3 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          {/* Heart Button */}
-          <button className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-50 transition-colors">
+        {/* Hover Buttons - pointer-events-none on container so image link works; auto on buttons so they are clickable */}
+        <div className="absolute top-3 right-3 z-20 flex flex-col space-y-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none [&_button]:pointer-events-auto">
+          {/* Wishlist Button */}
+          <button
+            type="button"
+            onClick={handleAddToWishlist}
+            className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-50 transition-colors"
+            aria-label="Add to wishlist"
+          >
             <Icon icon="material-symbols:favorite-outline" className="w-5 h-5 text-gray-600" />
           </button>
           
-          {/* Enlarge Button */}
-          <button className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-50 transition-colors">
+          {/* Zoom Button */}
+          <button
+            type="button"
+            onClick={handleZoomClick}
+            className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-50 transition-colors"
+            aria-label="Zoom image"
+          >
             <Icon icon="material-symbols:zoom-in" className="w-5 h-5 text-gray-600" />
           </button>
           
           {/* Cart Button */}
-          <button className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-green-50 transition-colors">
+          <button
+            type="button"
+            onClick={handleAddToCartClick}
+            className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-green-50 transition-colors"
+            aria-label="Add to cart"
+          >
             <Icon icon="material-symbols:shopping-cart-outline" className="w-5 h-5 text-gray-600" />
           </button>
         </div>
@@ -89,7 +155,7 @@ const PlantGridCard = ({
             </div>
             <button
               type="button"
-              onClick={onAddToCart}
+              onClick={handleAddToCartClick}
               className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition-colors"
               aria-label="Add to cart"
             >
@@ -102,6 +168,22 @@ const PlantGridCard = ({
           </div>
         </div>
       </div>
+
+      {/* Zoom Modal */}
+      <Dialog open={showZoomModal} onOpenChange={setShowZoomModal}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-transparent border-0 shadow-none">
+          <div className="relative w-full max-h-[85vh] flex items-center justify-center">
+            <Image
+              width={800}
+              height={600}
+              src={imageUrl}
+              alt={title}
+              className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-lg"
+              unoptimized={isExternalImage}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

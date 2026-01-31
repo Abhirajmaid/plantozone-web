@@ -67,6 +67,7 @@ const dealsData = [
 const DealCard = ({ deal }) => {
   return (
     <PlantGridCard
+      id={deal.id}
       href={`/product/${deal.title.toLowerCase().replace(/\s+/g, '-')}`}
       imageUrl={deal.image}
       discountLabel={deal.discount}

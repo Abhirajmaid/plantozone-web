@@ -5,7 +5,6 @@ import { Section } from "@/src/components/layout/Section";
 import { NewsletterSection, ShopServiceSection, Loader } from "@/src/components";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import PrimaryButton from "@/src/components/common/PrimaryButton";
 import Image from "next/image";
 import blogsAction from "@/src/lib/action/blogs.action";
 import categoriesAction from "@/src/lib/action/categories.action";
@@ -622,25 +621,6 @@ const BlogContent = () => {
                   </div>
                 </div>
 
-                {/* Advertisement Banner */}
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                  <div className="relative">
-                    <img 
-                      src="/images/plant.png" 
-                      alt="Summer Sale Advertisement"
-                      className="w-full h-64 object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-center p-6">
-                      <div className="text-white">
-                        <p className="text-sm font-medium mb-2">Summer Sale</p>
-                        <h4 className="text-xl font-bold mb-4">25% Off on Best-Selling Indoor Plants!</h4>
-                        <PrimaryButton withArrow={false} className="px-6 py-3">
-                          Buy Now
-                        </PrimaryButton>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 </div>
               </div>
             </div>

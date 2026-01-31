@@ -76,7 +76,13 @@ function ContactInfoCards() {
               <h3 className="text-lg font-bold text-gray-800 mb-2">
                 {info.title}
               </h3>
-              <p className="text-sm text-gray-600">{info.description}</p>
+              {info.title === "Email" ? (
+                <a href={`mailto:${info.description}`} className="text-sm text-gray-600 hover:text-green-600 transition-colors underline underline-offset-2">
+                  {info.description}
+                </a>
+              ) : (
+                <p className="text-sm text-gray-600">{info.description}</p>
+              )}
             </div>
           ))}
         </div>

@@ -14,7 +14,8 @@ import {
 import plantsAction from "@/src/lib/action/plants.action";
 
 const NO_PREVIEW_IMG = "/images/plant.png";
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
+const STRAPI_BASE_URL =
+  process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
 
 const TopSellerProducts = () => {
   const [swiper, setSwiper] = useState(null);
@@ -43,41 +44,45 @@ const TopSellerProducts = () => {
       setLoading(true);
       const resp = await plantsAction.getPlants();
       const plants = resp.data.data || [];
-      
+
       // Process and map plants data
       const processedPlants = plants.map((plant) => {
         const attrs = plant.attributes || {};
-        
+
         // Handle image URL - prepend Strapi base URL if relative
         let imageUrl = NO_PREVIEW_IMG;
         const strapiImageUrl = attrs?.images?.data?.[0]?.attributes?.url;
         if (strapiImageUrl) {
-          imageUrl = strapiImageUrl.startsWith('http') 
-            ? strapiImageUrl 
+          imageUrl = strapiImageUrl.startsWith("http")
+            ? strapiImageUrl
             : `${STRAPI_BASE_URL}${strapiImageUrl}`;
         }
-        
+
         // Return plant data in expected format
         return {
           id: plant.id,
           attributes: {
             ...attrs,
             images: {
-              data: [{
-                attributes: {
-                  url: imageUrl
-                }
-              }]
-            }
-          }
+              data: [
+                {
+                  attributes: {
+                    url: imageUrl,
+                  },
+                },
+              ],
+            },
+          },
         };
       });
-      
+
       // Sort by rating (highest first) and take top 8-12 products
       const sortedByRating = processedPlants
-        .sort((a, b) => (b.attributes?.rating || 0) - (a.attributes?.rating || 0))
+        .sort(
+          (a, b) => (b.attributes?.rating || 0) - (a.attributes?.rating || 0),
+        )
         .slice(0, 12);
-      
+
       setTopSellers(sortedByRating);
       setLoading(false);
     } catch (error) {
@@ -107,7 +112,7 @@ const TopSellerProducts = () => {
     <Section className="bg-white py-12 md:py-16">
       <Container>
         {/* Section Header */}
-        <SectionTitle 
+        <SectionTitle
           subtitle="Our Products"
           title="Our Top Seller Products"
           className="mb-12"
@@ -122,7 +127,7 @@ const TopSellerProducts = () => {
         ) : error ? (
           <div className="text-center py-16">
             <p className="text-red-600 mb-4">{error}</p>
-            <button 
+            <button
               onClick={fetchTopSellers}
               className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
@@ -131,7 +136,9 @@ const TopSellerProducts = () => {
           </div>
         ) : topSellers.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-600">No products available at the moment.</p>
+            <p className="text-gray-600">
+              No products available at the moment.
+            </p>
           </div>
         ) : (
           /* Swiper Carousel */
@@ -155,11 +162,11 @@ const TopSellerProducts = () => {
                   spaceBetween: 24,
                 },
                 1024: {
-                  slidesPerView: 4,
+                  slidesPerView: 5,
                   spaceBetween: 24,
                 },
                 1280: {
-                  slidesPerView: 4,
+                  slidesPerView: 5,
                   spaceBetween: 30,
                 },
               }}
@@ -167,7 +174,7 @@ const TopSellerProducts = () => {
                 delay: 3000,
                 disableOnInteraction: false,
               }}
-              loop={topSellers.length > 4}
+              loop={topSellers.length > 5}
               className="top-seller-swiper"
             >
               {topSellers.map((product) => (
@@ -183,24 +190,44 @@ const TopSellerProducts = () => {
             </Swiper>
 
             {/* Custom Navigation Buttons */}
-            {topSellers.length > 4 && (
+            {topSellers.length > 5 && (
               <>
-                <button 
+                <button
                   ref={prevRef}
                   className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
                   aria-label="Previous"
                 >
-                  <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  <svg
+                    className="w-5 h-5 text-gray-700"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
                   </svg>
                 </button>
-                <button 
+                <button
                   ref={nextRef}
                   className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
                   aria-label="Next"
                 >
-                  <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-5 h-5 text-gray-700"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               </>

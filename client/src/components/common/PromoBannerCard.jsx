@@ -12,25 +12,60 @@ const PromoBannerCard = ({
   href = "/shop",
   bg = "bg-white",
   buttonVariant = "primary",
-  size = "large" // large | small
+  size = "large", // large | small
+  fullWidth = false,
 }) => {
   const isPrimary = buttonVariant === "primary";
   const CardButton = isPrimary ? PrimaryButton : SecondaryButton;
-  const minHeight = size === "large" ? "min-h-[340px] md:min-h-[400px] lg:min-h-[440px]" : "min-h-[160px] md:min-h-[180px] lg:min-h-[200px]";
-  const maxWidth = size === "large" ? "max-w-[750px]" : "max-w-[620px]"; // increased width for large banners
+  const minHeight =
+    size === "large"
+      ? "min-h-[340px] md:min-h-[400px] lg:min-h-[440px]"
+      : "min-h-[160px] md:min-h-[180px] lg:min-h-[200px]";
+  const maxWidth = fullWidth
+    ? "w-full"
+    : size === "large"
+      ? "max-w-[750px]"
+      : "max-w-[620px]"; // increased width for large banners
 
   return (
-    <div className={`relative ${bg} rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ${maxWidth}`}>
-      <div className={`relative p-6 md:p-8 lg:p-10 ${minHeight} flex items-center`}>
+    <div
+      className={`relative ${bg} rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ${maxWidth}`}
+    >
+      <div
+        className={`relative p-6 md:p-8 lg:p-10 ${minHeight} flex items-center ${fullWidth ? "px-6 md:px-12 lg:px-16" : ""}`}
+      >
         {/* Right side image overlay */}
-        <div className="absolute right-0 top-0 bottom-0 w-1/2 md:w-2/5 opacity-100">
-          <Image src={image} alt={titlePrimary} fill sizes="(max-width: 768px) 50vw, 40vw" className="object-cover object-center" />
+        <div
+          className={`absolute right-0 top-0 bottom-0 ${fullWidth ? "w-1/2 md:w-1/2" : "w-1/2 md:w-2/5"} opacity-100`}
+        >
+          <Image
+            src={image}
+            alt={titlePrimary}
+            fill
+            sizes="(max-width: 768px) 50vw, 40vw"
+            className="object-cover object-center"
+          />
         </div>
 
         <div className="relative z-10 max-w-xl">
-          <div className="bg-secondary text-gray-800 px-4 py-2 rounded-full text-sm font-bold w-fit mb-4">
-            {discountLabel}
-          </div>
+          {/*
+            Label color:
+            - if card bg is white (bg includes 'white'), show secondary background with dark text
+            - otherwise (secondary bg), show white background with secondary-colored text
+          */}
+          {(() => {
+            const isBgWhite = String(bg || "").includes("white");
+            const labelClass = isBgWhite
+              ? "bg-secondary text-gray-800"
+              : "bg-white text-primary";
+            return (
+              <div
+                className={`${labelClass} px-4 py-2 rounded-full text-sm font-bold w-fit mb-4`}
+              >
+                {discountLabel}
+              </div>
+            );
+          })()}
 
           <h3 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3 leading-tight">
             <span className="block">{titlePrimary}</span>
@@ -49,5 +84,3 @@ const PromoBannerCard = ({
 };
 
 export default PromoBannerCard;
-
-

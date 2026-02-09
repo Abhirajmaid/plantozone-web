@@ -13,31 +13,50 @@ const DEFAULT_IMAGE = "/images/plant.png";
 
 // Helper function to normalize category names for comparison
 const normalizeCategory = (category) => {
-  return category.toLowerCase().trim().replace(/\s+/g, ' ').replace(/[&]/g, 'and');
+  return category
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/[&]/g, "and");
 };
 
 // Helper function to check if categories match (flexible matching)
 const categoriesMatch = (filterCategory, plantCategory) => {
   const normalizedFilter = normalizeCategory(filterCategory);
   const normalizedPlant = normalizeCategory(plantCategory);
-  
+
   // Exact match
   if (normalizedFilter === normalizedPlant) return true;
-  
+
   // Check if one contains the other (handles singular/plural variations)
-  if (normalizedFilter.includes(normalizedPlant) || normalizedPlant.includes(normalizedFilter)) {
+  if (
+    normalizedFilter.includes(normalizedPlant) ||
+    normalizedPlant.includes(normalizedFilter)
+  ) {
     return true;
   }
-  
+
   // Check for common variations (singular/plural, with/without spaces, etc.)
   // Remove common suffixes for flexible matching
-  const filterBase = normalizedFilter.replace(/s$/, '').replace(/plant$/, '').trim();
-  const plantBase = normalizedPlant.replace(/s$/, '').replace(/plant$/, '').trim();
-  
-  if (filterBase && plantBase && (filterBase === plantBase || filterBase.includes(plantBase) || plantBase.includes(filterBase))) {
+  const filterBase = normalizedFilter
+    .replace(/s$/, "")
+    .replace(/plant$/, "")
+    .trim();
+  const plantBase = normalizedPlant
+    .replace(/s$/, "")
+    .replace(/plant$/, "")
+    .trim();
+
+  if (
+    filterBase &&
+    plantBase &&
+    (filterBase === plantBase ||
+      filterBase.includes(plantBase) ||
+      plantBase.includes(filterBase))
+  ) {
     return true;
   }
-  
+
   return false;
 };
 
@@ -55,7 +74,7 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
     lightRequirements: [],
     potSize: [],
     potShape: [],
-    availability: []
+    availability: [],
   });
   const [filteredData, setFilteredData] = useState([]);
 
@@ -64,9 +83,9 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
     if (initialCategory) {
       // Check if we need to add it to filters
       if (!filters.categories.includes(initialCategory)) {
-        setFilters(prev => ({
+        setFilters((prev) => ({
           ...prev,
-          categories: [initialCategory]
+          categories: [initialCategory],
         }));
       }
     }
@@ -78,7 +97,9 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
       try {
         const resp = await categoriesAction.getCategories();
         const categories = resp.data.data || [];
-        const categoryTitles = categories.map(cat => cat.attributes?.title || '').filter(Boolean);
+        const categoryTitles = categories
+          .map((cat) => cat.attributes?.title || "")
+          .filter(Boolean);
         setAvailableCategories(categoryTitles);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -98,83 +119,109 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
   useEffect(() => {
     let filtered = [...(data || [])];
 
-    console.log('Filtering data:', filtered.length, 'items');
-    console.log('Current filters:', filters);
+    console.log("Filtering data:", filtered.length, "items");
+    console.log("Current filters:", filters);
 
     // Apply category filters
     if (filters.categories.length > 0) {
       const beforeFilter = filtered.length;
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         // Get plant categories from relation
         const plantCategories = item.attributes?.categories?.data || [];
-        const plantCategoryTitles = plantCategories.map(cat => cat.attributes?.title || '').filter(Boolean);
-        
+        const plantCategoryTitles = plantCategories
+          .map((cat) => cat.attributes?.title || "")
+          .filter(Boolean);
+
         // If plant has no categories, skip it
         if (plantCategoryTitles.length === 0) {
           return false;
         }
-        
+
         // Check if any selected filter category matches any plant category
-        const matches = filters.categories.some(filterCategory => {
+        const matches = filters.categories.some((filterCategory) => {
           // First try exact match
           if (plantCategoryTitles.includes(filterCategory)) {
             return true;
           }
           // Then try flexible matching
-          return plantCategoryTitles.some(plantCat => 
-            categoriesMatch(filterCategory, plantCat)
+          return plantCategoryTitles.some((plantCat) =>
+            categoriesMatch(filterCategory, plantCat),
           );
         });
-        
+
         if (!matches) {
-          console.log(`Item "${item.attributes?.title}" filtered out. Plant categories:`, plantCategoryTitles, 'Filter categories:', filters.categories);
+          console.log(
+            `Item "${item.attributes?.title}" filtered out. Plant categories:`,
+            plantCategoryTitles,
+            "Filter categories:",
+            filters.categories,
+          );
         }
-        
+
         return matches;
       });
-      console.log(`After category filter: ${beforeFilter} -> ${filtered.length} items`);
+      console.log(
+        `After category filter: ${beforeFilter} -> ${filtered.length} items`,
+      );
     }
 
     // Apply price filter
-    filtered = filtered.filter(item => {
+    filtered = filtered.filter((item) => {
       const price = item.attributes?.price || 0;
       const maxPrice = filters.priceRange[1];
-      console.log(`Item: ${item.attributes?.title}, Price: ${price}, MaxPrice: ${maxPrice}, Pass: ${price <= maxPrice}`);
+      console.log(
+        `Item: ${item.attributes?.title}, Price: ${price}, MaxPrice: ${maxPrice}, Pass: ${price <= maxPrice}`,
+      );
       return price <= maxPrice;
     });
-    console.log('After price filter:', filtered.length, 'items');
+    console.log("After price filter:", filtered.length, "items");
 
     // Apply rating filter
     if (filters.ratings.length > 0) {
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         const rating = item.attributes?.rating || 5;
-        return filters.ratings.some(filterRating => Math.floor(rating) >= filterRating);
+        return filters.ratings.some(
+          (filterRating) => Math.floor(rating) >= filterRating,
+        );
       });
-      console.log('After rating filter:', filtered.length, 'items');
+      console.log("After rating filter:", filtered.length, "items");
     }
 
     // Apply availability filter
-    if (filters.availability.includes('In Stock')) {
-      filtered = filtered.filter(item => (item.attributes?.stock || 0) > 0);
+    if (filters.availability.includes("In Stock")) {
+      filtered = filtered.filter((item) => (item.attributes?.stock || 0) > 0);
     }
-    if (filters.availability.includes('Out of Stock')) {
-      filtered = filtered.filter(item => (item.attributes?.stock || 0) === 0);
+    if (filters.availability.includes("Out of Stock")) {
+      filtered = filtered.filter((item) => (item.attributes?.stock || 0) === 0);
     }
 
     // Apply sorting
-    const isDiscounted = (item) => (parseFloat(item?.attributes?.discountPercent) || 0) > 0;
+    const isDiscounted = (item) =>
+      (parseFloat(item?.attributes?.discountPercent) || 0) > 0;
     switch (sortBy) {
-      case 'price-low':
-        filtered.sort((a, b) => (a.attributes?.price || 0) - (b.attributes?.price || 0));
+      case "price-low":
+        filtered.sort(
+          (a, b) => (a.attributes?.price || 0) - (b.attributes?.price || 0),
+        );
         break;
-      case 'price-high':
-        filtered.sort((a, b) => (b.attributes?.price || 0) - (a.attributes?.price || 0));
+      case "price-high":
+        filtered.sort(
+          (a, b) => (b.attributes?.price || 0) - (a.attributes?.price || 0),
+        );
         break;
-      case 'rating':
-        filtered.sort((a, b) => (b.attributes?.rating || 0) - (a.attributes?.rating || 0));
+      case "rating":
+        filtered.sort(
+          (a, b) => (b.attributes?.rating || 0) - (a.attributes?.rating || 0),
+        );
         break;
-      case 'name':
-        filtered.sort((a, b) => (a.attributes?.title || '').localeCompare(b.attributes?.title || '', undefined, { sensitivity: 'base' }));
+      case "name":
+        filtered.sort((a, b) =>
+          (a.attributes?.title || "").localeCompare(
+            b.attributes?.title || "",
+            undefined,
+            { sensitivity: "base" },
+          ),
+        );
         break;
       default:
         // Discounted first, then A–Z by title
@@ -182,18 +229,25 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
           const aDisc = isDiscounted(a) ? 1 : 0;
           const bDisc = isDiscounted(b) ? 1 : 0;
           if (aDisc !== bDisc) return bDisc - aDisc;
-          return (a.attributes?.title || '').localeCompare(b.attributes?.title || '', undefined, { sensitivity: 'base' });
+          return (a.attributes?.title || "").localeCompare(
+            b.attributes?.title || "",
+            undefined,
+            { sensitivity: "base" },
+          );
         });
         break;
     }
 
-    console.log('Final filtered data:', filtered.length, 'items');
+    console.log("Final filtered data:", filtered.length, "items");
     setFilteredData(filtered);
     setPage(1); // Reset to first page when filters change
   }, [data, filters, sortBy]);
 
   const totalPages = Math.ceil((filteredData?.length || 0) / pageSize);
-  const paginatedData = filteredData?.slice((page - 1) * pageSize, page * pageSize);
+  const paginatedData = filteredData?.slice(
+    (page - 1) * pageSize,
+    page * pageSize,
+  );
 
   const handlePrev = () => setPage((prev) => Math.max(prev - 1, 1));
   const handleNext = () => setPage((prev) => Math.min(prev + 1, totalPages));
@@ -240,56 +294,56 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
 
   // Filter handlers
   const handleCategoryChange = (category) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       categories: prev.categories.includes(category)
-        ? prev.categories.filter(c => c !== category)
-        : [...prev.categories, category]
+        ? prev.categories.filter((c) => c !== category)
+        : [...prev.categories, category],
     }));
   };
 
   const handleRatingChange = (rating) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       ratings: prev.ratings.includes(rating)
-        ? prev.ratings.filter(r => r !== rating)
-        : [...prev.ratings, rating]
+        ? prev.ratings.filter((r) => r !== rating)
+        : [...prev.ratings, rating],
     }));
   };
 
   const handleLightRequirementChange = (requirement) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       lightRequirements: prev.lightRequirements.includes(requirement)
-        ? prev.lightRequirements.filter(r => r !== requirement)
-        : [...prev.lightRequirements, requirement]
+        ? prev.lightRequirements.filter((r) => r !== requirement)
+        : [...prev.lightRequirements, requirement],
     }));
   };
 
   const handleAvailabilityChange = (availability) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       availability: prev.availability.includes(availability)
-        ? prev.availability.filter(a => a !== availability)
-        : [...prev.availability, availability]
+        ? prev.availability.filter((a) => a !== availability)
+        : [...prev.availability, availability],
     }));
   };
 
   const handlePotSizeChange = (size) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       potSize: prev.potSize.includes(size)
-        ? prev.potSize.filter(s => s !== size)
-        : [...prev.potSize, size]
+        ? prev.potSize.filter((s) => s !== size)
+        : [...prev.potSize, size],
     }));
   };
 
   const handlePotShapeChange = (shape) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       potShape: prev.potShape.includes(shape)
-        ? prev.potShape.filter(s => s !== shape)
-        : [...prev.potShape, shape]
+        ? prev.potShape.filter((s) => s !== shape)
+        : [...prev.potShape, shape],
     }));
   };
 
@@ -301,19 +355,22 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
       lightRequirements: [],
       potSize: [],
       potShape: [],
-      availability: []
+      availability: [],
     });
   };
 
   // Get active filters for display
   const getActiveFilters = () => {
     const active = [];
-    if (filters.categories.length > 0) active.push(`Category: ${filters.categories.join(', ')}`);
+    if (filters.categories.length > 0)
+      active.push(`Category: ${filters.categories.join(", ")}`);
     if (filters.priceRange[1] < 1000) {
       active.push(`Price: ₹0 - ₹${filters.priceRange[1]}`);
     }
-    if (filters.ratings.length > 0) active.push(`${filters.ratings.join(', ')} Star`);
-    if (filters.availability.length > 0) active.push(filters.availability.join(', '));
+    if (filters.ratings.length > 0)
+      active.push(`${filters.ratings.join(", ")} Star`);
+    if (filters.availability.length > 0)
+      active.push(filters.availability.join(", "));
     return active;
   };
 
@@ -329,203 +386,254 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
           aria-expanded={isFilterOpen}
           aria-controls="filter-options-content"
         >
-          <h3 className="text-xl font-semibold text-gray-800">Filter Options</h3>
+          <h3 className="text-xl font-semibold text-gray-800">
+            Filter Options
+          </h3>
           <Icon
             icon={isFilterOpen ? "mdi:chevron-up" : "mdi:chevron-down"}
             className="w-6 h-6 text-gray-600"
           />
         </button>
         {/* Static header - visible on desktop only */}
-        <h3 className="hidden lg:block text-3xl font-semibold text-gray-800 p-6 pt-6 pb-0">Filter Options</h3>
-        
+        <h3 className="hidden lg:block text-3xl font-semibold text-gray-800 p-6 pt-6 pb-0">
+          Filter Options
+        </h3>
+
         {/* Filter content - collapsible on mobile, always visible on desktop */}
         <div
           id="filter-options-content"
           className={`lg:block ${isFilterOpen ? "block" : "hidden"} p-6 pt-4 lg:pt-6`}
         >
-        {/* Category Filter */}
-        <div className="mb-6">
-          <h4 className="text-lg font-medium text-gray-700 mb-3">Category</h4>
-          {availableCategories.length > 0 ? (
+          {/* Category Filter */}
+          <div className="mb-6">
+            <h4 className="text-lg font-medium text-gray-700 mb-3">Category</h4>
+            {availableCategories.length > 0 ? (
+              <div className="space-y-2">
+                {availableCategories.map((category) => (
+                  <label
+                    key={category}
+                    className="flex items-center space-x-2 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={filters.categories.includes(category)}
+                      onChange={() => handleCategoryChange(category)}
+                      className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                    />
+                    <span className="text-[16px] text-gray-600">
+                      {category}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {/* Fallback to default categories while loading */}
+                {[
+                  "Indoor Plants",
+                  "Outdoor Plants",
+                  "Flowering Plants",
+                  "Pet-friendly Plants",
+                  "Air-purifying Plants",
+                  "Herbs & Edibles",
+                ].map((category) => (
+                  <label
+                    key={category}
+                    className="flex items-center space-x-2 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={filters.categories.includes(category)}
+                      onChange={() => handleCategoryChange(category)}
+                      className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                    />
+                    <span className="text-[16px] text-gray-600">
+                      {category}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Price Filter */}
+          <div className="mb-6">
+            <h4 className="text-base font-medium text-gray-700 mb-3">Price</h4>
+            <div className="space-y-3">
+              {/* Price Display */}
+              <div className="flex justify-between text-base text-gray-600">
+                <span>₹0</span>
+                <span>₹1000</span>
+              </div>
+
+              {/* Single Range Slider */}
+              <div className="relative">
+                <input
+                  type="range"
+                  min="0"
+                  max="1000"
+                  step="10"
+                  value={filters.priceRange[1]}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    setFilters((prev) => ({ ...prev, priceRange: [0, value] }));
+                  }}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
+                  style={{
+                    background: `linear-gradient(to right, #16a34a 0%, #16a34a ${((filters.priceRange[1] - 0) / (1000 - 0)) * 100}%, #e5e7eb ${((filters.priceRange[1] - 0) / (1000 - 0)) * 100}%, #e5e7eb 100%)`,
+                  }}
+                />
+              </div>
+
+              {/* Price Range Display */}
+              <div className="text-center text-base text-gray-500">
+                ₹0 - ₹{filters.priceRange[1]} (Current: {filters.priceRange[1]})
+              </div>
+            </div>
+
+            <style jsx>{`
+              .slider-thumb::-webkit-slider-thumb {
+                appearance: none;
+                height: 20px;
+                width: 20px;
+                border-radius: 50%;
+                background: #16a34a;
+                cursor: pointer;
+                border: 2px solid #fff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+              }
+
+              .slider-thumb::-moz-range-thumb {
+                height: 20px;
+                width: 20px;
+                border-radius: 50%;
+                background: #16a34a;
+                cursor: pointer;
+                border: 2px solid #fff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+              }
+            `}</style>
+          </div>
+
+          {/* Review Filter */}
+          <div className="mb-6">
+            <h4 className="text-base font-medium text-gray-700 mb-3">Review</h4>
             <div className="space-y-2">
-              {availableCategories.map((category) => (
-                <label key={category} className="flex items-center space-x-2 cursor-pointer">
+              {[5, 4, 3, 2, 1].map((rating) => (
+                <label
+                  key={rating}
+                  className="flex items-center space-x-2 cursor-pointer"
+                >
                   <input
                     type="checkbox"
-                    checked={filters.categories.includes(category)}
-                    onChange={() => handleCategoryChange(category)}
+                    checked={filters.ratings.includes(rating)}
+                    onChange={() => handleRatingChange(rating)}
                     className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                   />
-                  <span className="text-[16px] text-gray-600">{category}</span>
+                  <span className="text-base text-gray-600">{rating} Star</span>
                 </label>
               ))}
             </div>
-          ) : (
+          </div>
+
+          {/* Light Requirements */}
+          <div className="mb-6">
+            <h4 className="text-base font-medium text-gray-700 mb-3">
+              Light Requirements
+            </h4>
             <div className="space-y-2">
-              {/* Fallback to default categories while loading */}
-              {['Indoor Plants', 'Outdoor Plants', 'Flowering Plants', 'Pet-friendly Plants', 'Air-purifying Plants', 'Herbs & Edibles'].map((category) => (
-                <label key={category} className="flex items-center space-x-2 cursor-pointer">
+              {[
+                "Full Sun",
+                "Partial Shade",
+                "Low Light",
+                "Bright Indirect Light",
+              ].map((requirement) => (
+                <label
+                  key={requirement}
+                  className="flex items-center space-x-2 cursor-pointer"
+                >
                   <input
                     type="checkbox"
-                    checked={filters.categories.includes(category)}
-                    onChange={() => handleCategoryChange(category)}
+                    checked={filters.lightRequirements.includes(requirement)}
+                    onChange={() => handleLightRequirementChange(requirement)}
                     className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                   />
-                  <span className="text-[16px] text-gray-600">{category}</span>
+                  <span className="text-base text-gray-600">{requirement}</span>
                 </label>
               ))}
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Price Filter */}
-        <div className="mb-6">
-          <h4 className="text-base font-medium text-gray-700 mb-3">Price</h4>
-          <div className="space-y-3">
-            {/* Price Display */}
-            <div className="flex justify-between text-base text-gray-600">
-              <span>₹0</span>
-              <span>₹1000</span>
-            </div>
-            
-            {/* Single Range Slider */}
-            <div className="relative">
-              <input
-                type="range"
-                min="0"
-                max="1000"
-                step="10"
-                value={filters.priceRange[1]}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value);
-                  setFilters(prev => ({ ...prev, priceRange: [0, value] }));
-                }}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
-                style={{
-                  background: `linear-gradient(to right, #16a34a 0%, #16a34a ${((filters.priceRange[1] - 0) / (1000 - 0)) * 100}%, #e5e7eb ${((filters.priceRange[1] - 0) / (1000 - 0)) * 100}%, #e5e7eb 100%)`
-                }}
-              />
-            </div>
-            
-            {/* Price Range Display */}
-            <div className="text-center text-base text-gray-500">
-              ₹0 - ₹{filters.priceRange[1]} (Current: {filters.priceRange[1]})
+          {/* Pot Size */}
+          <div className="mb-6">
+            <h4 className="text-base font-medium text-gray-700 mb-3">
+              Pot Size
+            </h4>
+            <div className="space-y-2">
+              {["Small", "Medium"].map((size) => (
+                <label
+                  key={size}
+                  className="flex items-center space-x-2 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={filters.potSize.includes(size)}
+                    onChange={() => handlePotSizeChange(size)}
+                    className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span className="text-base text-gray-600">{size}</span>
+                </label>
+              ))}
             </div>
           </div>
-          
-          <style jsx>{`
-            .slider-thumb::-webkit-slider-thumb {
-              appearance: none;
-              height: 20px;
-              width: 20px;
-              border-radius: 50%;
-              background: #16a34a;
-              cursor: pointer;
-              border: 2px solid #fff;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            }
-            
-            .slider-thumb::-moz-range-thumb {
-              height: 20px;
-              width: 20px;
-              border-radius: 50%;
-              background: #16a34a;
-              cursor: pointer;
-              border: 2px solid #fff;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            }
-          `}</style>
-        </div>
 
-        {/* Review Filter */}
-        <div className="mb-6">
-          <h4 className="text-base font-medium text-gray-700 mb-3">Review</h4>
-          <div className="space-y-2">
-            {[5, 4, 3, 2, 1].map((rating) => (
-              <label key={rating} className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={filters.ratings.includes(rating)}
-                  onChange={() => handleRatingChange(rating)}
-                  className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                />
-                <span className="text-base text-gray-600">{rating} Star</span>
-              </label>
-            ))}
+          {/* Pot Shape */}
+          <div className="mb-6">
+            <h4 className="text-base font-medium text-gray-700 mb-3">
+              Pot Shape
+            </h4>
+            <div className="space-y-2">
+              {["Round", "Hexagonal"].map((shape) => (
+                <label
+                  key={shape}
+                  className="flex items-center space-x-2 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={filters.potShape.includes(shape)}
+                    onChange={() => handlePotShapeChange(shape)}
+                    className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span className="text-base text-gray-600">{shape}</span>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Light Requirements */}
-        <div className="mb-6">
-          <h4 className="text-base font-medium text-gray-700 mb-3">Light Requirements</h4>
-          <div className="space-y-2">
-            {['Full Sun', 'Partial Shade', 'Low Light', 'Bright Indirect Light'].map((requirement) => (
-              <label key={requirement} className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={filters.lightRequirements.includes(requirement)}
-                  onChange={() => handleLightRequirementChange(requirement)}
-                  className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                />
-                <span className="text-base text-gray-600">{requirement}</span>
-              </label>
-            ))}
+          {/* Availability */}
+          <div className="mb-6">
+            <h4 className="text-base font-medium text-gray-700 mb-3">
+              Availability
+            </h4>
+            <div className="space-y-2">
+              {["In Stock", "Out of Stock"].map((availability) => (
+                <label
+                  key={availability}
+                  className="flex items-center space-x-2 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={filters.availability.includes(availability)}
+                    onChange={() => handleAvailabilityChange(availability)}
+                    className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span className="text-base text-gray-600">
+                    {availability}
+                  </span>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
-
-        {/* Pot Size */}
-        <div className="mb-6">
-          <h4 className="text-base font-medium text-gray-700 mb-3">Pot Size</h4>
-          <div className="space-y-2">
-            {['Small', 'Medium'].map((size) => (
-              <label key={size} className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={filters.potSize.includes(size)}
-                  onChange={() => handlePotSizeChange(size)}
-                  className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                />
-                <span className="text-base text-gray-600">{size}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Pot Shape */}
-        <div className="mb-6">
-          <h4 className="text-base font-medium text-gray-700 mb-3">Pot Shape</h4>
-          <div className="space-y-2">
-            {['Round', 'Hexagonal'].map((shape) => (
-              <label key={shape} className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={filters.potShape.includes(shape)}
-                  onChange={() => handlePotShapeChange(shape)}
-                  className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                />
-                <span className="text-base text-gray-600">{shape}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Availability */}
-        <div className="mb-6">
-          <h4 className="text-base font-medium text-gray-700 mb-3">Availability</h4>
-          <div className="space-y-2">
-            {['In Stock', 'Out of Stock'].map((availability) => (
-              <label key={availability} className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={filters.availability.includes(availability)}
-                  onChange={() => handleAvailabilityChange(availability)}
-                  className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                />
-                <span className="text-base text-gray-600">{availability}</span>
-              </label>
-            ))}
-          </div>
-        </div>
         </div>
       </div>
 
@@ -543,7 +651,9 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
         {/* Results and Sort Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
           <div className="text-gray-600 mb-2 sm:mb-0">
-            Showing {((page - 1) * pageSize) + 1}-{Math.min(page * pageSize, filteredData.length)} of {filteredData.length} results
+            Showing {(page - 1) * pageSize + 1}-
+            {Math.min(page * pageSize, filteredData.length)} of{" "}
+            {filteredData.length} results
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-gray-600 text-sm">Sort by:</span>
@@ -565,7 +675,10 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
         {getActiveFilters().length > 0 && (
           <div className="flex flex-wrap items-center gap-2 mb-6">
             {getActiveFilters().map((filter, index) => (
-              <span key={index} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm flex items-center">
+              <span
+                key={index}
+                className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm flex items-center"
+              >
                 {filter}
                 <button
                   onClick={() => {
@@ -588,28 +701,28 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
         )}
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {paginatedData.map((item, id) => (
-          <ProductCard
-            key={id}
-            data={getCardData(item)}
-            onAddToCart={(opts) => handleAddToCart(getCardData(item), opts)}
-            showAddToCart
-          />
-        ))}
-      </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {paginatedData.map((item, id) => (
+            <ProductCard
+              key={id}
+              data={getCardData(item)}
+              onAddToCart={(opts) => handleAddToCart(getCardData(item), opts)}
+              showAddToCart
+            />
+          ))}
+        </div>
 
-      {/* Pagination Controls */}
-      {totalPages > 1 && (
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
           <div className="flex justify-center items-center mt-8 gap-2">
-          <button
-            onClick={handlePrev}
-            disabled={page === 1}
+            <button
+              onClick={handlePrev}
+              disabled={page === 1}
               className="px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Icon icon="mdi:chevron-left" className="w-4 h-4" />
             </button>
-            
+
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               const pageNum = i + 1;
               return (
@@ -618,15 +731,15 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
                   onClick={() => setPage(pageNum)}
                   className={`px-3 py-2 ${
                     page === pageNum
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
                   {pageNum}
                 </button>
               );
             })}
-            
+
             {totalPages > 5 && (
               <>
                 <span className="text-gray-500">...</span>
@@ -634,24 +747,24 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
                   onClick={() => setPage(totalPages)}
                   className={`px-3 py-2 ${
                     page === totalPages
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
                   {totalPages}
-          </button>
+                </button>
               </>
             )}
-            
-          <button
-            onClick={handleNext}
-            disabled={page === totalPages}
+
+            <button
+              onClick={handleNext}
+              disabled={page === totalPages}
               className="px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+            >
               <Icon icon="mdi:chevron-right" className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -49,7 +49,7 @@ export default function CustomNavbar() {
   const [isSigningIn, setIsSigningIn] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(pathname || "/");
-  
+
   // Sync activeTab with pathname changes
   useEffect(() => {
     setActiveTab(pathname || "/");
@@ -184,28 +184,55 @@ export default function CustomNavbar() {
           <div className="flex items-center justify-between text-sm">
             {/* Left: Call Us */}
             <div className="flex items-center">
-              <a href="tel:+919059152555" className="hover:underline cursor-pointer">
+              <a
+                href="tel:+919059152555"
+                className="hover:underline cursor-pointer"
+              >
                 Call Us : +91 90591 52555, +91 89994 92523
               </a>
             </div>
-            
+
             {/* Center: Discount code offer */}
             <div className="flex items-center">
               <span>Use code FIRST25 to get 25% OFF for your first order.</span>
             </div>
-            
+
             {/* Right: Social Media Icons */}
             <div className="flex items-center space-x-2">
-              <a href="https://www.facebook.com/plantozoneindia/" target="_blank" rel="noopener noreferrer" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors" aria-label="Facebook">
+              <a
+                href="https://www.facebook.com/plantozoneindia/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors"
+                aria-label="Facebook"
+              >
                 <Icon icon="mdi:facebook" className="w-3 h-3 text-black" />
               </a>
-              <a href="https://x.com/PLANTOZONEINDIA" target="_blank" rel="noopener noreferrer" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors" aria-label="X">
+              <a
+                href="https://x.com/PLANTOZONEINDIA"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors"
+                aria-label="X"
+              >
                 <Icon icon="simple-icons:x" className="w-3 h-3 text-black" />
               </a>
-              <a href="https://www.instagram.com/plantozone/?hl=en" target="_blank" rel="noopener noreferrer" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors" aria-label="Instagram">
+              <a
+                href="https://www.instagram.com/plantozone/?hl=en"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors"
+                aria-label="Instagram"
+              >
                 <Icon icon="mdi:instagram" className="w-3 h-3 text-black" />
               </a>
-              <a href="https://www.youtube.com/channel/UCCCPPdaOp1zociKZYiNsvHg" target="_blank" rel="noopener noreferrer" className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors" aria-label="YouTube">
+              <a
+                href="https://www.youtube.com/channel/UCCCPPdaOp1zociKZYiNsvHg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors"
+                aria-label="YouTube"
+              >
                 <Icon icon="mdi:youtube" className="w-3 h-3 text-black" />
               </a>
             </div>
@@ -216,17 +243,20 @@ export default function CustomNavbar() {
       {/* Main Navigation Bar */}
       <header className="fixed w-full bg-white z-[99] border-b md:top-10 top-0">
         <Container>
-          <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-1">
             {/* Left: Logo and Brand */}
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-90 transition-opacity">
-              <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-lg p-1 flex items-center justify-center">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 hover:opacity-90 transition-opacity"
+            >
+              <div className="w-16 h-16 md:w-24 md:h-24 bg-white rounded-lg p-1 flex items-center justify-center">
                 <Logo />
               </div>
               <span className="text-3xl hidden md:block md:text-3xl font-semibold text-gray-800">
                 Plantozone<span className="text-yellow-400">.</span>
               </span>
             </Link>
-            
+
             {/* Center: Navigation Links */}
             <div className="hidden md:flex items-center">
               <nav className="flex space-x-8 text-[16px] font-medium">
@@ -248,17 +278,29 @@ export default function CustomNavbar() {
 
             {/* Right: Icons */}
             <div className="hidden md:flex items-center space-x-4">
-              <Button variant="ghost" size="icon" className="relative" onClick={openSearch} aria-label="Search">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                onClick={openSearch}
+                aria-label="Search"
+              >
                 <Icon icon="mdi:magnify" className="h-6 w-6 text-gray-700" />
               </Button>
               <Button variant="ghost" size="icon" asChild className="relative">
                 <Link href="/whishlist">
-                  <Icon icon="mdi:heart-outline" className="h-6 w-6 text-gray-700" />
+                  <Icon
+                    icon="mdi:heart-outline"
+                    className="h-6 w-6 text-gray-700"
+                  />
                 </Link>
               </Button>
               <Button variant="ghost" size="icon" asChild className="relative">
                 <Link href="/cart">
-                  <Icon icon="mdi:cart-outline" className="h-6 w-6 text-gray-700" />
+                  <Icon
+                    icon="mdi:cart-outline"
+                    className="h-6 w-6 text-gray-700"
+                  />
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
                       {cartCount}
@@ -266,27 +308,35 @@ export default function CustomNavbar() {
                   )}
                 </Link>
               </Button>
-              <PrimaryButton 
-                href="/contact-us" 
-                withArrow={false}
-              >
+              <PrimaryButton href="/contact-us" withArrow={false}>
                 Contact Us
               </PrimaryButton>
             </div>
 
             {/* Mobile Icons - Search, Wishlist and Cart */}
             <div className="md:hidden flex items-center space-x-2">
-              <Button variant="ghost" size="icon" onClick={openSearch} aria-label="Search">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={openSearch}
+                aria-label="Search"
+              >
                 <Icon icon="mdi:magnify" className="h-7 w-7 text-gray-700" />
               </Button>
               <Button variant="ghost" size="icon" asChild>
                 <Link href="/whishlist">
-                  <Icon icon="mdi:heart-outline" className="h-7 w-7 text-gray-700" />
+                  <Icon
+                    icon="mdi:heart-outline"
+                    className="h-7 w-7 text-gray-700"
+                  />
                 </Link>
               </Button>
               <Button variant="ghost" size="icon" asChild className="relative">
                 <Link href="/cart">
-                  <Icon icon="mdi:cart-outline" className="h-7 w-7 text-gray-700" />
+                  <Icon
+                    icon="mdi:cart-outline"
+                    className="h-7 w-7 text-gray-700"
+                  />
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
                       {cartCount}
@@ -305,7 +355,11 @@ export default function CustomNavbar() {
             className="absolute top-0 left-0 right-0 bg-white shadow-md z-50 md:hidden transform transition-all duration-300 ease-in-out translate-x-0 min-h-screen"
           >
             <div className="flex justify-between items-center p-4">
-              <Link href="/" onClick={toggleMenu} className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center">
+              <Link
+                href="/"
+                onClick={toggleMenu}
+                className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center"
+              >
                 <Logo />
               </Link>
               <Button variant="ghost" size="icon" onClick={toggleMenu}>
@@ -316,7 +370,7 @@ export default function CustomNavbar() {
             <div className="flex flex-col items-center space-y-4 py-4">
               {header
                 .filter(
-                  (link) => !mobileTabs.some((tab) => tab.href === link.href)
+                  (link) => !mobileTabs.some((tab) => tab.href === link.href),
                 )
                 .map((link, id) => (
                   <Link
@@ -367,7 +421,7 @@ export default function CustomNavbar() {
       </header>
 
       {/* Bottom Navigation Tabs */}
-      <div 
+      <div
         className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-[100]"
         style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
       >
@@ -375,22 +429,28 @@ export default function CustomNavbar() {
           {mobileTabs
             .filter((link) => link.href !== "/wishlist")
             .map((link) => {
-              const isActive = pathname === link.href || (link.href === "/" && pathname === "/");
+              const isActive =
+                pathname === link.href ||
+                (link.href === "/" && pathname === "/");
               return (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={`relative flex flex-col items-center justify-center text-sm transition-colors duration-200 px-2 py-1 min-w-[60px] ${
-                    isActive
-                      ? "text-[#0b9c09]"
-                      : "text-gray-600"
+                    isActive ? "text-[#0b9c09]" : "text-gray-600"
                   }`}
                   onClick={() => handleTabClick(link.href)}
                 >
-                  <div className={`relative ${isActive ? "bg-green-50 rounded-lg p-1.5" : ""}`}>
+                  <div
+                    className={`relative ${isActive ? "bg-green-50 rounded-lg p-1.5" : ""}`}
+                  >
                     <Icon icon={link.icon} width="24" height="24" />
                   </div>
-                  <span className={`text-xs mt-1 ${isActive ? "font-medium" : ""}`}>{link.label}</span>
+                  <span
+                    className={`text-xs mt-1 ${isActive ? "font-medium" : ""}`}
+                  >
+                    {link.label}
+                  </span>
                 </Link>
               );
             })}
@@ -398,7 +458,13 @@ export default function CustomNavbar() {
       </div>
 
       {/* Search Modal */}
-      <Dialog open={isSearchOpen} onOpenChange={(open) => { setIsSearchOpen(open); if (!open) setSearchInput(""); }}>
+      <Dialog
+        open={isSearchOpen}
+        onOpenChange={(open) => {
+          setIsSearchOpen(open);
+          if (!open) setSearchInput("");
+        }}
+      >
         <DialogContent className="bg-white w-[90%] sm:w-[420px] mx-auto">
           <DialogHeader>
             <DialogTitle>Search plants</DialogTitle>
@@ -415,12 +481,17 @@ export default function CustomNavbar() {
               className="flex-1"
               autoFocus
             />
-            <Button onClick={handleSearchSubmit} className="bg-green-600 hover:bg-green-700">
+            <Button
+              onClick={handleSearchSubmit}
+              className="bg-green-600 hover:bg-green-700"
+            >
               Search
             </Button>
           </div>
           <DialogClose asChild>
-            <Button variant="ghost" className="mt-2">Cancel</Button>
+            <Button variant="ghost" className="mt-2">
+              Cancel
+            </Button>
           </DialogClose>
         </DialogContent>
       </Dialog>

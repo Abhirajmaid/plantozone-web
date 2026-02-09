@@ -51,7 +51,7 @@ const NewArrivals = () => {
   };
 
   // Carousel functions
-  const itemsPerSlide = 4;
+  const itemsPerSlide = 5;
   const totalSlides = Math.ceil(data.length / itemsPerSlide);
 
   const nextSlide = () => {
@@ -80,10 +80,10 @@ const NewArrivals = () => {
   const handleMouseUp = (e) => {
     if (!isDragging) return;
     setIsDragging(false);
-    
+
     const endX = e.pageX;
     const diff = startX - endX;
-    
+
     if (Math.abs(diff) > 50) {
       if (diff > 0) {
         nextSlide();
@@ -106,10 +106,10 @@ const NewArrivals = () => {
   const handleTouchEnd = (e) => {
     if (!isDragging) return;
     setIsDragging(false);
-    
+
     const endX = e.changedTouches[0].pageX;
     const diff = startX - endX;
-    
+
     if (Math.abs(diff) > 50) {
       if (diff > 0) {
         nextSlide();
@@ -130,18 +130,38 @@ const NewArrivals = () => {
             className="absolute -left-12 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 hover:bg-gray-50 transition-colors"
             disabled={totalSlides <= 1}
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-5 h-5 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
-          
+
           <button
             onClick={nextSlide}
             className="absolute -right-12 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 hover:bg-gray-50 transition-colors"
             disabled={totalSlides <= 1}
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg
+              className="w-5 h-5 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
 
@@ -155,7 +175,7 @@ const NewArrivals = () => {
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+            style={{ cursor: isDragging ? "grabbing" : "grab" }}
           >
             <div
               className="flex transition-transform duration-300 ease-in-out"
@@ -165,9 +185,12 @@ const NewArrivals = () => {
             >
               {Array.from({ length: totalSlides }, (_, slideIndex) => (
                 <div key={slideIndex} className="w-full flex-shrink-0">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 px-4">
                     {data
-                      ?.slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
+                      ?.slice(
+                        slideIndex * itemsPerSlide,
+                        (slideIndex + 1) * itemsPerSlide,
+                      )
                       ?.map((item, id) => (
                         <div key={id}>
                           <ProductCard
@@ -191,8 +214,8 @@ const NewArrivals = () => {
                   onClick={() => goToSlide(index)}
                   className={`w-3 h-3 rounded-full transition-colors ${
                     index === currentSlide
-                      ? 'bg-green-600'
-                      : 'bg-gray-300 hover:bg-gray-400'
+                      ? "bg-green-600"
+                      : "bg-gray-300 hover:bg-gray-400"
                   }`}
                 />
               ))}
@@ -202,7 +225,9 @@ const NewArrivals = () => {
 
         {/* Load More Button */}
         <div className="w-full flex justify-center mt-8">
-          <PrimaryButton href="/shop" className="text-base px-7 py-3">Load More</PrimaryButton>
+          <PrimaryButton href="/shop" className="text-base px-7 py-3">
+            Load More
+          </PrimaryButton>
         </div>
       </Container>
     </Section>

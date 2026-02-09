@@ -2,7 +2,8 @@ import cx from "clsx";
 
 export const Section = ({ children, className }) => {
   return (
-    <section className={cx("overflow-hidden py-10 sm:py-14", className)}>
+    // Reduced default vertical spacing to tighten up layout across sections
+    <section className={cx("overflow-hidden py-6 sm:py-8", className)}>
       {children}
     </section>
   );

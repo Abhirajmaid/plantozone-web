@@ -12,10 +12,10 @@ import {
   // VideoSec,
   WhyUs,
   TopSellerProducts,
+  TopFivePlants,
   PromotionalBanners,
   // DealsOfTheDaySection,
   InfiniteCategoryMarquee,
-  
 } from "@/src/components";
 import Image from "next/image";
 
@@ -23,8 +23,18 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <CategorySec />
+      <InfiniteCategoryMarquee />
+      <Image
+        src="/images/mission.png"
+        alt="platozone"
+        width={3000}
+        height={3000}
+        className="w-full h-auto"
+      />
+      <InfiniteCategoryMarquee />
       <AboutUsSection />
+      <CategorySec />
+      <TopFivePlants />
       <TopSellerProducts />
       {/* <SpecialOffer /> – Nature's Special Offer section + 30% OFF plants (IDs 64, 47) commented out */}
       {/* <DealsOfTheDaySection /> */}
@@ -42,10 +52,10 @@ export default function Home() {
       <NewsletterSection />
       <InfiniteCategoryMarquee />
       <Image
-        src="/images/plantozone.svg"
+        src="/images/mission.png"
         alt="platozone"
-        width={1000}
-        height={1000}
+        width={3000}
+        height={3000}
         className="w-full h-auto"
       />
     </>

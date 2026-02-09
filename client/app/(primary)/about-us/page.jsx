@@ -8,6 +8,11 @@ import {
 } from "@/src/components";
 import StatsBar from "@/src/components/common/StatsBar";
 import AboutUsVideoSection from "@/src/components/section/about/AboutUsVideoSection";
+import dynamic from "next/dynamic";
+const DynamicInstagramGrid = dynamic(
+  () => import("@/src/components/common/InstagramGrid"),
+  { ssr: false }
+);
 import { testimonials } from "@/src/lib/data/testimonials";
 import teamAction from "@/src/lib/action/team.action";
 import Link from "next/link";
@@ -366,7 +371,7 @@ export default async function AboutUsPage() {
         </Container>
       </Section>
 
-      {/* Instagram Feed Section */}
+      {/* Instagram Feed Section (client-rendered) */}
       <Section className="bg-white py-8 md:py-12 lg:py-16">
         <Container>
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -378,57 +383,13 @@ export default async function AboutUsPage() {
                 Follow Us On Instagram
               </h2>
             </div>
-
-            {/* Instagram Grid Layout */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 max-w-6xl mx-auto">
-              {/* Left 2x2 Grid - Mobile: shows as 2 columns, Desktop: shows as 2 columns in 5-col grid */}
-              <div className="col-span-2 md:col-span-2 lg:col-span-2 grid grid-cols-2 gap-2 md:gap-4">
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={`left-${i}`}
-                    className="aspect-square bg-gray-200 rounded-lg md:rounded-2xl overflow-hidden hover:scale-105 transition-transform cursor-pointer"
-                  >
-                    <Image
-                      src="/images/plant.png"
-                      alt={`Instagram post ${i + 1}`}
-                      width={300}
-                      height={300}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {/* Central Large Image - Hidden on mobile, visible on md+ */}
-              <div className="hidden md:block lg:col-span-1">
-                <div className="aspect-[2/4.15] bg-gray-200 rounded-2xl overflow-hidden hover:scale-105 transition-transform cursor-pointer">
-                  <Image
-                    src="/images/plant.png"
-                    alt="Main Instagram post"
-                    width={400}
-                    height={600}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-
-              {/* Right 2x2 Grid - Mobile: shows as 2 columns, Desktop: shows as 2 columns in 5-col grid */}
-              <div className="col-span-2 md:col-span-1 lg:col-span-2 grid grid-cols-2 gap-2 md:gap-4">
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={`right-${i}`}
-                    className="aspect-square bg-gray-200 rounded-lg md:rounded-2xl overflow-hidden hover:scale-105 transition-transform cursor-pointer"
-                  >
-                    <Image
-                      src="/images/plant.png"
-                      alt={`Instagram post ${i + 5}`}
-                      width={300}
-                      height={300}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
+            {/* Dynamically load client component to render interactive grid */}
+            {/*
+              The InstagramGrid is a client component (uses state and dialog).
+              Load it dynamically with no SSR so it mounts on the client.
+            */}
+            <div>
+              <DynamicInstagramGrid />
             </div>
           </div>
         </Container>

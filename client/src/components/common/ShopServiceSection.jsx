@@ -29,14 +29,21 @@ const ShopServiceSection = ({ services = [] }) => {
       {serviceItems.map((service, index) => (
         <div key={index} className="flex items-center space-x-4 text-center">
           <div className="relative flex-shrink-0">
-            <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full"></div>
-            <div className="relative z-10 w-12 h-12 flex items-center justify-center">
-              <Icon icon={service.icon} className="w-16 h-16 text-green-700" />
+            <div className="absolute -bottom-1 -right-1 w-12 h-12 bg-yellow-400 rounded-full"></div>
+            <div className="relative z-10 w-20 h-20 flex items-center justify-center">
+              <Icon
+                icon={service.icon}
+                className="w-full h-full text-green-700"
+              />
             </div>
           </div>
           <div>
-            <h3 className="text-lg font-bold text-gray-800">{service.title}</h3>
-            <p className="text-sm text-gray-600">{service.description}</p>
+            <h3 className="text-lg font-bold text-left text-gray-800">
+              {service.title}
+            </h3>
+            <p className="text-sm text-gray-600 text-left">
+              {service.description}
+            </p>
           </div>
         </div>
       ))}
@@ -45,5 +52,3 @@ const ShopServiceSection = ({ services = [] }) => {
 };
 
 export default ShopServiceSection;
-
-

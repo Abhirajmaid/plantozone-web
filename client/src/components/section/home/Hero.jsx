@@ -204,49 +204,12 @@ const Hero = () => {
   if (loading) {
     return (
       <Section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/30 via-white to-green-50/20 min-h-screen">
-        <Container className="relative z-10 py-8 lg:py-12 h-full px-4">
+        <Container className="relative z-10 py-8 lg:py-16 h-full px-4">
           <div className="flex items-center justify-center min-h-[calc(100vh-120px)]">
             <div className="text-center">
               <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-600 mx-auto mb-4"></div>
               <p className="text-gray-600">Loading plants...</p>
             </div>
-          </div>
-          {/* Debug controls for marquee (small) */}
-          <div className="fixed right-4 bottom-4 z-50 flex flex-col gap-2">
-            <button
-              onClick={() => {
-                const el = marqueeRef.current;
-                if (!el) return;
-                if (el.startMarquee) el.startMarquee();
-              }}
-              className="bg-black/60 text-white text-xs px-3 py-2 rounded"
-            >
-              Start Marquee
-            </button>
-            <button
-              onClick={() => {
-                const el = marqueeRef.current;
-                if (!el) return;
-                if (el.stopMarquee) el.stopMarquee();
-              }}
-              className="bg-black/60 text-white text-xs px-3 py-2 rounded"
-            >
-              Stop Marquee
-            </button>
-            <button
-              onClick={() => {
-                const el = marqueeRef.current;
-                if (!el) return;
-                // show sizes
-                // eslint-disable-next-line no-alert
-                alert(
-                  `scrollWidth: ${el.scrollWidth}\\nclientWidth: ${el.clientWidth}`,
-                );
-              }}
-              className="bg-black/60 text-white text-xs px-3 py-2 rounded"
-            >
-              Sizes
-            </button>
           </div>
         </Container>
       </Section>
@@ -288,7 +251,7 @@ const Hero = () => {
       </div>
 
       <div className="relative z-10">
-        <Container className="text-center pt-32">
+        <Container className="text-center md:pt-[160px] pt-[100px]">
           {/* Badge */}
           <div className="flex justify-center">
             <div className="inline-flex items-center bg-amber-100 text-amber-800 px-4 py-1.5 rounded-full text-sm font-medium shadow-sm">
@@ -313,15 +276,23 @@ const Hero = () => {
             transition={{ delay: 0.3 }}
             className="mt-4 text-gray-600 text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
           >
-            Discover curated indoor and outdoor plants, expert care tips, and reliable delivery — everything you need to make your home greener and healthier.
+            Discover curated indoor and outdoor plants, expert care tips, and
+            reliable delivery — everything you need to make your home greener
+            and healthier.
           </motion.p>
           {/* CTAs */}
           <div className="mt-8">
             <div className="flex gap-4 items-center justify-center">
-              <a href="/shop" className="inline-block px-6 py-3 rounded-full bg-green-600 text-white shadow hover:bg-green-700 transition">
+              <a
+                href="/shop"
+                className="inline-block px-6 py-3 rounded-full bg-green-600 text-white shadow hover:bg-green-700 transition"
+              >
                 Shop Plants
               </a>
-              <a href="/about-us" className="inline-block px-6 py-3 rounded-full border border-green-200 text-green-700 bg-white hover:bg-green-50 transition">
+              <a
+                href="/about-us"
+                className="inline-block px-6 py-3 rounded-full border border-green-200 text-green-700 bg-white hover:bg-green-50 transition"
+              >
                 Our Story
               </a>
             </div>

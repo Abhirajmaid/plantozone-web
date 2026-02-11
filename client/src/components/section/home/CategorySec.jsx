@@ -98,7 +98,7 @@ const CategorySec = () => {
           <SectionTitle
             subtitle="Our Categories"
             title="Shop By Category"
-            className="my-12 mt-14"
+            className="mb-6 mt-8"
             subtitleClassName="text-black"
           />
         </Container>
@@ -136,15 +136,11 @@ const CategorySec = () => {
               </div>
             </div>
           ) : (
-            <div className="w-full overflow-hidden py-8">
+            <div className="w-full overflow-hidden py-6">
               <div className="px-4 lg:px-12">
-                <div
-                  className="grid gap-4 items-start"
-                  style={{
-                    gridTemplateColumns: `repeat(${categories.length}, minmax(0, 1fr))`,
-                  }}
-                >
-                  {categories.map((item, idx) => (
+                {/* Desktop / Tablet grid */}
+                <div className="hidden sm:grid gap-4 items-start sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+                  {categories.map((item) => (
                     <Link
                       href={`/shop/${item.slug}`}
                       key={item.id}
@@ -152,9 +148,8 @@ const CategorySec = () => {
                     >
                       <div className="flex flex-col items-center">
                         <div
-                          className={`w-full aspect-[4/5] md:aspect-[5/6] min-h-[260px] md:min-h-[320px] lg:min-h-[380px] rounded-2xl overflow-hidden shadow-lg bg-primary flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl relative`}
+                          className={`w-full aspect-[4/5] md:aspect-[5/6] min-h-[320px] md:min-h-[360px] lg:min-h-[420px] rounded-2xl overflow-hidden shadow-lg bg-primary flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl relative`}
                         >
-                          {/* Image Display */}
                           <div className="relative w-full h-full">
                             <Image
                               src={item.image}
@@ -164,12 +159,45 @@ const CategorySec = () => {
                               unoptimized={item.image.startsWith("http")}
                             />
                           </div>
-                          {/* Overlay for better text visibility */}
                           <div className="absolute inset-0 group-hover:bg-primary/10 transition-colors duration-300"></div>
                         </div>
                       </div>
                     </Link>
                   ))}
+                </div>
+
+                {/* Mobile: grid layout (2 cols x 3 rows) for first 5 categories.
+                    Layout: fill left-to-right, top-to-bottom. Last (index 4) spans both columns. */}
+                <div className="sm:hidden py-4 px-2">
+                  <div className="grid grid-cols-2 grid-rows-2 gap-3">
+                    {categories.slice(0, 4).map((item, idx) => {
+                      const spanClass = idx === 4 ? "col-span-2" : "col-span-1";
+                      return (
+                        <Link
+                          href={`/shop/${item.slug}`}
+                          key={item.id}
+                          className={`group ${spanClass}`}
+                        >
+                          <div className="flex flex-col items-center h-full">
+                            <div
+                              className={`w-full h-full min-h-[220px] rounded-2xl overflow-hidden shadow-lg bg-primary flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl relative`}
+                            >
+                              <div className="relative w-full h-full">
+                                <Image
+                                  src={item.image}
+                                  alt={item.name}
+                                  fill
+                                  className="object-cover"
+                                  unoptimized={item.image.startsWith("http")}
+                                />
+                              </div>
+                              <div className="absolute inset-0 group-hover:bg-primary/10 transition-colors duration-300"></div>
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>

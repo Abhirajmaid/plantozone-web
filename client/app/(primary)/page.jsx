@@ -24,13 +24,23 @@ export default function Home() {
     <>
       <Hero />
       <InfiniteCategoryMarquee />
-      <Image
-        src="/images/mission.png"
-        alt="platozone"
-        width={3000}
-        height={3000}
-        className="w-full h-auto"
-      />
+      <>
+        {/* Mobile: use Frame 23411.png, Desktop: mission.png */}
+        <Image
+          src="/images/Frame 23411.png"
+          alt="plantozone-mobile"
+          width={1200}
+          height={800}
+          className="block sm:hidden w-full h-auto"
+        />
+        <Image
+          src="/images/mission.png"
+          alt="platozone"
+          width={3000}
+          height={3000}
+          className="hidden sm:block w-full h-auto"
+        />
+      </>
       <InfiniteCategoryMarquee />
       <AboutUsSection />
       <CategorySec />
@@ -51,13 +61,22 @@ export default function Home() {
       <BlogSection />
       <NewsletterSection />
       <InfiniteCategoryMarquee />
-      <Image
-        src="/images/mission.png"
-        alt="platozone"
-        width={3000}
-        height={3000}
-        className="w-full h-auto"
-      />
+      <>
+        <Image
+          src="/images/Frame 23411.png"
+          alt="platozone-mobile"
+          width={1200}
+          height={800}
+          className="block sm:hidden w-full h-auto"
+        />
+        <Image
+          src="/images/mission.png"
+          alt="platozone"
+          width={3000}
+          height={3000}
+          className="hidden sm:block w-full h-auto"
+        />
+      </>
     </>
   );
 }

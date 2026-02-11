@@ -25,7 +25,8 @@ function buildSizeOptions(attrs) {
 }
 
 function isOfferActive(attrs) {
-  if (!attrs?.discountPercent || parseFloat(attrs.discountPercent) <= 0) return false;
+  if (!attrs?.discountPercent || parseFloat(attrs.discountPercent) <= 0)
+    return false;
   const start = attrs.offerStart ? new Date(attrs.offerStart) : null;
   const end = attrs.offerEnd ? new Date(attrs.offerEnd) : null;
   const now = new Date();
@@ -49,7 +50,10 @@ const ProductCard = ({ data, onAddToCart }) => {
   const addBtnRef = useRef(null);
 
   const attrs = data?.attributes || {};
-  const sizeOptions = useMemo(() => buildSizeOptions(attrs), [attrs.priceSmall, attrs.priceMedium, attrs.priceLarge]);
+  const sizeOptions = useMemo(
+    () => buildSizeOptions(attrs),
+    [attrs.priceSmall, attrs.priceMedium, attrs.priceLarge],
+  );
   const offerActive = isOfferActive(attrs);
   const discountPercent = parseFloat(attrs.discountPercent) || 0;
 
@@ -96,7 +100,8 @@ const ProductCard = ({ data, onAddToCart }) => {
   };
 
   const getEffectivePrice = (basePrice) => {
-    if (offerActive && discountPercent > 0) return Math.round(basePrice * (1 - discountPercent / 100));
+    if (offerActive && discountPercent > 0)
+      return Math.round(basePrice * (1 - discountPercent / 100));
     return Math.round(basePrice);
   };
 
@@ -109,7 +114,11 @@ const ProductCard = ({ data, onAddToCart }) => {
     const basePrice = opt?.price ?? 0;
     const effectivePrice = getEffectivePrice(basePrice);
     if (onAddToCart) {
-      onAddToCart({ size: selectedSize, shape: selectedShape, price: effectivePrice });
+      onAddToCart({
+        size: selectedSize,
+        shape: selectedShape,
+        price: effectivePrice,
+      });
     }
     setShowPopup(false);
     setSelectedSize("");
@@ -242,7 +251,7 @@ const ProductCard = ({ data, onAddToCart }) => {
             onError={() => setImgError(true)}
           />
         </Link>
-        
+
         {/* Hover Buttons - pointer-events-none on container so image link works; auto on buttons so they are clickable */}
         <div className="absolute top-3 right-3 z-20 flex flex-col space-y-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none [&_button]:pointer-events-auto">
           {/* Wishlist Button */}
@@ -252,9 +261,12 @@ const ProductCard = ({ data, onAddToCart }) => {
             className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-50 transition-colors"
             aria-label="Add to wishlist"
           >
-            <Icon icon="material-symbols:favorite-outline" className="w-5 h-5 text-gray-600" />
+            <Icon
+              icon="material-symbols:favorite-outline"
+              className="w-5 h-5 text-gray-600"
+            />
           </button>
-          
+
           {/* Zoom Button */}
           <button
             type="button"
@@ -262,9 +274,12 @@ const ProductCard = ({ data, onAddToCart }) => {
             className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-50 transition-colors"
             aria-label="Zoom image"
           >
-            <Icon icon="material-symbols:zoom-in" className="w-5 h-5 text-gray-600" />
+            <Icon
+              icon="material-symbols:zoom-in"
+              className="w-5 h-5 text-gray-600"
+            />
           </button>
-          
+
           {/* Cart Button */}
           <button
             type="button"
@@ -273,18 +288,24 @@ const ProductCard = ({ data, onAddToCart }) => {
             className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Add to cart"
           >
-            <Icon icon="material-symbols:shopping-cart-outline" className="w-5 h-5 text-gray-600" />
+            <Icon
+              icon="material-symbols:shopping-cart-outline"
+              className="w-5 h-5 text-gray-600"
+            />
           </button>
         </div>
       </div>
-      
+
       {/* Content Section with Gap */}
       <div className="p-4 space-y-2 pl-0">
         {/* Category and Rating */}
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-500">{category}</span>
           <div className="flex items-center space-x-1">
-            <Icon icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
+            <Icon
+              icon="material-symbols:star"
+              className="w-4 h-4 text-yellow-400"
+            />
             <span className="text-sm font-medium text-gray-800">{rating}</span>
           </div>
         </div>
@@ -292,24 +313,29 @@ const ProductCard = ({ data, onAddToCart }) => {
         {/* Plant Name and Price Together */}
         <div className="space-y-2">
           <Link href={`/product/${data?.id}`}>
-            <h3 className="text-base font-semibold text-gray-800 line-clamp-2 hover:text-green-600 transition-colors">
+            <h3 className="text-2xl sm:text-base md:text-lg font-semibold text-gray-800 line-clamp-2 hover:text-green-600 transition-colors">
               {data?.attributes?.title}
             </h3>
           </Link>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               {sizeOptions.length > 0 ? (
                 <>
                   <span className="text-lg font-bold text-gray-800">
-                    {sizeOptions.length > 1 ? "From " : ""}₹{displayPrice.toLocaleString("en-IN")}
+                    {sizeOptions.length > 1 ? "From " : ""}₹
+                    {displayPrice.toLocaleString("en-IN")}
                   </span>
                   {showStrikethrough && (
-                    <span className="text-base text-gray-400 line-through">₹{Math.round(firstBase).toLocaleString("en-IN")}</span>
+                    <span className="text-base text-gray-400 line-through">
+                      ₹{Math.round(firstBase).toLocaleString("en-IN")}
+                    </span>
                   )}
                 </>
               ) : (
-                <span className="text-base font-medium text-gray-500">Price on request</span>
+                <span className="text-base font-medium text-gray-500">
+                  Price on request
+                </span>
               )}
             </div>
             <Button

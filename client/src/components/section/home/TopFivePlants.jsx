@@ -135,10 +135,10 @@ const TopFivePlants = () => {
                 <div className="h-6 w-40 shimmer-bg rounded"></div>
                 <div className="h-4 w-80 shimmer-bg rounded"></div>
                 <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div className="h-40 shimmer-bg rounded-lg"></div>
-                  <div className="h-40 shimmer-bg rounded-lg"></div>
-                  <div className="h-40 shimmer-bg rounded-lg"></div>
-                  <div className="h-40 shimmer-bg rounded-lg"></div>
+                  <div className="h-44 shimmer-bg rounded-lg"></div>
+                  <div className="h-44 shimmer-bg rounded-lg"></div>
+                  <div className="h-44 shimmer-bg rounded-lg"></div>
+                  <div className="h-44 shimmer-bg rounded-lg"></div>
                 </div>
               </div>
             </div>
@@ -354,7 +354,7 @@ const TopFivePlants = () => {
                       )}
 
                       {/* Plant Image full with overlayed name */}
-                      <div className="relative w-full h-32 md:h-40 lg:h-48 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                      <div className="relative w-full h-44 md:h-52 lg:h-60 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
                         <Image
                           src={plant.image}
                           alt={plant.name}

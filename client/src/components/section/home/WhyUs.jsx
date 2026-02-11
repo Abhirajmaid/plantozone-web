@@ -23,7 +23,17 @@ const whyUs = [
 const WhyUs = () => {
   return (
     <Section>
-      <div className="bg-secondary py-12 bg-[url('/images/why-us-bg.png')] bg-cover bg-center">
+      <div
+        className="py-12"
+        style={{
+          background:
+            "radial-gradient(200px circle at 0% 0%, rgba(245,158,11,0.14), transparent 30%)," +
+            "radial-gradient(200px circle at 100% 0%, rgba(245,158,11,0.12), transparent 30%)," +
+            "radial-gradient(200px circle at 0% 100%, rgba(245,158,11,0.10), transparent 30%)," +
+            "radial-gradient(220px circle at 100% 100%, rgba(245,158,11,0.12), transparent 30%)," +
+            "#fff",
+        }}
+      >
         <Container>
           <div className="w-full flex justify-center mb-10 pt-4">
             <SectionTitle title="Why Us" />

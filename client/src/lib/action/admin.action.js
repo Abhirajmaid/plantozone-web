@@ -298,6 +298,56 @@ const deleteTeamMember = (id, token) => {
   return client.delete(`/team-members/${id}`);
 };
 
+// Customer Media CRUD (user-submitted media)
+const getCustomerMedia = (token, params = {}) => {
+  const authToken = token || API_TOKEN;
+  const client = axios.create({
+    baseURL: `${STRAPI_BASE_URL}/api`,
+    headers: {
+      "Content-Type": "application/json",
+      ...(authToken && { Authorization: `Bearer ${authToken}` }),
+    },
+  });
+
+  const queryParams = new URLSearchParams({
+    populate: "*",
+    "pagination[pageSize]": params.pageSize || 50,
+    ...(params.page && { "pagination[page]": params.page }),
+    ...(params.search && { "filters[title][$containsi]": params.search }),
+    ...(params.sort && { sort: params.sort }),
+    publicationState: "preview",
+  });
+
+  return client.get(`/customer-medias?${queryParams}`);
+};
+
+const getCustomerMediaById = (id, token) => {
+  const authToken = token || API_TOKEN;
+  const client = axios.create({
+    baseURL: `${STRAPI_BASE_URL}/api`,
+    headers: {
+      "Content-Type": "application/json",
+      ...(authToken && { Authorization: `Bearer ${authToken}` }),
+    },
+  });
+  return client.get(`/customer-medias/${id}?populate=*`);
+};
+
+const createCustomerMedia = (data, token) => {
+  const client = axiosClient(token);
+  return client.post("/customer-medias", { data });
+};
+
+const updateCustomerMedia = (id, data, token) => {
+  const client = axiosClient(token);
+  return client.put(`/customer-medias/${id}`, { data });
+};
+
+const deleteCustomerMedia = (id, token) => {
+  const client = axiosClient(token);
+  return client.delete(`/customer-medias/${id}`);
+};
+
 const updateOrderStatus = (id, status, token) => {
   const client = axiosClient(token);
   return client.put(`/order-details/${id}`, { data: { status } });
@@ -352,6 +402,12 @@ export default {
   createTeamMember,
   updateTeamMember,
   deleteTeamMember,
+  // Customer Media
+  getCustomerMedia,
+  getCustomerMediaById,
+  createCustomerMedia,
+  updateCustomerMedia,
+  deleteCustomerMedia,
   getOrders,
   getOrderById,
   updateOrderStatus,

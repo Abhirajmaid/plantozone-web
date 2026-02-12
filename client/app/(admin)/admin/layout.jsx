@@ -22,6 +22,7 @@ const menuItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/plants", label: "Plants", icon: Package },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
+    { href: "/admin/customer-media", label: "Customer Media", icon: FileText },
   { href: "/admin/blogs", label: "Blogs", icon: FileText },
   { href: "/admin/team", label: "Team", icon: Users },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },

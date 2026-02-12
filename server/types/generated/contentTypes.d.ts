@@ -886,6 +886,45 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
   };
 }
 
+export interface ApiCustomerMediaCustomerMedia extends Schema.CollectionType {
+  collectionName: 'customer_media';
+  info: {
+    singularName: 'customer-media';
+    pluralName: 'customer-medias';
+    displayName: 'Customer Media';
+    description: 'User submitted photos/videos from customers';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    title: Attribute.String;
+    description: Attribute.Text;
+    customerName: Attribute.String;
+    product: Attribute.Relation<
+      'api::customer-media.customer-media',
+      'oneToOne',
+      'api::plant.plant'
+    >;
+    image: Attribute.Media<'images' | 'videos', true>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::customer-media.customer-media',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::customer-media.customer-media',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiOrderDetailOrderDetail extends Schema.CollectionType {
   collectionName: 'order_details';
   info: {
@@ -1036,6 +1075,7 @@ declare module '@strapi/types' {
       'api::blog.blog': ApiBlogBlog;
       'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
+      'api::customer-media.customer-media': ApiCustomerMediaCustomerMedia;
       'api::order-detail.order-detail': ApiOrderDetailOrderDetail;
       'api::plant.plant': ApiPlantPlant;
       'api::team-member.team-member': ApiTeamMemberTeamMember;

@@ -12,9 +12,9 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import plantsAction from "@/src/lib/action/plants.action";
+import adminAction from "@/src/lib/action/admin.action";
 import { addToWishlist } from "@/src/lib/utils/wishlistUtils";
 import { Dialog, DialogContent } from "../../ui/dialog";
-import { customerMedia } from "@/src/lib/data/customerMedia";
 
 const NO_PREVIEW_IMG = "/images/plant.png";
 const STRAPI_BASE_URL =
@@ -30,11 +30,45 @@ const Hero = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showZoomModal, setShowZoomModal] = useState(false);
+  const [customerMedia, setCustomerMedia] = useState([]);
 
   // Fetch plants from backend
   useEffect(() => {
     getPlantList();
+    fetchCustomerMedia();
   }, []);
+
+  const fetchCustomerMedia = async () => {
+    try {
+      const res = await adminAction.getCustomerMedia(null, { pageSize: 20 });
+      const data = res.data.data || [];
+      const mapped = data.map((item) => {
+        const attrs = item.attributes || {};
+        const imageData = attrs.image?.data?.[0];
+        const imageUrl = imageData?.attributes?.url;
+        const fullUrl = imageUrl 
+          ? (imageUrl.startsWith("http") ? imageUrl : `${STRAPI_BASE_URL}${imageUrl}`)
+          : "/images/plant.png";
+        
+        // Determine type based on mime type or file extension
+        const mimeType = imageData?.attributes?.mime || "";
+        const isVideo = mimeType.startsWith("video/") || fullUrl.endsWith(".mp4") || fullUrl.endsWith(".webm");
+        
+        return {
+          id: item.id,
+          type: isVideo ? "video" : "image",
+          src: fullUrl,
+          caption: attrs.title || attrs.description || "",
+          name: attrs.customerName || "Customer",
+        };
+      });
+      setCustomerMedia(mapped);
+    } catch (err) {
+      console.error("Error fetching customer media:", err);
+      // Fallback to empty array
+      setCustomerMedia([]);
+    }
+  };
 
   const getPlantList = async () => {
     try {

@@ -25,7 +25,7 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-const comingSoonLinks = ["/updates", "/stores", "/track-order", "/career"];
+const comingSoonLinks = ["/updates", "/stores", "/career"];
 
 export default function Footer() {
   const router = useRouter();
@@ -167,7 +167,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/return"
+                  href="/cancellation-and-refund"
                   className="text-gray-100 hover:text-white transition-colors"
                 >
                   Return

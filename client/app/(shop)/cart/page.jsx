@@ -48,17 +48,18 @@ export default function CartPage() {
   // Discount code handler
   const handleApplyDiscount = () => {
     const code = discountCode.trim().toUpperCase();
-    const validCodes = ["SAVE10", "WELCOME15", "PLANT20"];
     let percent = 0;
-    
+
     if (code === "SAVE10") {
       percent = 10;
     } else if (code === "WELCOME15") {
       percent = 15;
     } else if (code === "PLANT20") {
       percent = 20;
+    } else if (code === "FIRST125") {
+      percent = 25;
     }
-    
+
     if (percent > 0) {
       setDiscountPercent(percent);
       setDiscountError("");
@@ -194,7 +195,15 @@ export default function CartPage() {
                     type="text"
                     placeholder="Coupon Code"
                     value={discountCode}
-                    onChange={(e) => setDiscountCode(e.target.value)}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setDiscountCode(v);
+                      // If user clears the input, automatically remove applied discount
+                      if (v.trim() === "") {
+                        setDiscountPercent(0);
+                        setDiscountError("");
+                      }
+                    }}
                     className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                   <SecondaryButton

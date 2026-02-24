@@ -194,7 +194,7 @@ export default function CustomNavbar() {
 
             {/* Center: Discount code offer */}
             <div className="flex items-center">
-              <span>Use code FIRST25 to get 25% OFF for your first order.</span>
+              <span>Use code FIRST125 to get 25% OFF for your first order.</span>
             </div>
 
             {/* Right: Social Media Icons */}

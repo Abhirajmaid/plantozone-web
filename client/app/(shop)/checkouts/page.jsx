@@ -390,8 +390,8 @@ export default function CheckoutPage() {
     }
 
     // Valid promo codes
-    if (code === "FIRST25") {
-      setDiscount({ code: "FIRST25", percent: 25 });
+    if (code === "FIRST125") {
+      setDiscount({ code: "FIRST125", percent: 25 });
       setPromoError("");
     } else if (code === "OXY30") {
       setDiscount({ code: "OXY30", percent: 30 });

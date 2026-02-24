@@ -70,8 +70,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
   const [filters, setFilters] = useState({
     categories: initialCategory ? [initialCategory] : [],
     priceRange: [0, 1000],
-    ratings: [],
-    lightRequirements: [],
     potSize: [],
     potShape: [],
     availability: [],
@@ -176,16 +174,7 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
     });
     console.log("After price filter:", filtered.length, "items");
 
-    // Apply rating filter
-    if (filters.ratings.length > 0) {
-      filtered = filtered.filter((item) => {
-        const rating = item.attributes?.rating || 5;
-        return filters.ratings.some(
-          (filterRating) => Math.floor(rating) >= filterRating,
-        );
-      });
-      console.log("After rating filter:", filtered.length, "items");
-    }
+    // (ratings filter removed)
 
     // Apply availability filter
     if (filters.availability.includes("In Stock")) {
@@ -302,23 +291,8 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
     }));
   };
 
-  const handleRatingChange = (rating) => {
-    setFilters((prev) => ({
-      ...prev,
-      ratings: prev.ratings.includes(rating)
-        ? prev.ratings.filter((r) => r !== rating)
-        : [...prev.ratings, rating],
-    }));
-  };
-
-  const handleLightRequirementChange = (requirement) => {
-    setFilters((prev) => ({
-      ...prev,
-      lightRequirements: prev.lightRequirements.includes(requirement)
-        ? prev.lightRequirements.filter((r) => r !== requirement)
-        : [...prev.lightRequirements, requirement],
-    }));
-  };
+ 
+ 
 
   const handleAvailabilityChange = (availability) => {
     setFilters((prev) => ({
@@ -351,8 +325,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
     setFilters({
       categories: [],
       priceRange: [0, 1000],
-      ratings: [],
-      lightRequirements: [],
       potSize: [],
       potShape: [],
       availability: [],
@@ -367,8 +339,7 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
     if (filters.priceRange[1] < 1000) {
       active.push(`Price: ₹0 - ₹${filters.priceRange[1]}`);
     }
-    if (filters.ratings.length > 0)
-      active.push(`${filters.ratings.join(", ")} Star`);
+    // (ratings filter removed)
     if (filters.availability.length > 0)
       active.push(filters.availability.join(", "));
     return active;
@@ -515,54 +486,7 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
             `}</style>
           </div>
 
-          {/* Review Filter */}
-          <div className="mb-6">
-            <h4 className="text-base font-medium text-gray-700 mb-3">Review</h4>
-            <div className="space-y-2">
-              {[5, 4, 3, 2, 1].map((rating) => (
-                <label
-                  key={rating}
-                  className="flex items-center space-x-2 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={filters.ratings.includes(rating)}
-                    onChange={() => handleRatingChange(rating)}
-                    className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                  />
-                  <span className="text-base text-gray-600">{rating} Star</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Light Requirements */}
-          <div className="mb-6">
-            <h4 className="text-base font-medium text-gray-700 mb-3">
-              Light Requirements
-            </h4>
-            <div className="space-y-2">
-              {[
-                "Full Sun",
-                "Partial Shade",
-                "Low Light",
-                "Bright Indirect Light",
-              ].map((requirement) => (
-                <label
-                  key={requirement}
-                  className="flex items-center space-x-2 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={filters.lightRequirements.includes(requirement)}
-                    onChange={() => handleLightRequirementChange(requirement)}
-                    className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                  />
-                  <span className="text-base text-gray-600">{requirement}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+          {/* (Review and Light Requirements filters removed) */}
 
           {/* Pot Size */}
           <div className="mb-6">
@@ -701,7 +625,7 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
         )}
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {paginatedData.map((item, id) => (
             <ProductCard
               key={id}

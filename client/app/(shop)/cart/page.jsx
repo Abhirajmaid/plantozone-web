@@ -87,7 +87,7 @@ export default function CartPage() {
   return (
     <>
       <PageBanner title="Shopping Cart" showBreadcrumb={true} />
-      <Section className="min-h-screen bg-gray-50">
+      <Section className="min-h-screen bg-gray-50 overflow-x-hidden">
         <Container className="py-8">
 
         {cartItems.length === 0 ? (
@@ -109,35 +109,34 @@ export default function CartPage() {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 {/* Table Header */}
-                <div className="bg-secondary px-6 py-4 grid grid-cols-12 gap-4 text-sm font-semibold text-black">
-                  <div className="col-span-1"></div>
-                  <div className="col-span-4">Product</div>
-                  <div className="col-span-2">Price</div>
-                  <div className="col-span-2">Quantity</div>
-                  <div className="col-span-2">Subtotal</div>
-                  <div className="col-span-1"></div>
+                <div className="hidden md:grid md:grid-cols-12 bg-secondary px-6 py-4 gap-4 text-sm font-semibold text-black">
+                  <div className="md:col-span-1"></div>
+                  <div className="md:col-span-4">Product</div>
+                  <div className="md:col-span-2">Price</div>
+                  <div className="md:col-span-2">Quantity</div>
+                  <div className="md:col-span-2">Subtotal</div>
+                  <div className="md:col-span-1"></div>
                 </div>
 
                 {/* Cart Items */}
                 {cartItems.map((item, index) => {
                   const displayPrice = item.price || (item.size === "Medium" ? 850 : 650);
                   const itemSubtotal = displayPrice * item.quantity;
-                  
+
                   return (
-                    <div key={`${item.product}-${item.size}-${item.shape || ""}`} className="px-6 py-4 border-b border-gray-200 grid grid-cols-12 gap-4 items-center">
-                      {/* Remove Button */}
-                      <div className="col-span-1">
+                    <div
+                      key={`${item.product}-${item.size}-${item.shape || ""}`}
+                      className="px-6 py-4 border-b border-gray-200 flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4 min-w-0 max-w-full"
+                    >
+                      <div className="flex items-start md:items-center gap-3 min-w-0">
                         <button
                           onClick={() => handleRemoveItem(item.product, item.size, item.shape)}
-                          className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors"
+                          className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
                         >
                           <Icon icon="material-symbols:close" className="w-4 h-4" />
                         </button>
-                      </div>
 
-                      {/* Product Image and Info */}
-                      <div className="col-span-4 flex items-center space-x-3">
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
+                        <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
                           <Image
                             src={item.image || "/images/default-plant.jpg"}
                             alt={item.title}
@@ -146,51 +145,44 @@ export default function CartPage() {
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-800 text-sm">{item.title}</h3>
+
+                        <div className="flex-1 min-w-0 break-words">
+                          <h3 className="font-semibold text-gray-800 text-sm truncate">{item.title}</h3>
                           <p className="text-xs text-gray-500">Indoor Plant</p>
                         </div>
                       </div>
 
-                      {/* Price */}
-                      <div className="col-span-2">
-                        <span className="text-sm font-medium text-gray-800">₹{displayPrice}</span>
-                      </div>
+                      <div className="flex flex-col md:flex-row md:items-center md:gap-4 w-full md:w-auto max-w-full">
+                        <div className="flex justify-between items-center w-full md:w-auto gap-3">
+                          <span className="text-sm font-medium text-gray-800">₹{displayPrice}</span>
 
-                      {/* Quantity Controls */}
-                      <div className="col-span-2">
-                        <div className="flex items-center border border-gray-300 rounded-lg w-fit">
-                          <button
-                            onClick={() => handleQuantityChange(item.product, item.size, item.shape, item.quantity - 1)}
-                            className="px-3 py-1 text-gray-600 hover:bg-gray-100 transition-colors"
-                          >
-                            -
-                          </button>
-                          <span className="px-4 py-1 text-sm font-medium">{item.quantity}</span>
-                          <button
-                            onClick={() => handleQuantityChange(item.product, item.size, item.shape, item.quantity + 1)}
-                            className="px-3 py-1 text-gray-600 hover:bg-gray-100 transition-colors"
-                          >
-                            +
-                          </button>
+                          <div className="flex items-center border border-gray-300 rounded-lg px-2 py-1 text-sm">
+                            <button
+                              onClick={() => handleQuantityChange(item.product, item.size, item.shape, item.quantity - 1)}
+                              className="px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 transition-colors"
+                            >
+                              -
+                            </button>
+                            <span className="px-3 py-1 text-sm font-medium">{item.quantity}</span>
+                            <button
+                              onClick={() => handleQuantityChange(item.product, item.size, item.shape, item.quantity + 1)}
+                              className="px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 transition-colors"
+                            >
+                              +
+                            </button>
+                          </div>
+
+                          <span className="text-sm font-semibold text-gray-800">₹{itemSubtotal}</span>
                         </div>
                       </div>
-
-                      {/* Subtotal */}
-                      <div className="col-span-2">
-                        <span className="text-sm font-semibold text-gray-800">₹{itemSubtotal}</span>
-                      </div>
-
-                      {/* Empty space for alignment */}
-                      <div className="col-span-1"></div>
                     </div>
                   );
                 })}
               </div>
 
               {/* Coupon and Clear Cart */}
-              <div className="mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex items-center space-x-3">
+              <div className="mt-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 min-w-0 max-w-full">
+                <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-3 min-w-0 w-full md:w-auto">
                   <input
                     type="text"
                     placeholder="Coupon Code"
@@ -204,12 +196,12 @@ export default function CartPage() {
                         setDiscountError("");
                       }
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-w-0 w-full md:w-64 max-w-full box-border"
                   />
                   <SecondaryButton
                     onClick={handleApplyDiscount}
                     withArrow={false}
-                    className="px-6 py-2"
+                    className="px-6 py-2 w-full md:w-auto flex-shrink-0"
                   >
                     Apply Coupon
                   </SecondaryButton>
@@ -228,7 +220,7 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
+              <div className="bg-white rounded-lg shadow-sm p-6 lg:sticky lg:top-4 w-full box-border">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Order Summary</h2>
                 
                 <div className="space-y-3 mb-6">

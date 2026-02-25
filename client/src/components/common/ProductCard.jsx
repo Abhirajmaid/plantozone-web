@@ -44,6 +44,7 @@ const DEFAULT_IMAGE = "/images/plant.png";
 const ProductCard = ({ data, onAddToCart }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [showZoomModal, setShowZoomModal] = useState(false);
+  const [popupAlignment, setPopupAlignment] = useState("right"); // 'right' or 'left'
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedShape, setSelectedShape] = useState("");
   const [imgError, setImgError] = useState(false);
@@ -75,6 +76,24 @@ const ProductCard = ({ data, onAddToCart }) => {
     }
     setSelectedSize(sizeOptions[0].size);
     setSelectedShape("");
+    // Decide popup alignment based on available space to the right of the anchor
+    try {
+      const popupEstimate = 280; // px
+      const margin = 12; // px
+      const anchor = (e && e.currentTarget) || addBtnRef.current;
+      if (anchor && typeof window !== "undefined") {
+        const rect = anchor.getBoundingClientRect();
+        if (rect.right + popupEstimate + margin > window.innerWidth) {
+          setPopupAlignment("left");
+        } else {
+          setPopupAlignment("right");
+        }
+      } else {
+        setPopupAlignment("right");
+      }
+    } catch (err) {
+      setPopupAlignment("right");
+    }
     setShowPopup(true);
   };
 
@@ -155,7 +174,7 @@ const ProductCard = ({ data, onAddToCart }) => {
 
   // Position popup absolutely near the Add to Cart button
   return (
-    <div className="w-full bg-white transition-shadow duration-300 overflow-hidden relative">
+    <div className="w-full bg-white transition-shadow duration-300 overflow-visible relative">
       {/* Discount Tags: 20% off (always) + extra offer when discount % is set in CMS */}
       <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
         <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
@@ -175,7 +194,9 @@ const ProductCard = ({ data, onAddToCart }) => {
       </div>
       {/* Popup: dynamic sizes from CMS, shapes Hexagonal/Round */}
       {showPopup && (
-        <div className="absolute z-50 right-0 top-0 bg-white border border-green-600 shadow-2xl rounded-xl p-5 min-w-[230px]">
+        <div
+        className={`absolute z-50 top-2 bg-white border border-green-600 shadow-2xl rounded-xl p-5 left-1/2 -translate-x-1/2 w-[95%] min-w-[240px] max-w-[90vw] ${popupAlignment === "left" ? "md:left-12 md:right-auto md:translate-x-0" : "md:left-auto md:right-12 md:translate-x-0"}`}
+        >
           <div className="mb-3">
             <div className="font-semibold mb-2 text-green-700 text-sm tracking-wide uppercase">
               Select Size
@@ -246,7 +267,7 @@ const ProductCard = ({ data, onAddToCart }) => {
             height={400}
             src={displaySrc}
             alt={data?.attributes?.title || "plantozone"}
-            className="w-full h-[300px] rounded-xl object-cover bg-gray-50"
+            className="w-full h-[220px] sm:h-[260px] md:h-[300px] rounded-xl object-cover bg-gray-50"
             unoptimized={isExternalImage}
             onError={() => setImgError(true)}
           />

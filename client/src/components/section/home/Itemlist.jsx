@@ -375,6 +375,22 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
           id="filter-options-content"
           className={`lg:block ${isFilterOpen ? "block" : "hidden"} p-6 pt-4 lg:pt-6`}
         >
+          {/* Clear Filters button (visible when any filter is active) */}
+          {(filters.categories.length > 0 ||
+            filters.priceRange[1] < 1000 ||
+            filters.potSize.length > 0 ||
+            filters.potShape.length > 0 ||
+            filters.availability.length > 0) && (
+            <div className="mb-4 flex justify-end">
+              <button
+                onClick={clearAllFilters}
+                className="text-sm text-gray-600 hover:text-gray-800 underline"
+                aria-label="Clear all filters"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
           {/* Category Filter */}
           <div className="mb-6">
             <h4 className="text-lg font-medium text-gray-700 mb-3">Category</h4>
@@ -596,25 +612,70 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
         </div>
 
         {/* Active Filters */}
-        {getActiveFilters().length > 0 && (
+        {(filters.categories.length > 0 ||
+          filters.priceRange[1] < 1000 ||
+          filters.availability.length > 0) && (
           <div className="flex flex-wrap items-center gap-2 mb-6">
-            {getActiveFilters().map((filter, index) => (
+            {/* Category chips */}
+            {filters.categories.map((cat) => (
               <span
-                key={index}
+                key={`cat-${cat}`}
                 className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm flex items-center"
               >
-                {filter}
+                Category: {cat}
                 <button
-                  onClick={() => {
-                    // Remove specific filter logic would go here
-                    clearAllFilters();
-                  }}
+                  onClick={() =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      categories: prev.categories.filter((c) => c !== cat),
+                    }))
+                  }
                   className="ml-2 text-green-600 hover:text-green-800"
+                  aria-label={`Remove category ${cat}`}
                 >
                   ×
                 </button>
               </span>
             ))}
+
+            {/* Price chip */}
+            {filters.priceRange[1] < 1000 && (
+              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm flex items-center">
+                Price: ₹0 - ₹{filters.priceRange[1]}
+                <button
+                  onClick={() =>
+                    setFilters((prev) => ({ ...prev, priceRange: [0, 1000] }))
+                  }
+                  className="ml-2 text-green-600 hover:text-green-800"
+                  aria-label="Reset price filter"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+
+            {/* Availability chips */}
+            {filters.availability.map((a) => (
+              <span
+                key={`avail-${a}`}
+                className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm flex items-center"
+              >
+                {a}
+                <button
+                  onClick={() =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      availability: prev.availability.filter((x) => x !== a),
+                    }))
+                  }
+                  className="ml-2 text-green-600 hover:text-green-800"
+                  aria-label={`Remove availability ${a}`}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+
             <button
               onClick={clearAllFilters}
               className="text-sm text-gray-600 hover:text-gray-800 underline"

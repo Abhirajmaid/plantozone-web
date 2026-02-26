@@ -685,8 +685,8 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
           </div>
         )}
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {/* Product Grid - 1 column on mobile for cleaner layout and pop-up */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {paginatedData.map((item, id) => (
             <ProductCard
               key={id}

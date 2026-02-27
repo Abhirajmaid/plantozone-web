@@ -69,16 +69,16 @@ const categoryNavData = [
 export const metadata = {
   title: "About Us",
   description:
-    "Learn about Plantozone's mission, values, and passion for bringing nature indoors. Discover how we provide the best plants, care advice, and gardening tips.",
+    "Plantozone is the modern alternative to traditional gifting. Soil-free, cocohusk-based planters that replace fading bouquets with a living legacy. 10,000+ planters, measurable impact.",
   keywords:
-    "about plantozone, plant company, indoor plants, gardening tips, plant care, our story, plant shop, sustainable gardening",
+    "about plantozone, sustainable gifting, cocohusk planters, soil-free planters, indoor plants, living gift, eco-friendly, our story, plantozone impact",
   author: "Plantozone",
   publisher: "Plantozone",
   robots: "index, follow",
   openGraph: {
     title: "About Us | Plantozone",
     description:
-      "Get to know Plantozone, our story, and our commitment to delivering the best plants and gardening resources for your home and garden.",
+      "The modern alternative to traditional gifting. Every Plantozone planter is a quantifiable standard for a better planet. Give the gift of oxygen.",
     url: "https://www.plantozone.com/about",
     site_name: "Plantozone",
     type: "website",
@@ -96,7 +96,7 @@ export const metadata = {
     site: "@plantozone",
     title: "About Us | Plantozone",
     description:
-      "Learn about Plantozone, a company dedicated to bringing the best plants and expert gardening advice to your home.",
+      "Plantozone: replacing fading bouquets with a living legacy. Soil-free planters, rural women artisans, measurable environmental impact.",
     image: "/images/about-us-twitter-card.jpg",
   },
 };
@@ -150,22 +150,156 @@ export default async function AboutUsPage() {
                     About Us
                   </p>
                   <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-green-800 mb-4 md:mb-6">
-                    Bringing Nature Closer to Your Doorstep
+                    The Modern Alternative to Traditional Gifting
                   </h2>
-                  <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
-                    At Plantozone, we are passionate about bringing the beauty
-                    of nature into your home. We offer a wide selection of
-                    premium indoor and outdoor plants, expert care guidance, and
-                    everything you need to create your perfect green space. Our
-                    mission is to make plant care easy and enjoyable for
-                    everyone.
+                  <p className="text-gray-600 leading-relaxed text-sm sm:text-base mb-4">
+                    Before you buy your next gift or indoor plant, consider the footprint it leaves behind.
+                    Plantozone isn&apos;t just a brand; it&apos;s a quantifiable standard for a better planet. We believe in
+                    taking baby steps toward a greener future by replacing fading bouquets with a living legacy.
                   </p>
+                  <div className="bg-green-50 border border-green-200 rounded-xl p-4 md:p-5">
+                    <h3 className="text-lg font-semibold text-green-800 mb-2">Our 1-Plant Impact Standard</h3>
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                      Every single Plantozone planter you bring into your home or office represents a direct
+                      contribution to global wellness.
+                    </p>
+                  </div>
                 </div>
 
-                {/* Statistics Bar – real counts from API, 98% satisfaction */}
+                {/* Statistics Bar – real counts from API */}
                 <StatsBar compact />
               </div>
             </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* From Waste to Wonder: Our Origin Story */}
+      <Section className="bg-gray-50 py-8 md:py-12 lg:py-16">
+        <Container>
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <p className="text-sm sm:text-base text-black uppercase tracking-wide mb-2">
+              Our Story
+            </p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-green-800 mb-6 md:mb-8">
+              From Waste to Wonder: Our Origin Story
+            </h2>
+            <div className="space-y-4 text-gray-600 leading-relaxed text-sm sm:text-base">
+              <p>
+                The journey of Plantozone began on the vibrant floors of professional event management.
+                Our founder, <strong className="text-gray-800">Prabhash Rao Balla</strong>, saw a recurring and troubling pattern: after every
+                celebration, massive amounts of waste were discarded, specifically thousands of floral
+                bouquets. These symbols of joy were destined for the dustbin within days.
+              </p>
+              <p>
+                Troubled by this environmental cost, Prabhash set out to find a long-lasting, sustainable
+                alternative that wouldn&apos;t disturb Earth&apos;s natural elements. He envisioned a gift that
+                wouldn&apos;t fade, but would instead continue to grow. After months of research into nurseries
+                and eco-friendly materials, the concept of the <strong className="text-gray-800">soil-free, cocohusk-based planter</strong> was born.
+              </p>
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* The Innovation Center: Shapers of the Brand */}
+      <Section className="bg-white py-8 md:py-12 lg:py-16">
+        <Container>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <p className="text-sm sm:text-base text-black uppercase tracking-wide mb-2">
+              How We Make a Difference
+            </p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-green-800 mb-4 md:mb-6">
+              The Innovation Center: Shapers of the Brand
+            </h2>
+            <p className="text-gray-600 leading-relaxed text-sm sm:text-base mb-8 max-w-3xl">
+              The true &quot;shapers&quot; of Plantozone are the rural women who lead our research and production.
+            </p>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              <li className="flex gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
+                <span className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                  <Icon icon="mdi:hand-heart" className="w-5 h-5 text-green-700" />
+                </span>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Hand-Woven Excellence</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    While the research began with a dedicated R&D team, it was rural women who mastered the art of
+                    weaving iron nets with cocohusk to create our signature planters.
+                  </p>
+                </div>
+              </li>
+              <li className="flex gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
+                <span className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                  <Icon icon="mdi:leaf" className="w-5 h-5 text-green-700" />
+                </span>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Soil-Free Pioneering</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    To protect natural topsoil, our artisans developed a nutrient-rich cocopeat and compost
+                    alternative that allows roots to breathe better and grow stronger.
+                  </p>
+                </div>
+              </li>
+              <li className="flex gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
+                <span className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                  <Icon icon="mdi:account-group" className="w-5 h-5 text-green-700" />
+                </span>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Economic Impact</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    By hiring and training previously unemployed women, we are transforming lives while we
+                    transform homes.
+                  </p>
+                </div>
+              </li>
+              <li className="flex gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
+                <span className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                  <Icon icon="mdi:palette" className="w-5 h-5 text-green-700" />
+                </span>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Functional Art</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Our artisans hand-make an average of 15 planters per day, each one a unique piece of
+                    functional art.
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </Container>
+      </Section>
+
+      {/* The Collective Impact: 10,000 Lives Growing */}
+      <Section className="bg-green-800 py-10 md:py-14 lg:py-16">
+        <Container>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+            <p className="text-green-200 text-sm sm:text-base uppercase tracking-wide mb-2">
+              Our Impact
+            </p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white mb-4 md:mb-6">
+              The Collective Impact: 10,000 Lives Growing
+            </h2>
+            <p className="text-green-100 text-sm sm:text-base max-w-2xl mx-auto mb-10 md:mb-12">
+              To date, 10,000 Plantozone planters are living in homes and offices, quietly transforming indoor spaces.
+              Together, our community has achieved:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 mb-10 md:mb-12">
+              <div className="bg-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">10,000kg</div>
+                <p className="text-green-200 text-sm sm:text-base">of plastic waste prevented</p>
+              </div>
+              <div className="bg-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">20,000kg</div>
+                <p className="text-green-200 text-sm sm:text-base">of fresh oxygen produced every single day</p>
+              </div>
+              <div className="bg-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">260,000</div>
+                <p className="text-green-200 text-sm sm:text-base">units of electricity saved compared to mass-market alternatives</p>
+              </div>
+            </div>
+            <p className="text-xl sm:text-2xl font-semibold text-white">
+              Give the gift of oxygen. Choose Plantozone.
+            </p>
           </div>
         </Container>
       </Section>
@@ -198,10 +332,8 @@ export default async function AboutUsPage() {
                   </h3>
                 </div>
                 <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                  To become the leading destination for plant enthusiasts,
-                  creating a greener world by making quality plants accessible
-                  to everyone and fostering a community passionate about
-                  sustainable living and nature.
+                  A greener world where every gift and indoor plant has a quantifiable, positive footprint—replacing
+                  fading bouquets with a living legacy and making Plantozone the standard for sustainable gifting.
                 </p>
               </div>
 
@@ -234,10 +366,8 @@ export default async function AboutUsPage() {
                   </h3>
                 </div>
                 <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                  To provide premium quality plants, expert guidance, and
-                  exceptional customer service that helps people create
-                  beautiful, healthy green spaces in their homes and offices
-                  while promoting environmental sustainability.
+                  To offer soil-free, cocohusk-based planters and living gifts that don&apos;t fade—transforming homes
+                  and offices while supporting rural women artisans and measurable environmental impact.
                 </p>
               </div>
             </div>

@@ -193,8 +193,8 @@ export default function CustomNavbar() {
             </div>
 
             {/* Center: Discount code offer - text only, no icons */}
-            <div className="flex items-center justify-center order-1 md:order-2 text-center flex-1">
-              <span className="font-medium">Use code FIRST125 to get 25% OFF for your first order.</span>
+            <div className="flex items-center justify-center order-1 md:order-2 text-center flex-1 ">
+              <span className="font-regular md:font-medium">Use code FIRST125 to get 25% OFF for your first order.</span>
             </div>
           </div>
         </Container>

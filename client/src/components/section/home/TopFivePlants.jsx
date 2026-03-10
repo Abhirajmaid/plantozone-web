@@ -1,6 +1,6 @@
  "use client";
 
- import React, { useEffect, useState } from "react";
+ import React, { useEffect, useState, useRef } from "react";
 import { Container } from "../../layout/Container";
 import { Section } from "../../layout/Section";
 import Image from "next/image";
@@ -27,6 +27,8 @@ const TopFivePlants = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showZoomModal, setShowZoomModal] = useState(false);
+  const [expandedMobilePlantId, setExpandedMobilePlantId] = useState(null);
+  const mobileSwiperRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -109,6 +111,31 @@ const TopFivePlants = () => {
     setShowZoomModal(true);
   };
 
+  const handleMobileCardTap = (plant, idx) => {
+    if (expandedMobilePlantId === plant.id) {
+      setExpandedMobilePlantId(null);
+    } else {
+      handlePlantClick(plant, idx);
+      setExpandedMobilePlantId(plant.id);
+    }
+  };
+
+  const handleMobileCardWishlist = (e, plant) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    addToWishlist({
+      product: plant.id,
+      title: plant.name,
+      price: 0,
+      size: "Small",
+      shape: "Default",
+      quantity: 1,
+      image: plant.image,
+    });
+    toast.success("Added to wishlist!", { position: "top-right" });
+    setExpandedMobilePlantId(null);
+  };
+
   return (
     <Section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/20 to-white">
       {/* Decorative blobs */}
@@ -163,18 +190,10 @@ const TopFivePlants = () => {
                     className="mb-3 text-left md:text-left"
                     subtitleClassName="text-gray-500"
                   />
-                  <div className="flex items-center justify-between">
-                    <p className="text-gray-600 mb-0 max-w-lg">
-                      Our most loved plants this week — handpicked for you.
-                      Click any item to preview it on the left.
-                    </p>
-                    <Link
-                      href="/shop"
-                      className="text-sm text-green-600 font-medium hover:underline"
-                    >
-                      View all
-                    </Link>
-                  </div>
+                  <p className="text-gray-600 mb-0 max-w-lg text-center">
+                    Our most loved plants this week — handpicked for you.
+                    Click any item to preview it on the left.
+                  </p>
                 </div>
 
                 {/* Desktop / large screens: keep the original grid layout (hidden on mobile) */}
@@ -268,11 +287,11 @@ const TopFivePlants = () => {
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
-                className="order-2 lg:order-1 flex items-center justify-center h-full"
+                className="order-2 lg:order-1 flex items-center justify-center h-full min-h-[300px] lg:min-h-0"
               >
                 <Link
                   href={`/product/${selectedPlant.id}`}
-                  className="bg-white/80 backdrop-blur-sm rounded-lg md:rounded-xl lg:rounded-[2rem] shadow-lg md:shadow-xl lg:shadow-2xl overflow-hidden w-full h-full relative border border-green-100/50 hover:shadow-green-200/50 hover:shadow-3xl transition-all duration-500 block cursor-pointer"
+                  className="bg-white/80 backdrop-blur-sm rounded-lg md:rounded-xl lg:rounded-[2rem] shadow-lg md:shadow-xl lg:shadow-2xl overflow-hidden w-full h-full min-h-[300px] lg:min-h-0 relative border border-green-100/50 hover:shadow-green-200/50 hover:shadow-3xl transition-all duration-500 block cursor-pointer"
                 >
                   <AnimatePresence mode="wait">
                     <motion.div
@@ -400,7 +419,7 @@ const TopFivePlants = () => {
                 </Link>
               </motion.div>
 
-              {/* Mobile: Swiper slider showing plants horizontally with partial preview (placed below featured on mobile) */}
+              {/* Mobile: Swiper — same card height as Top Sellers (ProductCard): image h-[220px] + content; details expand inline in card (no popup) */}
               <div className="block lg:hidden mt-4 px-4 order-3">
                 <Swiper
                   modules={[Autoplay]}
@@ -408,42 +427,144 @@ const TopFivePlants = () => {
                   slidesPerView={1.2}
                   autoplay={{
                     delay: 2500,
-                    disableOnInteraction: false,
+                    disableOnInteraction: true,
                   }}
                   loop={true}
                   className="overflow-visible"
+                  onSwiper={(swiper) => {
+                    mobileSwiperRef.current = swiper;
+                  }}
+                  onSlideChange={() => setExpandedMobilePlantId(null)}
                 >
                   {plants.map((plant, idx) => (
                     <SwiperSlide key={plant.id} className="!flex">
                       <div
-                        onClick={() => handlePlantClick(plant, idx)}
-                        className={`w-full min-h-[180px] bg-white rounded-2xl shadow-sm transition-all duration-300 overflow-hidden cursor-pointer group px-0`}
+                        className={`relative w-full bg-white rounded-xl shadow-md transition-all duration-300 overflow-hidden cursor-pointer group ${
+                          expandedMobilePlantId === plant.id
+                            ? "ring-2 ring-green-600 shadow-xl"
+                            : ""
+                        }`}
                       >
-                        <div className="relative w-full h-44 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                        {/* Image: same height as Top Sellers ProductCard on mobile (h-[220px]) */}
+                        <div
+                          onClick={() => handleMobileCardTap(plant, idx)}
+                          className="relative w-full h-[220px] bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden rounded-t-xl"
+                        >
                           <Image
                             src={plant.image}
                             alt={plant.name}
                             fill
                             sizes="(max-width: 768px) 100vw"
-                            className="object-cover transform group-hover:scale-105 transition-transform duration-300"
+                            className="object-cover transform group-hover:scale-105 transition-transform duration-300 rounded-t-xl"
                           />
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/6 transition-colors duration-200"></div>
-                          <div className="absolute inset-x-0 top-3 flex items-center justify-center z-10 pointer-events-none">
-                            <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-gray-900 shadow">
-                              {plant.name}
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/6 transition-colors duration-200" />
+                          <div className="absolute top-3 left-3 z-10">
+                            <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
+                              20% off
                             </div>
                           </div>
-                          <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 shadow-lg flex items-center gap-1 z-10">
-                            <svg
-                              className="w-3 h-3 text-yellow-400 fill-current"
-                              viewBox="0 0 20 20"
+                          <div className="absolute top-3 right-3 z-10 flex flex-col space-y-2">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMobileCardWishlist(e, plant);
+                              }}
+                              className="w-9 h-9 bg-white rounded-full shadow flex items-center justify-center hover:bg-red-50"
+                              aria-label="Wishlist"
                             >
+                              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedPlant(plant);
+                                setShowZoomModal(true);
+                              }}
+                              className="w-9 h-9 bg-white rounded-full shadow flex items-center justify-center hover:bg-blue-50"
+                              aria-label="Zoom"
+                            >
+                              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                              </svg>
+                            </button>
+                          </div>
+                          <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 shadow flex items-center gap-1 z-10">
+                            <svg className="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
-                            <span className="text-[10px] font-semibold text-gray-800">
-                              {plant.rating}
-                            </span>
+                            <span className="text-[10px] font-semibold text-gray-800">{plant.rating}</span>
                           </div>
+                        </div>
+
+                        {/* Content below image: same structure as ProductCard (category, name, rating) — always visible */}
+                        <div
+                          onClick={() => handleMobileCardTap(plant, idx)}
+                          className="p-4 space-y-2"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-gray-500">{plant.category || "Plant"}</span>
+                            <div className="flex items-center gap-1">
+                              <svg className="w-3.5 h-3.5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                              </svg>
+                              <span className="text-sm font-medium text-gray-800">{plant.rating}</span>
+                            </div>
+                          </div>
+                          <h3 className="text-base font-semibold text-gray-800 line-clamp-2">{plant.name}</h3>
+
+                          {/* Expanded details: show inside this card (no popup) */}
+                          <AnimatePresence initial={false}>
+                            {expandedMobilePlantId === plant.id && (
+                              <motion.div
+                                initial={{ maxHeight: 0, opacity: 0 }}
+                                animate={{ maxHeight: 280, opacity: 1 }}
+                                exit={{ maxHeight: 0, opacity: 0 }}
+                                transition={{ duration: 0.25, ease: "easeInOut" }}
+                                className="overflow-hidden"
+                              >
+                                {plant.description && (
+                                  <p className="text-xs text-gray-600 line-clamp-3 mb-3 pt-1">
+                                    {plant.description}
+                                  </p>
+                                )}
+                                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => handleMobileCardWishlist(e, plant)}
+                                    className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-gray-600 bg-gray-50 hover:bg-gray-100 text-xs flex items-center justify-center gap-1"
+                                  >
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                    Wishlist
+                                  </button>
+                                  <Link
+                                    href={`/product/${plant.id}`}
+                                    className="flex-1 px-3 py-2 rounded-lg bg-green-600 text-white font-semibold text-xs hover:bg-green-700 flex items-center justify-center gap-1"
+                                  >
+                                    Know More
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                    </svg>
+                                  </Link>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setExpandedMobilePlantId(null);
+                                  }}
+                                  className="w-full mt-2 py-1.5 text-xs text-gray-500 hover:text-gray-700"
+                                >
+                                  Collapse
+                                </button>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
                       </div>
                     </SwiperSlide>

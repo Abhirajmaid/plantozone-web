@@ -69,7 +69,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
   const [availableCategories, setAvailableCategories] = useState([]);
   const [filters, setFilters] = useState({
     categories: initialCategory ? [initialCategory] : [],
-    priceRange: [0, 1000],
     potSize: [],
     potShape: [],
     availability: [],
@@ -163,18 +162,7 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
       );
     }
 
-    // Apply price filter
-    filtered = filtered.filter((item) => {
-      const price = item.attributes?.price || 0;
-      const maxPrice = filters.priceRange[1];
-      console.log(
-        `Item: ${item.attributes?.title}, Price: ${price}, MaxPrice: ${maxPrice}, Pass: ${price <= maxPrice}`,
-      );
-      return price <= maxPrice;
-    });
-    console.log("After price filter:", filtered.length, "items");
-
-    // (ratings filter removed)
+    // (price filter removed — show all products)
 
     // Apply availability filter
     if (filters.availability.includes("In Stock")) {
@@ -324,7 +312,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
   const clearAllFilters = () => {
     setFilters({
       categories: [],
-      priceRange: [0, 1000],
       potSize: [],
       potShape: [],
       availability: [],
@@ -336,10 +323,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
     const active = [];
     if (filters.categories.length > 0)
       active.push(`Category: ${filters.categories.join(", ")}`);
-    if (filters.priceRange[1] < 1000) {
-      active.push(`Price: ₹0 - ₹${filters.priceRange[1]}`);
-    }
-    // (ratings filter removed)
     if (filters.availability.length > 0)
       active.push(filters.availability.join(", "));
     return active;
@@ -377,7 +360,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
         >
           {/* Clear Filters button (visible when any filter is active) */}
           {(filters.categories.length > 0 ||
-            filters.priceRange[1] < 1000 ||
             filters.potSize.length > 0 ||
             filters.potShape.length > 0 ||
             filters.availability.length > 0) && (
@@ -442,67 +424,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
               </div>
             )}
           </div>
-
-          {/* Price Filter */}
-          <div className="mb-6">
-            <h4 className="text-base font-medium text-gray-700 mb-3">Price</h4>
-            <div className="space-y-3">
-              {/* Price Display */}
-              <div className="flex justify-between text-base text-gray-600">
-                <span>₹0</span>
-                <span>₹1000</span>
-              </div>
-
-              {/* Single Range Slider */}
-              <div className="relative">
-                <input
-                  type="range"
-                  min="0"
-                  max="1000"
-                  step="10"
-                  value={filters.priceRange[1]}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value);
-                    setFilters((prev) => ({ ...prev, priceRange: [0, value] }));
-                  }}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
-                  style={{
-                    background: `linear-gradient(to right, #16a34a 0%, #16a34a ${((filters.priceRange[1] - 0) / (1000 - 0)) * 100}%, #e5e7eb ${((filters.priceRange[1] - 0) / (1000 - 0)) * 100}%, #e5e7eb 100%)`,
-                  }}
-                />
-              </div>
-
-              {/* Price Range Display */}
-              <div className="text-center text-base text-gray-500">
-                ₹0 - ₹{filters.priceRange[1]} (Current: {filters.priceRange[1]})
-              </div>
-            </div>
-
-            <style jsx>{`
-              .slider-thumb::-webkit-slider-thumb {
-                appearance: none;
-                height: 20px;
-                width: 20px;
-                border-radius: 50%;
-                background: #16a34a;
-                cursor: pointer;
-                border: 2px solid #fff;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-              }
-
-              .slider-thumb::-moz-range-thumb {
-                height: 20px;
-                width: 20px;
-                border-radius: 50%;
-                background: #16a34a;
-                cursor: pointer;
-                border: 2px solid #fff;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-              }
-            `}</style>
-          </div>
-
-          {/* (Review and Light Requirements filters removed) */}
 
           {/* Pot Size */}
           <div className="mb-6">
@@ -612,9 +533,7 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
         </div>
 
         {/* Active Filters */}
-        {(filters.categories.length > 0 ||
-          filters.priceRange[1] < 1000 ||
-          filters.availability.length > 0) && (
+        {(filters.categories.length > 0 || filters.availability.length > 0) && (
           <div className="flex flex-wrap items-center gap-2 mb-6">
             {/* Category chips */}
             {filters.categories.map((cat) => (
@@ -637,22 +556,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
                 </button>
               </span>
             ))}
-
-            {/* Price chip */}
-            {filters.priceRange[1] < 1000 && (
-              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm flex items-center">
-                Price: ₹0 - ₹{filters.priceRange[1]}
-                <button
-                  onClick={() =>
-                    setFilters((prev) => ({ ...prev, priceRange: [0, 1000] }))
-                  }
-                  className="ml-2 text-green-600 hover:text-green-800"
-                  aria-label="Reset price filter"
-                >
-                  ×
-                </button>
-              </span>
-            )}
 
             {/* Availability chips */}
             {filters.availability.map((a) => (

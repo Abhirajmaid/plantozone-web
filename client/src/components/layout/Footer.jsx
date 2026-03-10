@@ -39,7 +39,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-primary text-white mx-6 mb-24 md:my-6 rounded-3xl shadow-2xl">
+    <footer className="bg-green-800 text-white mx-6 mb-24 md:my-6 rounded-3xl shadow-2xl">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 py-8">
           {/* Brand Info */}
@@ -243,7 +243,7 @@ export default function Footer() {
           </div>
         </div>
         {/* Bottom Bar */}
-        <div className="border-t border-green-500 py-6 rounded-b-3xl">
+        <div className="border-t border-green-700 py-6 rounded-b-3xl">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-gray-200 mb-4 md:mb-0">
               Copyright © 2025 Plantozone. All Rights Reserved.

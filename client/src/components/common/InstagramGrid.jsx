@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Dialog, DialogContent } from "@/src/components/ui/dialog";
 import adminAction from "@/src/lib/action/admin.action";
 
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 
 const InstagramGrid = () => {
   const [selected, setSelected] = useState(null);

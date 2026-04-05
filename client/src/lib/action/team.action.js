@@ -1,5 +1,5 @@
-const STRAPI_BASE_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
+import { STRAPI_BASE_URL } from "../strapiBaseUrl";
+
 const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || "";
 
 /**

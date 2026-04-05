@@ -1,4 +1,5 @@
 "use client";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
@@ -12,8 +13,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src
 import { Checkbox } from "@/src/components/ui/checkbox";
 import { toast } from "react-toastify";
 import { ArrowLeft, Users, Image as ImageIcon, ImagePlus, X } from "lucide-react";
-
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337";
 
 export default function EditTeamMemberPage() {
   const router = useRouter();

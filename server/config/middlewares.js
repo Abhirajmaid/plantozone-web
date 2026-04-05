@@ -1,4 +1,23 @@
-module.exports = [
+'use strict';
+
+const defaultCorsOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'https://plantozone-web-production.up.railway.app',
+  'https://www.plantozone.com',
+  'https://plantozone.com',
+];
+
+function resolveCorsOrigins(env) {
+  const extra = env('CORS_ORIGIN');
+  if (!extra || typeof extra !== 'string') {
+    return defaultCorsOrigins;
+  }
+  const additional = extra.split(',').map((s) => s.trim()).filter(Boolean);
+  return [...new Set([...defaultCorsOrigins, ...additional])];
+}
+
+module.exports = ({ env }) => [
   'strapi::logger',
   'strapi::errors',
   {
@@ -24,7 +43,7 @@ module.exports = [
   {
     name: 'strapi::cors',
     config: {
-      origin: ['http://localhost:5173', 'http://localhost:3000'],
+      origin: resolveCorsOrigins(env),
       credentials: true,
     },
   },

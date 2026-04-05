@@ -1,4 +1,5 @@
 "use client";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAdminAuth } from "@/src/hooks/useAdminAuth";
@@ -18,7 +19,6 @@ import { toast } from "react-toastify";
 import { Plus, Edit, Trash2, Search, ChevronLeft, ChevronRight, Package, Inbox, AlertCircle } from "lucide-react";
 import Image from "next/image";
 
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337";
 const PAGE_SIZE = 10;
 
 const SORT_OPTIONS = [

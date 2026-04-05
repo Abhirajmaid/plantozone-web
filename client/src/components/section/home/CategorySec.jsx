@@ -6,10 +6,9 @@ import Link from "next/link";
 import { InfiniteCategoryMarquee, SectionTitle } from "@/src/components";
 import Image from "next/image";
 import categoriesAction from "@/src/lib/action/categories.action";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 
 const DEFAULT_CATEGORY_IMAGE = "/images/plant.png";
-const STRAPI_BASE_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
 
 // Gradient colors for categories
 const gradientColors = [

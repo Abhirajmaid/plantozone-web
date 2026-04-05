@@ -12,10 +12,9 @@ import {
   getCartItems,
 } from "@/src/lib/utils/cartUtils";
 import plantsAction from "@/src/lib/action/plants.action";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 
 const NO_PREVIEW_IMG = "/images/plant.png";
-const STRAPI_BASE_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
 
 const TopSellerProducts = () => {
   const [swiper, setSwiper] = useState(null);

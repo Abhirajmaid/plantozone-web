@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { addToWishlist } from "@/src/lib/utils/wishlistUtils";
 import { Dialog, DialogContent } from "../ui/dialog";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 
 const SHAPES = ["Hexagonal", "Round"];
 
@@ -40,10 +41,6 @@ function isOfferActive(attrs) {
 }
 
 const DEFAULT_IMAGE = "/images/plant.png";
-const STRAPI_BASE_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://dashboard.plantozone.com";
 
 function toAbsoluteMediaUrl(url) {
   if (!url || String(url).trim() === "") return "";

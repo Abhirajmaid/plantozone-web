@@ -1,5 +1,6 @@
  "use client";
 
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAdminAuth } from "@/src/hooks/useAdminAuth";
@@ -10,8 +11,6 @@ import { Card } from "@/src/components/ui/card";
 import { toast } from "react-toastify";
 import { Plus, Trash2, Edit } from "lucide-react";
 import Image from "next/image";
-
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337";
 
 export default function CustomerMediaPage() {
   const { getToken } = useAdminAuth();

@@ -1,8 +1,7 @@
-const { default: axios } = require("axios");
+import axios from "axios";
+import { STRAPI_BASE_URL } from "../strapiBaseUrl";
 
 const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || '';
-// Development: use localhost:1337. Override with NEXT_PUBLIC_STRAPI_URL or NEXT_PUBLIC_API_URL for production.
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
 
 // Create axios instance with token (user token or API token)
 const axiosClient = (token) => {

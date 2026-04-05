@@ -13,6 +13,7 @@ import {
   isValidPincodeFormat,
   getServiceablePincodesList,
 } from "@/src/lib/utils/pincodeValidation";
+import { STRAPI_BASE_URL as STRAPI_ORIGIN } from "@/src/lib/strapiBaseUrl";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -179,7 +180,7 @@ export default function CheckoutPage() {
 
     // 1. Create order on backend
     const orderRes = await fetch(
-      "https://dashboard.plantozone.com/api/create-razorpay-order",
+      `${STRAPI_ORIGIN}/api/create-razorpay-order`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -206,7 +207,7 @@ export default function CheckoutPage() {
         // Save order in your DB as before
         try {
           const orderRes = await fetch(
-            "https://dashboard.plantozone.com/api/order-details",
+            `${STRAPI_ORIGIN}/api/order-details`,
             {
               method: "POST",
               headers: {

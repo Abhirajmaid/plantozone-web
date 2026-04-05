@@ -23,8 +23,7 @@ import plantsAction from "@/src/lib/action/plants.action";
 import { addToCart as addToCartUtil, getCartItems } from "@/src/lib/utils/cartUtils";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.NEXT_PUBLIC_API_URL || "https://dashboard.plantozone.com";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 
 const getImageUrl = (url) => !url ? "" : (url.startsWith("http") ? url : `${STRAPI_BASE_URL}${url}`);
 
@@ -130,7 +129,6 @@ export default function ProductPage() {
   const fetchRelatedProducts = async () => {
     try {
       setLoadingRelated(true);
-      const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
       const NO_PREVIEW_IMG = "/images/plant.png";
       
       const resp = await plantsAction.getPlants();
@@ -180,7 +178,6 @@ export default function ProductPage() {
   const handleRelatedAddToCart = (item, { size, shape, price }) => {
     const attrs = item.attributes;
     const NO_PREVIEW_IMG = "/images/plant.png";
-    const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
     const strapiImageUrl = attrs?.images?.data?.[0]?.attributes?.url;
     let imageUrl = NO_PREVIEW_IMG;
     if (strapiImageUrl) {

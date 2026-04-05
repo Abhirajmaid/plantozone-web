@@ -18,9 +18,8 @@ import teamAction from "@/src/lib/action/team.action";
 import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 
-const STRAPI_BASE_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
 const DEFAULT_TEAM_IMAGE = "/images/plant.png";
 
 function getTeamImageUrl(apiMember) {

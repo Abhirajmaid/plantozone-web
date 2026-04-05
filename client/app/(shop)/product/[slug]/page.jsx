@@ -720,9 +720,12 @@ export default function ProductPage() {
                 </ul>
                 <h4 className="text-lg font-semibold text-gray-800 mt-6 mb-3">Care Instructions</h4>
                 <ul className="list-disc list-inside text-gray-600 space-y-2">
-                  <li>Water 2-3 times a week</li>
-                  <li>4-6 hours of sunlight daily</li>
-                  <li>Fertilize once a month</li>
+                  <li>
+                    <strong>Watering:</strong> Give your plant a drink 1–2 times a week. The best way to check? Touch the soil; if the top inch feels dry, it’s time for some hydration.
+                  </li>
+                  <li>
+                    <strong>Leaf Care:</strong> Keep your plant looking its best by gently removing any dried or yellowing leaves. This allows the plant to focus its energy on fresh, new growth.
+                  </li>
                 </ul>
               </div>
             )}
@@ -760,7 +763,7 @@ export default function ProductPage() {
                         Light Requirements
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        Bright, indirect sunlight
+                        Indirect sunlight
                       </td>
                     </tr>
                     <tr className="bg-gray-50">
@@ -768,7 +771,7 @@ export default function ProductPage() {
                         Watering Needs
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        Water every 1-2 weeks
+                        Water every 1–2 weeks (check soil moisture)
                       </td>
                     </tr>
                     <tr className="bg-white">
@@ -784,7 +787,7 @@ export default function ProductPage() {
                         Pot Material
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        Ceramic pot with drainage hole
+                        Eco-friendly, plastic-free Cocohusk pot (Naturally restores and retains moisture for healthier roots)
                       </td>
                     </tr>
                   </tbody>

@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
+import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import plantsAction from "@/src/lib/action/plants.action";
 import adminAction from "@/src/lib/action/admin.action";
@@ -25,8 +26,7 @@ const Hero = () => {
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
-  const marqueeRef = useRef(null);
-  const frameCounterRef = useRef(0);
+  const swiperRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showZoomModal, setShowZoomModal] = useState(false);
@@ -124,87 +124,7 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, [allPlants]);
 
-  // Marquee auto-scroll for customer media (infinite)
-  useEffect(() => {
-    const el = marqueeRef.current;
-    if (!el) return;
-
-    let rafId = null;
-    let last = performance.now();
-    const pxPerSecond = 60; // speed (px/s)
-
-    const step = (now) => {
-      if (!el) return;
-      const dt = Math.max(0, now - last);
-      last = now;
-      // run only if content is wider than container and page is visible
-      if (el.scrollWidth > el.clientWidth + 2 && !document.hidden) {
-        el.scrollLeft += (pxPerSecond * dt) / 1000;
-        if (el.scrollLeft >= el.scrollWidth / 2) {
-          el.scrollLeft -= el.scrollWidth / 2;
-        }
-      }
-      rafId = requestAnimationFrame(step);
-    };
-
-    const start = () => {
-      if (!rafId) {
-        last = performance.now();
-        rafId = requestAnimationFrame(step);
-      }
-    };
-    const stop = () => {
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
-    };
-
-    const onEnter = () => stop();
-    const onLeave = () => start();
-
-    el.addEventListener("mouseenter", onEnter);
-    el.addEventListener("mouseleave", onLeave);
-    el.addEventListener("touchstart", onEnter, { passive: true });
-    el.addEventListener("touchend", onLeave, { passive: true });
-
-    const onVisibility = () => {
-      if (document.hidden) stop();
-      else start();
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-
-    const ro = new ResizeObserver(() => {
-      if (el.scrollWidth > el.clientWidth + 2) start();
-    });
-    ro.observe(el);
-
-    // initial start
-    start();
-
-    // expose simple controls for debugging
-    // eslint-disable-next-line no-param-reassign
-    el.startMarquee = start;
-    // eslint-disable-next-line no-param-reassign
-    el.stopMarquee = stop;
-
-    return () => {
-      stop();
-      ro.disconnect();
-      el.removeEventListener("mouseenter", onEnter);
-      el.removeEventListener("mouseleave", onLeave);
-      el.removeEventListener("touchstart", onEnter);
-      el.removeEventListener("touchend", onLeave);
-      document.removeEventListener("visibilitychange", onVisibility);
-      try {
-        // cleanup debug props
-        // eslint-disable-next-line no-param-reassign
-        delete el.startMarquee;
-        // eslint-disable-next-line no-param-reassign
-        delete el.stopMarquee;
-      } catch (e) {}
-    };
-  }, [customerMedia]);
+  // Swiper will handle autoplay/navigation for customer media
 
   // Handle manual plant selection
   const handlePlantClick = (plant, index) => {
@@ -333,21 +253,59 @@ const Hero = () => {
           </div>
         </Container>
 
-        {/* Marquee of customer media (infinite scroll) */}
+        {/* Customer media carousel (Swiper) */}
         <div className="w-full mt-8">
-          <div
-            className="w-full overflow-x-auto hero-marquee"
-            ref={marqueeRef}
-            style={{ whiteSpace: "nowrap" }}
-            aria-label="Customer media carousel"
-          >
-            <div className="flex gap-4 min-w-max px-4 py-6">
-              {[...customerMedia, ...customerMedia, ...customerMedia].map(
-                (m, idx) => (
-                  <div
-                    key={m.id + "-" + idx}
-                    className="rounded-xl shadow overflow-hidden flex-shrink-0 w-[220px] sm:w-[240px] md:w-[280px] bg-transparent"
-                  >
+          <div className="relative">
+            {/* Navigation buttons */}
+            <button
+              aria-label="Previous"
+              className="hero-swiper-prev absolute left-3 top-1/2 z-20 -translate-y-1/2 bg-green-600 text-white p-2 rounded-full shadow hover:bg-green-700 transition"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              aria-label="Next"
+              className="hero-swiper-next absolute right-3 top-1/2 z-20 -translate-y-1/2 bg-green-600 text-white p-2 rounded-full shadow hover:bg-green-700 transition"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            <Swiper
+              modules={[Autoplay, Navigation, Pagination]}
+              spaceBetween={16}
+              loop={true}
+              autoplay={{ delay: 4000, disableOnInteraction: false }}
+              navigation={{ prevEl: ".hero-swiper-prev", nextEl: ".hero-swiper-next" }}
+              pagination={{ clickable: true }}
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
+              }}
+              breakpoints={{
+                320: { slidesPerView: 1.3 },
+                640: { slidesPerView: 2.2 },
+                768: { slidesPerView: 3.2 },
+                1024: { slidesPerView: 4.2 },
+              }}
+              className="py-6"
+            >
+              {customerMedia.map((m, idx) => (
+                <SwiperSlide
+                  key={m.id + "-" + idx}
+                  onContextMenu={(e) => {
+                    // Right-click to advance to next slide
+                    e.preventDefault();
+                    try {
+                      swiperRef.current?.slideNext();
+                    } catch (err) {
+                      // ignore
+                    }
+                  }}
+                >
+                  <div className="rounded-xl shadow overflow-hidden bg-transparent mx-2">
                     <div className="relative w-full aspect-[9/16]">
                       {m.type === "image" ? (
                         <Image
@@ -367,7 +325,6 @@ const Hero = () => {
                           preload="metadata"
                         />
                       )}
-
                       {m.caption && (
                         <div className="absolute left-3 right-3 bottom-3 bg-black/40 text-white text-sm px-3 py-1 rounded-md backdrop-blur-sm">
                           {m.caption}
@@ -375,9 +332,9 @@ const Hero = () => {
                       )}
                     </div>
                   </div>
-                ),
-              )}
-            </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       </div>
@@ -399,16 +356,7 @@ const Hero = () => {
           </DialogContent>
         </Dialog>
       )}
-      {/* Hide scrollbars for marquee */}
-      <style jsx>{`
-        .hero-marquee {
-          -ms-overflow-style: none; /* IE and Edge */
-          scrollbar-width: none; /* Firefox */
-        }
-        .hero-marquee::-webkit-scrollbar {
-          display: none; /* Chrome, Safari, Opera */
-        }
-      `}</style>
+      
     </Section>
   );
 };

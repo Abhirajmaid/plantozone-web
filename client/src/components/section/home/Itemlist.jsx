@@ -69,9 +69,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
   const [availableCategories, setAvailableCategories] = useState([]);
   const [filters, setFilters] = useState({
     categories: initialCategory ? [initialCategory] : [],
-    priceRange: [0, 1000],
-    ratings: [],
-    lightRequirements: [],
     potSize: [],
     potShape: [],
     availability: [],
@@ -165,27 +162,7 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
       );
     }
 
-    // Apply price filter
-    filtered = filtered.filter((item) => {
-      const price = item.attributes?.price || 0;
-      const maxPrice = filters.priceRange[1];
-      console.log(
-        `Item: ${item.attributes?.title}, Price: ${price}, MaxPrice: ${maxPrice}, Pass: ${price <= maxPrice}`,
-      );
-      return price <= maxPrice;
-    });
-    console.log("After price filter:", filtered.length, "items");
-
-    // Apply rating filter
-    if (filters.ratings.length > 0) {
-      filtered = filtered.filter((item) => {
-        const rating = item.attributes?.rating || 5;
-        return filters.ratings.some(
-          (filterRating) => Math.floor(rating) >= filterRating,
-        );
-      });
-      console.log("After rating filter:", filtered.length, "items");
-    }
+    // (price filter removed — show all products)
 
     // Apply availability filter
     if (filters.availability.includes("In Stock")) {
@@ -302,23 +279,8 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
     }));
   };
 
-  const handleRatingChange = (rating) => {
-    setFilters((prev) => ({
-      ...prev,
-      ratings: prev.ratings.includes(rating)
-        ? prev.ratings.filter((r) => r !== rating)
-        : [...prev.ratings, rating],
-    }));
-  };
-
-  const handleLightRequirementChange = (requirement) => {
-    setFilters((prev) => ({
-      ...prev,
-      lightRequirements: prev.lightRequirements.includes(requirement)
-        ? prev.lightRequirements.filter((r) => r !== requirement)
-        : [...prev.lightRequirements, requirement],
-    }));
-  };
+ 
+ 
 
   const handleAvailabilityChange = (availability) => {
     setFilters((prev) => ({
@@ -350,9 +312,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
   const clearAllFilters = () => {
     setFilters({
       categories: [],
-      priceRange: [0, 1000],
-      ratings: [],
-      lightRequirements: [],
       potSize: [],
       potShape: [],
       availability: [],
@@ -364,11 +323,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
     const active = [];
     if (filters.categories.length > 0)
       active.push(`Category: ${filters.categories.join(", ")}`);
-    if (filters.priceRange[1] < 1000) {
-      active.push(`Price: ₹0 - ₹${filters.priceRange[1]}`);
-    }
-    if (filters.ratings.length > 0)
-      active.push(`${filters.ratings.join(", ")} Star`);
     if (filters.availability.length > 0)
       active.push(filters.availability.join(", "));
     return active;
@@ -404,6 +358,21 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
           id="filter-options-content"
           className={`lg:block ${isFilterOpen ? "block" : "hidden"} p-6 pt-4 lg:pt-6`}
         >
+          {/* Clear Filters button (visible when any filter is active) */}
+          {(filters.categories.length > 0 ||
+            filters.potSize.length > 0 ||
+            filters.potShape.length > 0 ||
+            filters.availability.length > 0) && (
+            <div className="mb-4 flex justify-end">
+              <button
+                onClick={clearAllFilters}
+                className="text-sm text-gray-600 hover:text-gray-800 underline"
+                aria-label="Clear all filters"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
           {/* Category Filter */}
           <div className="mb-6">
             <h4 className="text-lg font-medium text-gray-700 mb-3">Category</h4>
@@ -454,114 +423,6 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Price Filter */}
-          <div className="mb-6">
-            <h4 className="text-base font-medium text-gray-700 mb-3">Price</h4>
-            <div className="space-y-3">
-              {/* Price Display */}
-              <div className="flex justify-between text-base text-gray-600">
-                <span>₹0</span>
-                <span>₹1000</span>
-              </div>
-
-              {/* Single Range Slider */}
-              <div className="relative">
-                <input
-                  type="range"
-                  min="0"
-                  max="1000"
-                  step="10"
-                  value={filters.priceRange[1]}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value);
-                    setFilters((prev) => ({ ...prev, priceRange: [0, value] }));
-                  }}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
-                  style={{
-                    background: `linear-gradient(to right, #16a34a 0%, #16a34a ${((filters.priceRange[1] - 0) / (1000 - 0)) * 100}%, #e5e7eb ${((filters.priceRange[1] - 0) / (1000 - 0)) * 100}%, #e5e7eb 100%)`,
-                  }}
-                />
-              </div>
-
-              {/* Price Range Display */}
-              <div className="text-center text-base text-gray-500">
-                ₹0 - ₹{filters.priceRange[1]} (Current: {filters.priceRange[1]})
-              </div>
-            </div>
-
-            <style jsx>{`
-              .slider-thumb::-webkit-slider-thumb {
-                appearance: none;
-                height: 20px;
-                width: 20px;
-                border-radius: 50%;
-                background: #16a34a;
-                cursor: pointer;
-                border: 2px solid #fff;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-              }
-
-              .slider-thumb::-moz-range-thumb {
-                height: 20px;
-                width: 20px;
-                border-radius: 50%;
-                background: #16a34a;
-                cursor: pointer;
-                border: 2px solid #fff;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-              }
-            `}</style>
-          </div>
-
-          {/* Review Filter */}
-          <div className="mb-6">
-            <h4 className="text-base font-medium text-gray-700 mb-3">Review</h4>
-            <div className="space-y-2">
-              {[5, 4, 3, 2, 1].map((rating) => (
-                <label
-                  key={rating}
-                  className="flex items-center space-x-2 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={filters.ratings.includes(rating)}
-                    onChange={() => handleRatingChange(rating)}
-                    className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                  />
-                  <span className="text-base text-gray-600">{rating} Star</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Light Requirements */}
-          <div className="mb-6">
-            <h4 className="text-base font-medium text-gray-700 mb-3">
-              Light Requirements
-            </h4>
-            <div className="space-y-2">
-              {[
-                "Full Sun",
-                "Partial Shade",
-                "Low Light",
-                "Bright Indirect Light",
-              ].map((requirement) => (
-                <label
-                  key={requirement}
-                  className="flex items-center space-x-2 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={filters.lightRequirements.includes(requirement)}
-                    onChange={() => handleLightRequirementChange(requirement)}
-                    className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                  />
-                  <span className="text-base text-gray-600">{requirement}</span>
-                </label>
-              ))}
-            </div>
           </div>
 
           {/* Pot Size */}
@@ -672,25 +533,52 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
         </div>
 
         {/* Active Filters */}
-        {getActiveFilters().length > 0 && (
+        {(filters.categories.length > 0 || filters.availability.length > 0) && (
           <div className="flex flex-wrap items-center gap-2 mb-6">
-            {getActiveFilters().map((filter, index) => (
+            {/* Category chips */}
+            {filters.categories.map((cat) => (
               <span
-                key={index}
+                key={`cat-${cat}`}
                 className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm flex items-center"
               >
-                {filter}
+                Category: {cat}
                 <button
-                  onClick={() => {
-                    // Remove specific filter logic would go here
-                    clearAllFilters();
-                  }}
+                  onClick={() =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      categories: prev.categories.filter((c) => c !== cat),
+                    }))
+                  }
                   className="ml-2 text-green-600 hover:text-green-800"
+                  aria-label={`Remove category ${cat}`}
                 >
                   ×
                 </button>
               </span>
             ))}
+
+            {/* Availability chips */}
+            {filters.availability.map((a) => (
+              <span
+                key={`avail-${a}`}
+                className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm flex items-center"
+              >
+                {a}
+                <button
+                  onClick={() =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      availability: prev.availability.filter((x) => x !== a),
+                    }))
+                  }
+                  className="ml-2 text-green-600 hover:text-green-800"
+                  aria-label={`Remove availability ${a}`}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+
             <button
               onClick={clearAllFilters}
               className="text-sm text-gray-600 hover:text-gray-800 underline"
@@ -700,8 +588,8 @@ const ItemList = ({ data, initialCategory = null, searchQuery = null }) => {
           </div>
         )}
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Product Grid - 1 column on mobile for cleaner layout and pop-up */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {paginatedData.map((item, id) => (
             <ProductCard
               key={id}

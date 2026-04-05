@@ -40,6 +40,15 @@ function isOfferActive(attrs) {
 }
 
 const DEFAULT_IMAGE = "/images/plant.png";
+const STRAPI_BASE_URL =
+  process.env.NEXT_PUBLIC_STRAPI_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://dashboard.plantozone.com";
+
+function toAbsoluteMediaUrl(url) {
+  if (!url || String(url).trim() === "") return "";
+  return url.startsWith("http") ? url : `${STRAPI_BASE_URL}${url}`;
+}
 
 const ProductCard = ({ data, onAddToCart }) => {
   const [showPopup, setShowPopup] = useState(false);
@@ -59,8 +68,9 @@ const ProductCard = ({ data, onAddToCart }) => {
 
   const imgArr = data?.attributes?.images?.data;
   const rawUrl = imgArr?.[0]?.attributes?.url;
-  const hasValidUrl = rawUrl != null && String(rawUrl).trim() !== "";
-  const imgUrl = hasValidUrl ? rawUrl : DEFAULT_IMAGE;
+  const normalizedUrl = toAbsoluteMediaUrl(rawUrl);
+  const hasValidUrl = normalizedUrl !== "";
+  const imgUrl = hasValidUrl ? normalizedUrl : DEFAULT_IMAGE;
   const displaySrc = imgError ? DEFAULT_IMAGE : imgUrl;
   const firstBase = sizeOptions[0]?.price ?? 0;
 

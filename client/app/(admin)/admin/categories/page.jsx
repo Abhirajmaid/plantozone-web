@@ -1,4 +1,5 @@
 "use client";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { useAdminAuth } from "@/src/hooks/useAdminAuth";
@@ -24,8 +25,6 @@ import {
 import { Label } from "@/src/components/ui/label";
 import { toast } from "react-toastify";
 import { Plus, Edit, Trash2, Search, ChevronLeft, ChevronRight, Layers, FileText, FileX, ImagePlus, X } from "lucide-react";
-
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337";
 
 const PAGE_SIZE = 10;
 

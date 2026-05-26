@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { addToWishlist } from "@/src/lib/utils/wishlistUtils";
 import { Dialog, DialogContent } from "../ui/dialog";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 
 const SHAPES = ["Hexagonal", "Round"];
 
@@ -41,6 +42,11 @@ function isOfferActive(attrs) {
 
 const DEFAULT_IMAGE = "/images/plant.png";
 
+function toAbsoluteMediaUrl(url) {
+  if (!url || String(url).trim() === "") return "";
+  return url.startsWith("http") ? url : `${STRAPI_BASE_URL}${url}`;
+}
+
 const ProductCard = ({ data, onAddToCart }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [showZoomModal, setShowZoomModal] = useState(false);
@@ -60,8 +66,9 @@ const ProductCard = ({ data, onAddToCart }) => {
 
   const imgArr = data?.attributes?.images?.data;
   const rawUrl = imgArr?.[0]?.attributes?.url;
-  const hasValidUrl = rawUrl != null && String(rawUrl).trim() !== "";
-  const imgUrl = hasValidUrl ? rawUrl : DEFAULT_IMAGE;
+  const normalizedUrl = toAbsoluteMediaUrl(rawUrl);
+  const hasValidUrl = normalizedUrl !== "";
+  const imgUrl = hasValidUrl ? normalizedUrl : DEFAULT_IMAGE;
   const displaySrc = imgError ? DEFAULT_IMAGE : imgUrl;
   const firstBase = sizeOptions[0]?.price ?? 0;
 

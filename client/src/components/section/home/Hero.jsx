@@ -16,10 +16,9 @@ import plantsAction from "@/src/lib/action/plants.action";
 import adminAction from "@/src/lib/action/admin.action";
 import { addToWishlist } from "@/src/lib/utils/wishlistUtils";
 import { Dialog, DialogContent } from "../../ui/dialog";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 
 const NO_PREVIEW_IMG = "/images/plant.png";
-const STRAPI_BASE_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
 
 const Hero = () => {
   const [allPlants, setAllPlants] = useState([]);

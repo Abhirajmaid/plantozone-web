@@ -15,9 +15,8 @@ import plantsAction from "@/src/lib/action/plants.action";
 import { addToWishlist } from "@/src/lib/utils/wishlistUtils";
 import { Dialog, DialogContent } from "../../ui/dialog";
 import { SectionTitle } from "../..";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 
-const STRAPI_BASE_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
 const FALLBACK_IMG = "/images/plant.png";
 
 const TopFivePlants = () => {

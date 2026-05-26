@@ -8,8 +8,8 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import blogsAction from "@/src/lib/action/blogs.action";
 import categoriesAction from "@/src/lib/action/categories.action";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
 const DEFAULT_IMAGE = "/images/plant.png";
 
 // Blog Data Structure (fallback)

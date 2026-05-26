@@ -1,5 +1,6 @@
  "use client";
 
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -12,8 +13,6 @@ import { Label } from "@/src/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/src/components/ui/card";
 import { toast } from "react-toastify";
 import { ArrowLeft, ImagePlus, X } from "lucide-react";
-
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337";
 
 export default function AddCustomerMediaPage() {
   const router = useRouter();

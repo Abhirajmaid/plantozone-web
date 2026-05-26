@@ -5,6 +5,7 @@ import { SectionTitle } from "@/src/components";
 import { useEffect, useState } from "react";
 import blogsAction from "@/src/lib/action/blogs.action";
 import Link from "next/link";
+import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
 
 const BlogSection = () => {
   const [blogs, setBlogs] = useState([]);
@@ -75,7 +76,6 @@ const BlogSection = () => {
             {blogs.map((blog, idx) => {
               const attributes = blog?.attributes || {};
               // Handle image URL - check if it's already a full URL
-              const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://dashboard.plantozone.com";
               let imageUrl = "/images/plant.png";
               if (attributes?.image?.data?.attributes?.url) {
                 const url = attributes.image.data.attributes.url;

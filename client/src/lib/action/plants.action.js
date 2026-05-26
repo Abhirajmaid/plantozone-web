@@ -1,7 +1,7 @@
-const { default: axios } = require("axios");
+import axios from "axios";
+import { STRAPI_BASE_URL } from "../strapiBaseUrl";
 
 const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || '';
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://dashboard.plantozone.com';
 
 const axiosClient = axios.create({
     baseURL: `${STRAPI_BASE_URL}/api`,

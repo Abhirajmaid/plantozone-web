@@ -101,7 +101,7 @@ export default function EditCustomerMediaPage() {
       setNewImages((prev) => [...prev, ...uploaded]);
     } catch (err) {
       console.error("Upload error:", err);
-      toast.error("Failed to upload images");
+      toast.error(err.response?.data?.error?.message || "Failed to upload images");
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -216,7 +216,7 @@ export default function EditCustomerMediaPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={handleImageSelect} />
+            <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImageSelect} />
             <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={loading || uploading}>
               <ImagePlus className="h-4 w-4 mr-2" />
               {uploading ? "Uploading..." : "Add Media"}

@@ -53,6 +53,12 @@ export default function CustomerMediaPage() {
     }
   };
 
+  const getFirstImage = (imageField) => {
+    const data = imageField?.data;
+    if (!data) return null;
+    return Array.isArray(data) ? data[0] : data;
+  };
+
   const getImageUrl = (image) => {
     if (!image) return "/images/plant.png";
     const url = image.attributes?.url;
@@ -104,13 +110,14 @@ export default function CustomerMediaPage() {
             ) : (
               items.map((it) => {
                 const attrs = it.attributes || {};
-                const image = attrs.image?.data;
+                const image = getFirstImage(attrs.image);
+                const previewUrl = getImageUrl(image);
                 return (
                   <TableRow key={it.id}>
                     <TableCell>
                       <div className="w-24 h-16 relative rounded overflow-hidden bg-gray-100">
                         {image ? (
-                          <Image src={getImageUrl(image)} alt={attrs.title || ""} fill className="object-cover" />
+                          <Image src={previewUrl} alt={attrs.title || ""} fill className="object-cover" />
                         ) : null}
                       </div>
                     </TableCell>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAdminAuth } from "@/src/hooks/useAdminAuth";
 import adminAction from "@/src/lib/action/admin.action";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Package, FolderTree, ShoppingCart, Users, FileText } from "lucide-react";
+import { Package, FolderTree, ShoppingCart, Users, FileText, Tag } from "lucide-react";
 import { toast } from "react-toastify";
 
 export default function DashboardPage() {
@@ -165,6 +165,15 @@ export default function DashboardPage() {
               <div className="flex items-center gap-3">
                 <ShoppingCart className="h-5 w-5 text-violet-600" />
                 <span className="font-medium">View Orders</span>
+              </div>
+            </Link>
+            <Link
+              href="/admin/promo-codes"
+              className="block p-3 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <Tag className="h-5 w-5 text-green-600" />
+                <span className="font-medium">Promo Codes & Generator</span>
               </div>
             </Link>
           </CardContent>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getCartItems } from "@/src/lib/utils/cartUtils";
+import { getCartItems, clearCart } from "@/src/lib/utils/cartUtils";
 import { Container } from "@/src/components/layout/Container";
 import PrimaryButton from "@/src/components/common/PrimaryButton";
 import SecondaryButton from "@/src/components/common/SecondaryButton";
@@ -24,6 +24,7 @@ export default function CheckoutPage() {
   const [discount, setDiscount] = useState({ code: "", percent: 0 });
   const [promoCode, setPromoCode] = useState("");
   const [promoError, setPromoError] = useState("");
+  const [promoLoading, setPromoLoading] = useState(false);
 
   // User details state
   const [userDetails, setUserDetails] = useState({
@@ -251,6 +252,78 @@ export default function CheckoutPage() {
             discountAmount: discountAmount,
             total: total,
           });
+
+          // Send order confirmation email to customer
+          try {
+            await fetch("/api/send-order-confirmation", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: response.razorpay_order_id,
+                paymentId: response.razorpay_payment_id,
+                userName: userDetails.name,
+                userLastName: userDetails.lastName,
+                userEmail: userDetails.email,
+                userPhone: userDetails.phone,
+                address: `${userDetails.address}${
+                  userDetails.address2 ? ", " + userDetails.address2 : ""
+                }`,
+                address2: userDetails.address2 || "",
+                city: userDetails.city,
+                state: userDetails.state,
+                pincode: userDetails.pincode,
+                items: cartItems,
+                subtotal,
+                discountCode: discount.code,
+                discountAmount,
+                total,
+                status: "paid",
+              }),
+            });
+          } catch (emailErr) {
+            console.warn("Order confirmation email failed:", emailErr);
+          }
+
+          if (discount.code) {
+            try {
+              await fetch("/api/redeem-promo", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: discount.code }),
+              });
+            } catch {
+              /* non-blocking */
+            }
+          }
+
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem(
+              "lastOrder",
+              JSON.stringify({
+                orderId: response.razorpay_order_id,
+                paymentId: response.razorpay_payment_id,
+                email: userDetails.email,
+                userName: `${userDetails.name} ${userDetails.lastName}`.trim(),
+                userPhone: userDetails.phone,
+                paymentMethod: "Razorpay (Online)",
+                address: `${userDetails.address}${
+                  userDetails.address2 ? ", " + userDetails.address2 : ""
+                }`,
+                city: userDetails.city,
+                state: userDetails.state,
+                pincode: userDetails.pincode,
+                items: cartItems,
+                subtotal,
+                discountCode: discount.code,
+                discountPercent: discount.percent,
+                discountAmount,
+                total,
+                placedAt: new Date().toISOString(),
+              })
+            );
+            clearCart();
+          }
+
           // Redirect to order completed page
           router.push("/order-completed");
         } catch (err) {
@@ -370,26 +443,41 @@ export default function CheckoutPage() {
     }
   };
 
-  // Apply promo code
-  const applyPromoCode = () => {
+  const applyPromoCode = async () => {
     setPromoError("");
     const code = promoCode.trim().toUpperCase();
-    
+
     if (!code) {
       setPromoError("Please enter a promo code");
       return;
     }
 
-    // Valid promo codes
-    if (code === "FIRST125") {
-      setDiscount({ code: "FIRST125", percent: 25 });
+    setPromoLoading(true);
+    try {
+      const res = await fetch("/api/validate-promo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code,
+          subtotal,
+          email: userDetails.email?.trim() || "",
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.valid) {
+        setPromoError(data.error || "Invalid promo code. Please try again.");
+        setDiscount({ code: "", percent: 0 });
+        return;
+      }
+
+      setDiscount({ code: data.code, percent: data.discountPercent });
       setPromoError("");
-    } else if (code === "OXY30") {
-      setDiscount({ code: "OXY30", percent: 30 });
-      setPromoError("");
-    } else {
-      setPromoError("Invalid promo code. Please try again.");
+    } catch {
+      setPromoError("Could not validate promo code. Please try again.");
       setDiscount({ code: "", percent: 0 });
+    } finally {
+      setPromoLoading(false);
     }
   };
 
@@ -441,7 +529,7 @@ export default function CheckoutPage() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 min-w-0">
               {/* Left: Billing Details - Spans 2 columns */}
               <form
                 className="lg:col-span-2 space-y-6"
@@ -664,8 +752,8 @@ export default function CheckoutPage() {
               </form>
 
               {/* Right: Order Summary - Spans 1 column */}
-              <div className="lg:col-span-1">
-                <div className="bg-gray-50 rounded-xl p-6 sticky top-24">
+              <div className="lg:col-span-1 min-w-0">
+                <div className="bg-gray-50 rounded-xl p-4 sm:p-6 sticky top-24 min-w-0 overflow-hidden">
                   <h2 className="text-2xl font-bold text-gray-800 mb-6">
                     Order Summary
                   </h2>
@@ -697,7 +785,7 @@ export default function CheckoutPage() {
                         <label className="block text-sm font-medium mb-2 text-gray-700">
                           Promo Code
                         </label>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2 min-w-0">
                           <input
                             type="text"
                             value={promoCode}
@@ -705,21 +793,22 @@ export default function CheckoutPage() {
                               setPromoCode(e.target.value.toUpperCase());
                               setPromoError("");
                             }}
-                            onKeyPress={(e) => {
+                            onKeyDown={(e) => {
                               if (e.key === "Enter") {
                                 e.preventDefault();
                                 applyPromoCode();
                               }
                             }}
                             placeholder="Enter promo code"
-                            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                            className="w-full min-w-0 flex-1 border border-gray-300 rounded-lg px-3 sm:px-4 py-2 bg-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
                           />
                           <button
                             type="button"
                             onClick={applyPromoCode}
-                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                            disabled={promoLoading}
+                            className="w-full sm:w-auto shrink-0 px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm sm:text-base disabled:opacity-60"
                           >
-                            Apply
+                            {promoLoading ? "Checking…" : "Apply"}
                           </button>
                         </div>
                         {promoError && (

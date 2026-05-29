@@ -39,18 +39,35 @@ const TrackOrderInputPage = () => {
   const [orderId, setOrderId] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleTrackOrder = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+    setError("");
+
+    try {
+      const res = await fetch("/api/track-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: orderId.trim(), email: email.trim() }),
+      });
+      const json = await res.json();
+
+      if (!res.ok) {
+        setError(json.error || "Could not find this order.");
+        setIsLoading(false);
+        return;
+      }
+
+      router.push(
+        `/track-order?orderId=${encodeURIComponent(orderId.trim())}&email=${encodeURIComponent(email.trim())}`
+      );
+    } catch {
+      setError("Network error. Please try again.");
       setIsLoading(false);
-      // Redirect to track order page with the order details
-      router.push(`/track-order?orderId=${orderId}&email=${email}`);
-    }, 1000);
+    }
   };
 
   return (
@@ -72,6 +89,12 @@ const TrackOrderInputPage = () => {
                 </p>
               </div>
 
+              {error && (
+                <div className="mb-6 p-4 rounded-lg bg-red-50 text-red-700 text-sm border border-red-100">
+                  {error}
+                </div>
+              )}
+
               <form onSubmit={handleTrackOrder} className="space-y-6">
                 <div>
                   <Label htmlFor="orderId" className="text-sm font-medium text-gray-700 mb-2 block">
@@ -80,7 +103,7 @@ const TrackOrderInputPage = () => {
                   <Input
                     id="orderId"
                     type="text"
-                    placeholder="Enter your order ID (e.g., #SDGT1254FD)"
+                    placeholder="Enter your Razorpay order ID (e.g., order_xxx)"
                     value={orderId}
                     onChange={(e) => setOrderId(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"

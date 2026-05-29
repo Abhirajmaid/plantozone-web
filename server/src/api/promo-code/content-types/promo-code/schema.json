@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "promo_codes",
+  "info": {
+    "singularName": "promo-code",
+    "pluralName": "promo-codes",
+    "displayName": "Promo Code",
+    "description": "Checkout discount codes managed from admin dashboard"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "discountPercent": {
+      "type": "decimal",
+      "required": true,
+      "min": 1,
+      "max": 100
+    },
+    "description": {
+      "type": "text"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "firstOrderOnly": {
+      "type": "boolean",
+      "default": false
+    },
+    "minOrderAmount": {
+      "type": "decimal",
+      "default": 0
+    },
+    "maxUses": {
+      "type": "integer"
+    },
+    "usedCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "validFrom": {
+      "type": "datetime"
+    },
+    "validUntil": {
+      "type": "datetime"
+    },
+    "showInBanner": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

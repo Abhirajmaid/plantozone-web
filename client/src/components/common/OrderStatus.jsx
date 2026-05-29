@@ -2,6 +2,14 @@
 import React from "react";
 import { Check, Package, CheckCircle, Loader, Truck, Home } from "lucide-react";
 
+const ICON_MAP = {
+  package: Package,
+  check: CheckCircle,
+  loader: Loader,
+  truck: Truck,
+  home: Home,
+};
+
 const defaultSteps = [
   {
     id: 1,
@@ -76,7 +84,10 @@ const OrderStatus = ({ orderData }) => {
 
         <div className="flex justify-between items-start relative z-10">
           {steps.map((step) => {
-            const IconComponent = step.icon || Package;
+            const IconComponent =
+              step.icon ||
+              ICON_MAP[step.iconKey] ||
+              Package;
             const isStepCompleted = !!step.completed;
             return (
               <div key={step.id} className="flex flex-col items-center relative flex-1">

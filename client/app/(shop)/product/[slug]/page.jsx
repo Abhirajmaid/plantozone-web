@@ -15,6 +15,7 @@ import {
 import { Section } from "@/src/components/layout/Section";
 import { Container } from "@/src/components/layout/Container";
 import { Diver, TestimonialSwiper, ShopServiceSection, SectionTitle, ProductCard, NewsletterSection } from "@/src/components";
+import ProductReviewsSection from "@/src/components/section/product/ProductReviewsSection";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -671,6 +672,14 @@ export default function ProductPage() {
           </div>
         </div>
 
+        <ProductReviewsSection
+          reviewForm={reviewForm}
+          reviewRating={reviewRating}
+          onInputChange={handleReviewInputChange}
+          onStarClick={handleStarClick}
+          onSubmit={handleReviewSubmit}
+        />
+
         {/* Product Information Tabs */}
         <div className="mb-12">
           {/* Tab Navigation */}
@@ -679,7 +688,6 @@ export default function ProductPage() {
               {[
                 { id: "description", label: "Description" },
                 { id: "additional-info", label: "Additional Information" },
-                { id: "review", label: "Review" }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -789,259 +797,6 @@ export default function ProductPage() {
                     </tr>
                   </tbody>
                 </table>
-              </div>
-            )}
-
-            {activeTab === "review" && (
-              <div className="space-y-8">
-                {/* Overall Rating Summary */}
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center space-x-4">
-                      <div className="text-4xl font-bold text-gray-800">4.9</div>
-                      <div>
-                        <div className="flex items-center space-x-1 mb-1">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Icon key={star} icon="material-symbols:star" className="w-5 h-5 text-yellow-400" />
-                          ))}
-                        </div>
-                        <p className="text-sm text-gray-600">245 Reviews</p>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      {[5, 4, 3, 2, 1].map((rating) => (
-                        <div key={rating} className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-600 w-8">{rating}</span>
-                          <Icon icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
-                          <div className="w-32 bg-gray-200 rounded-full h-2">
-                            <div 
-                              className="bg-yellow-400 h-2 rounded-full" 
-                              style={{ width: `${rating === 5 ? 85 : rating === 4 ? 10 : rating === 3 ? 3 : rating === 2 ? 1 : 1}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Review List */}
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-gray-800">Review List</h3>
-                    <div className="flex items-center space-x-4">
-                      <span className="text-sm text-gray-600">Showing 1-4 of 24 reviews</span>
-                      <select className="border border-gray-300 rounded-md px-3 py-1 text-sm">
-                        <option>Sort by: Newest</option>
-                        <option>Sort by: Oldest</option>
-                        <option>Sort by: Highest Rating</option>
-                        <option>Sort by: Lowest Rating</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Individual Reviews */}
-                  <div className="space-y-6">
-                    {/* Review 1 */}
-                    <div className="border-b border-gray-200 pb-6">
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
-                          P
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-semibold text-gray-800">Priya Sharma</h4>
-                            <div className="flex items-center space-x-1">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Icon key={star} icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
-                              ))}
-                              <span className="text-sm text-gray-600 ml-2">5.0</span>
-                            </div>
-                          </div>
-                          <h5 className="font-medium text-gray-700 mb-2">Perfect for my Mumbai apartment!</h5>
-                          <p className="text-gray-600 text-sm leading-relaxed mb-2">
-                            This plant is absolutely beautiful! It's been 2 months and it's thriving in my Mumbai apartment. 
-                            The humidity here is perfect for this plant. Delivery was super fast and packaging was excellent.
-                          </p>
-                          <span className="text-xs text-gray-500">2 weeks ago</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Review 2 */}
-                    <div className="border-b border-gray-200 pb-6">
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
-                          A
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-semibold text-gray-800">Arjun Patel</h4>
-                            <div className="flex items-center space-x-1">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Icon key={star} icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
-                              ))}
-                              <span className="text-sm text-gray-600 ml-2">5.0</span>
-                            </div>
-                          </div>
-                          <h5 className="font-medium text-gray-700 mb-2">Great quality, excellent service</h5>
-                          <p className="text-gray-600 text-sm leading-relaxed mb-2">
-                            Ordered this for my office in Bangalore. The plant arrived in perfect condition. 
-                            Customer service team was very helpful with care instructions. Highly recommend!
-                          </p>
-                          <span className="text-xs text-gray-500">1 month ago</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Review 3 */}
-                    <div className="border-b border-gray-200 pb-6">
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold">
-                          S
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-semibold text-gray-800">Sneha Reddy</h4>
-                            <div className="flex items-center space-x-1">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Icon key={star} icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
-                              ))}
-                              <span className="text-sm text-gray-600 ml-2">5.0</span>
-                            </div>
-                          </div>
-                          <h5 className="font-medium text-gray-700 mb-2">Love the plant, love the service!</h5>
-                          <p className="text-gray-600 text-sm leading-relaxed mb-2">
-                            This is my third order from Plantozone. The quality is consistently excellent. 
-                            The plant is growing beautifully in my Delhi home. Thank you for such amazing service!
-                          </p>
-                          <span className="text-xs text-gray-500">3 weeks ago</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Review 4 */}
-                    <div className="border-b border-gray-200 pb-6">
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-red-400 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
-                          R
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-semibold text-gray-800">Rajesh Kumar</h4>
-                            <div className="flex items-center space-x-1">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Icon key={star} icon="material-symbols:star" className="w-4 h-4 text-yellow-400" />
-                              ))}
-                              <span className="text-sm text-gray-600 ml-2">5.0</span>
-                            </div>
-                          </div>
-                          <h5 className="font-medium text-gray-700 mb-2">Excellent plant, fast delivery</h5>
-                          <p className="text-gray-600 text-sm leading-relaxed mb-2">
-                            Ordered this for my wife's birthday. She absolutely loves it! The plant is healthy and beautiful. 
-                            Delivery was on time and packaging was perfect. Will definitely order again.
-                          </p>
-                          <span className="text-xs text-gray-500">1 week ago</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Add Your Review Form */}
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Add your review</h3>
-                  <p className="text-sm text-gray-600 mb-6">* Required fields</p>
-                  
-                  <form onSubmit={handleReviewSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
-                        <input 
-                          type="text" 
-                          value={reviewForm.name}
-                          onChange={(e) => handleReviewInputChange('name', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                          placeholder="Enter your name"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                        <input 
-                          type="email" 
-                          value={reviewForm.email}
-                          onChange={(e) => handleReviewInputChange('email', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                          placeholder="Enter your email"
-                          required
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Your Rating *</label>
-                      <div className="flex items-center space-x-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button 
-                            key={star} 
-                            type="button" 
-                            onClick={() => handleStarClick(star)}
-                            className="transition-colors"
-                          >
-                            <Icon 
-                              icon="material-symbols:star" 
-                              className={`w-6 h-6 ${
-                                star <= reviewRating 
-                                  ? 'text-yellow-400' 
-                                  : 'text-gray-300 hover:text-yellow-200'
-                              }`} 
-                            />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Add Review Title *</label>
-                      <input 
-                        type="text" 
-                        value={reviewForm.title}
-                        onChange={(e) => handleReviewInputChange('title', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                        placeholder="Enter review title"
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Add Detailed Review *</label>
-                      <textarea 
-                        rows="4"
-                        value={reviewForm.review}
-                        onChange={(e) => handleReviewInputChange('review', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                        placeholder="Share your experience with this product"
-                        required
-                      ></textarea>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Photo / Video</label>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                        <Icon icon="material-symbols:cloud-upload" className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-600 mb-2">Drag and drop your files here, or</p>
-                        <PrimaryButton type="button" withArrow={false} className="!px-4 !py-2 rounded-md bg-white text-yellow-600 hover:text-yellow-700 shadow-none hover:scale-100">
-                          Browse
-                        </PrimaryButton>
-                      </div>
-                    </div>
-                    
-                <SecondaryButton type="submit" withArrow={false} className="px-6 py-2 rounded-md">
-                  Submit
-                </SecondaryButton>
-                  </form>
-                </div>
               </div>
             )}
           </div>

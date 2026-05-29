@@ -447,7 +447,7 @@ const TopFivePlants = () => {
                         {/* Image: same height as Top Sellers ProductCard on mobile (h-[220px]) */}
                         <div
                           onClick={() => handleMobileCardTap(plant, idx)}
-                          className="relative w-full h-[220px] bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden rounded-t-xl"
+                          className="relative w-full h-[300px] sm:h-[340px] bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden rounded-t-xl"
                         >
                           <Image
                             src={plant.image}

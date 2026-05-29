@@ -64,4 +64,12 @@ const updateQuantity = (productId, size, shape, quantity) => {
   return updatedCart;
 };
 
-export { getCartItems, addToCart, removeFromCart, updateQuantity };
+const clearCart = () => {
+  if (typeof window !== "undefined") {
+    sessionStorage.removeItem(CART_KEY);
+    sessionStorage.removeItem(CART_EXPIRY_KEY);
+    window.dispatchEvent(new Event("cart-updated"));
+  }
+};
+
+export { getCartItems, addToCart, removeFromCart, updateQuantity, clearCart };

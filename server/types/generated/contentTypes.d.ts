@@ -1019,6 +1019,54 @@ export interface ApiPlantPlant extends Schema.CollectionType {
   };
 }
 
+export interface ApiPromoCodePromoCode extends Schema.CollectionType {
+  collectionName: 'promo_codes';
+  info: {
+    singularName: 'promo-code';
+    pluralName: 'promo-codes';
+    displayName: 'Promo Code';
+    description: 'Checkout discount codes managed from admin dashboard';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    code: Attribute.String & Attribute.Required & Attribute.Unique;
+    discountPercent: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 1;
+          max: 100;
+        },
+        number
+      >;
+    description: Attribute.Text;
+    isActive: Attribute.Boolean & Attribute.DefaultTo<true>;
+    firstOrderOnly: Attribute.Boolean & Attribute.DefaultTo<false>;
+    minOrderAmount: Attribute.Decimal & Attribute.DefaultTo<0>;
+    maxUses: Attribute.Integer;
+    usedCount: Attribute.Integer & Attribute.DefaultTo<0>;
+    validFrom: Attribute.DateTime;
+    validUntil: Attribute.DateTime;
+    showInBanner: Attribute.Boolean & Attribute.DefaultTo<false>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::promo-code.promo-code',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::promo-code.promo-code',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiTeamMemberTeamMember extends Schema.CollectionType {
   collectionName: 'team_members';
   info: {
@@ -1078,6 +1126,7 @@ declare module '@strapi/types' {
       'api::customer-media.customer-media': ApiCustomerMediaCustomerMedia;
       'api::order-detail.order-detail': ApiOrderDetailOrderDetail;
       'api::plant.plant': ApiPlantPlant;
+      'api::promo-code.promo-code': ApiPromoCodePromoCode;
       'api::team-member.team-member': ApiTeamMemberTeamMember;
     }
   }

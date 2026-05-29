@@ -9,6 +9,17 @@ const nextConfig = {
                 hostname: 'res.cloudinary.com',
                 pathname: '**',
             },
+            {
+                protocol: 'https',
+                hostname: 'plantozone-web-production.up.railway.app',
+                pathname: '/uploads/**',
+            },
+            {
+                protocol: 'http',
+                hostname: 'localhost',
+                port: '1337',
+                pathname: '/uploads/**',
+            },
         ],
     }
 };

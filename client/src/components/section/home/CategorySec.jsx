@@ -6,7 +6,7 @@ import Link from "next/link";
 import { InfiniteCategoryMarquee, SectionTitle } from "@/src/components";
 import Image from "next/image";
 import categoriesAction from "@/src/lib/action/categories.action";
-import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
+import { getStrapiMediaUrl, isExternalMediaUrl } from "@/src/lib/strapiMedia";
 
 const DEFAULT_CATEGORY_IMAGE = "/images/plant.png";
 
@@ -53,15 +53,10 @@ const CategorySec = () => {
           console.warn(`Category ${cat.id} is missing title field`);
         }
 
-        // Get image URL from Strapi
-        let imageUrl = DEFAULT_CATEGORY_IMAGE;
-        const strapiImageUrl = cat.attributes?.image?.data?.attributes?.url;
-        if (strapiImageUrl) {
-          // If the URL is relative, prepend Strapi base URL
-          imageUrl = strapiImageUrl.startsWith("http")
-            ? strapiImageUrl
-            : `${STRAPI_BASE_URL}${strapiImageUrl}`;
-        }
+        const imageUrl = getStrapiMediaUrl(
+          cat.attributes?.image,
+          DEFAULT_CATEGORY_IMAGE
+        );
 
         return {
           id: cat.id,
@@ -154,8 +149,9 @@ const CategorySec = () => {
                               src={item.image}
                               alt={item.name}
                               fill
-                              className="object-cover"
-                              unoptimized={item.image.startsWith("http")}
+                              sizes="(max-width: 640px) 50vw, 20vw"
+                              className="object-cover object-center"
+                              unoptimized={isExternalMediaUrl(item.image)}
                             />
                           </div>
                           <div className="absolute inset-0 group-hover:bg-primary/10 transition-colors duration-300"></div>
@@ -187,7 +183,8 @@ const CategorySec = () => {
                                   alt={item.name}
                                   fill
                                   className="object-cover"
-                                  unoptimized={item.image.startsWith("http")}
+                                  unoptimized={isExternalMediaUrl(item.image)}
+                                  sizes="(max-width: 640px) 50vw, 20vw"
                                 />
                               </div>
                               <div className="absolute inset-0 group-hover:bg-primary/10 transition-colors duration-300"></div>

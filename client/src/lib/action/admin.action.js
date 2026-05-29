@@ -109,7 +109,8 @@ const getCategories = (token, params = {}) => {
   });
   
   const queryParams = new URLSearchParams({
-    'populate': '*',
+    'populate[image]': '*',
+    'publicationState': 'preview',
     'pagination[pageSize]': params.pageSize || 100,
     ...(params.page && { 'pagination[page]': params.page }),
     ...(params.search && { 'filters[title][$containsi]': params.search }),
@@ -352,6 +353,45 @@ const updateOrderStatus = (id, status, token) => {
   return client.put(`/order-details/${id}`, { data: { status } });
 };
 
+// Promo codes CRUD
+const getPromoCodes = (token, params = {}) => {
+  const authToken = token || API_TOKEN;
+  const client = axios.create({
+    baseURL: `${STRAPI_BASE_URL}/api`,
+    headers: {
+      "Content-Type": "application/json",
+      ...(authToken && { Authorization: `Bearer ${authToken}` }),
+    },
+  });
+  const queryParams = new URLSearchParams({
+    "pagination[pageSize]": params.pageSize || 100,
+    ...(params.page && { "pagination[page]": params.page }),
+    sort: params.sort || "code:asc",
+  });
+  if (params.search?.trim()) {
+    queryParams.set("filters[code][$containsi]", params.search.trim());
+  }
+  if (params.activeOnly) {
+    queryParams.set("filters[isActive][$eq]", "true");
+  }
+  return client.get(`/promo-codes?${queryParams}`);
+};
+
+const createPromoCode = (data, token) => {
+  const client = axiosClient(token);
+  return client.post("/promo-codes", { data });
+};
+
+const updatePromoCode = (id, data, token) => {
+  const client = axiosClient(token);
+  return client.put(`/promo-codes/${id}`, { data });
+};
+
+const deletePromoCode = (id, token) => {
+  const client = axiosClient(token);
+  return client.delete(`/promo-codes/${id}`);
+};
+
 // Stats/Dashboard
 // Uses Promise.allSettled so one failing request (e.g. /api/users 403) doesn't break the whole dashboard
 const getDashboardStats = (token) => {
@@ -410,5 +450,9 @@ export default {
   getOrders,
   getOrderById,
   updateOrderStatus,
+  getPromoCodes,
+  createPromoCode,
+  updatePromoCode,
+  deletePromoCode,
   getDashboardStats,
 };

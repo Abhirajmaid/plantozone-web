@@ -274,7 +274,7 @@ const ProductCard = ({ data, onAddToCart }) => {
             height={400}
             src={displaySrc}
             alt={data?.attributes?.title || "plantozone"}
-            className="w-full h-[220px] sm:h-[260px] md:h-[300px] rounded-xl object-cover bg-gray-50"
+            className="w-full h-[300px] sm:h-[340px] md:h-[380px] rounded-xl object-contain object-center bg-gray-50"
             unoptimized={isExternalImage}
             onError={() => setImgError(true)}
           />

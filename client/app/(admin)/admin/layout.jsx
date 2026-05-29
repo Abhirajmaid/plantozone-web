@@ -14,6 +14,7 @@ import {
   X,
   FileText,
   Users,
+  Tag,
 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ const menuItems = [
   { href: "/admin/blogs", label: "Blogs", icon: FileText },
   { href: "/admin/team", label: "Team", icon: Users },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/admin/promo-codes", label: "Promo Codes", icon: Tag },
   { href: "/admin/stats", label: "Statistics", icon: BarChart3 },
 ];
 

@@ -24,6 +24,7 @@ export default function CartPage() {
   const [discountCode, setDiscountCode] = useState("");
   const [discountPercent, setDiscountPercent] = useState(0);
   const [discountError, setDiscountError] = useState("");
+  const [discountLoading, setDiscountLoading] = useState(false);
 
   useEffect(() => {
     setCartItems(getCartItems());
@@ -45,27 +46,34 @@ export default function CartPage() {
     setCartItems([]);
   };
 
-  // Discount code handler
-  const handleApplyDiscount = () => {
+  const handleApplyDiscount = async () => {
     const code = discountCode.trim().toUpperCase();
-    let percent = 0;
-
-    if (code === "SAVE10") {
-      percent = 10;
-    } else if (code === "WELCOME15") {
-      percent = 15;
-    } else if (code === "PLANT20") {
-      percent = 20;
-    } else if (code === "FIRST125") {
-      percent = 25;
+    if (!code) {
+      setDiscountError("Please enter a promo code");
+      return;
     }
 
-    if (percent > 0) {
-      setDiscountPercent(percent);
-      setDiscountError("");
-    } else {
+    setDiscountLoading(true);
+    setDiscountError("");
+    try {
+      const res = await fetch("/api/validate-promo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, subtotal: cartItems.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0) }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.valid) {
+        setDiscountPercent(0);
+        setDiscountError(data.error || "Invalid discount code");
+        return;
+      }
+      setDiscountPercent(data.discountPercent);
+      setDiscountCode(data.code);
+    } catch {
+      setDiscountError("Could not validate code. Try again.");
       setDiscountPercent(0);
-      setDiscountError("Invalid discount code");
+    } finally {
+      setDiscountLoading(false);
     }
   };
 
@@ -181,28 +189,34 @@ export default function CartPage() {
 
               {/* Coupon and Clear Cart */}
               <div className="mt-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 min-w-0 max-w-full">
-                <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-3 min-w-0 w-full md:w-auto">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 min-w-0 w-full md:max-w-md">
                   <input
                     type="text"
-                    placeholder="Coupon Code"
+                    placeholder="Promo code"
                     value={discountCode}
                     onChange={(e) => {
-                      const v = e.target.value;
+                      const v = e.target.value.toUpperCase();
                       setDiscountCode(v);
-                      // If user clears the input, automatically remove applied discount
                       if (v.trim() === "") {
                         setDiscountPercent(0);
                         setDiscountError("");
                       }
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-w-0 w-full md:w-64 max-w-full box-border"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleApplyDiscount();
+                      }
+                    }}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-w-0 w-full flex-1 box-border"
                   />
                   <SecondaryButton
                     onClick={handleApplyDiscount}
                     withArrow={false}
-                    className="px-6 py-2 w-full md:w-auto flex-shrink-0"
+                    disabled={discountLoading}
+                    className="px-6 py-2 w-full sm:w-auto shrink-0"
                   >
-                    Apply Coupon
+                    {discountLoading ? "Checking…" : "Apply"}
                   </SecondaryButton>
                 </div>
                 <button

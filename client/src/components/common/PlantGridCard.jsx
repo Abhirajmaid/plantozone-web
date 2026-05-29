@@ -91,7 +91,8 @@ const PlantGridCard = ({
             height={400}
             src={imageUrl}
             alt={title}
-            className="w-full h-[300px] rounded-xl object-cover bg-gray-50"
+            className="w-full h-[300px] sm:h-[340px] md:h-[380px] rounded-xl object-contain object-center bg-gray-50"
+            unoptimized={isExternalImage}
           />
         </Link>
         

@@ -11,7 +11,10 @@ const axiosClient = axios.create({
     }
 })
 
-const getCategories = () => axiosClient.get('/categories?populate=*&pagination[pageSize]=100')
+const getCategories = () =>
+  axiosClient.get(
+    "/categories?populate[image]=*&publicationState=preview&pagination[pageSize]=100"
+  );
 
 const getCategoryById = (id) => axiosClient.get(`/categories/${id}?populate=*`)
 

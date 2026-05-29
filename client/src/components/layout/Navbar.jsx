@@ -57,6 +57,10 @@ export default function CustomNavbar() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [bannerPromo, setBannerPromo] = useState({
+    code: "FIRST125",
+    discountPercent: 25,
+  });
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const menuRef = useRef(null);
@@ -161,19 +165,23 @@ export default function CustomNavbar() {
   }, []);
 
   useEffect(() => {
-    setCartCount(getCartCount());
-    // Listen for cart changes (optional: use a custom event or polling)
-    const handleStorage = () => setCartCount(getCartCount());
-    window.addEventListener("storage", handleStorage);
-    // Optionally, poll for cart changes if cart is updated in sessionStorage
-    const interval = setInterval(() => setCartCount(getCartCount()), 1000);
+    const refreshCartCount = () => setCartCount(getCartCount());
+    refreshCartCount();
+    window.addEventListener("storage", refreshCartCount);
+    window.addEventListener("cart-updated", refreshCartCount);
     return () => {
-      window.removeEventListener("storage", handleStorage);
-      clearInterval(interval);
-      if (dropdownTimerRef.current) {
-        clearTimeout(dropdownTimerRef.current);
-      }
+      window.removeEventListener("storage", refreshCartCount);
+      window.removeEventListener("cart-updated", refreshCartCount);
     };
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/promo-banner")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.code) setBannerPromo(data);
+      })
+      .catch(() => {});
   }, []);
 
   return (
@@ -193,8 +201,12 @@ export default function CustomNavbar() {
             </div>
 
             {/* Center: Discount code offer - text only, no icons */}
-            <div className="flex items-center justify-center order-1 md:order-2 text-center flex-1 ">
-              <span className="font-regular md:font-medium">Use code FIRST125 to get 25% OFF for your first order.</span>
+            <div className="flex items-center justify-center order-1 md:order-2 text-center flex-1 px-1">
+              <span className="font-regular md:font-medium text-[11px] sm:text-xs md:text-sm leading-tight">
+                Use code{" "}
+                <strong className="font-semibold">{bannerPromo.code}</strong> to get{" "}
+                {bannerPromo.discountPercent}% OFF for your first order.
+              </span>
             </div>
           </div>
         </Container>

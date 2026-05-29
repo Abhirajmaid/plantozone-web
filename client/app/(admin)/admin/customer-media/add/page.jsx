@@ -126,7 +126,7 @@ export default function AddCustomerMediaPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={handleImageSelect} />
+            <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImageSelect} />
             <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
               <ImagePlus className="h-4 w-4 mr-2" />
               {uploading ? "Uploading..." : "Add Media"}

@@ -8,7 +8,7 @@ const ShopServiceSection = ({ services = [] }) => {
     {
       icon: "material-symbols:local-shipping-outline",
       title: "Free Shipping",
-      description: "Free shipping for order above ₹2000",
+      description: "Free shipping on all orders",
     },
     {
       icon: "material-symbols:account-balance-wallet-outline",

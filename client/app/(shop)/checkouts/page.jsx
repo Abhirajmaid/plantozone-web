@@ -55,13 +55,7 @@ export default function CheckoutPage() {
   );
   const discountAmount = Math.round((subtotal * discount.percent) / 100);
 
-  // Delivery fee logic
-  const DELIVERY_FEE = 79;
-  const FREE_DELIVERY_THRESHOLD = 2000;
-  const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
-  const isFreeDelivery = subtotal >= FREE_DELIVERY_THRESHOLD;
-
-  const total = subtotal - discountAmount + deliveryFee;
+  const total = subtotal - discountAmount;
 
   // Basic field validation (excluding pincode serviceability)
   const areBasicFieldsValid =
@@ -233,8 +227,6 @@ export default function CheckoutPage() {
                   discountCode: discount.code,
                   discountPercent: discount.percent,
                   discountAmount: discountAmount,
-                  deliveryFee: deliveryFee,
-                  isFreeDelivery: isFreeDelivery,
                   total: total,
                   status: "paid",
                 },
@@ -257,8 +249,6 @@ export default function CheckoutPage() {
             discountCode: discount.code,
             discountPercent: discount.percent,
             discountAmount: discountAmount,
-            deliveryFee: deliveryFee,
-            isFreeDelivery: isFreeDelivery,
             total: total,
           });
           // Redirect to order completed page
@@ -749,10 +739,6 @@ export default function CheckoutPage() {
                     <div className="flex justify-between text-gray-700">
                       <span>Sub Total</span>
                       <span className="font-semibold">₹{subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-gray-700">
-                      <span>Shipping</span>
-                      <span className="font-semibold">₹{deliveryFee.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-gray-700">
                       <span>Taxes</span>

@@ -21,8 +21,7 @@ export default function ShippingDeliveryPage() {
         </p>
         <h2 className="text-xl font-semibold mt-6">Shipping Charges</h2>
         <p>
-          We offer free shipping on all orders above ₹500. For orders below
-          ₹500, a nominal shipping fee may apply.
+          We offer free shipping on all orders. No delivery charges apply at checkout.
         </p>
         <h2 className="text-xl font-semibold mt-6">Order Tracking</h2>
         <p>

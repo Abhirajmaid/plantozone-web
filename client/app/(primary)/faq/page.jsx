@@ -71,7 +71,7 @@ const faqData = [
   {
     id: "8",
     question: "Do you deliver to my city?",
-    answer: "We deliver across India. At checkout, enter your pincode to confirm serviceability. Some remote areas may have longer delivery times or additional charges. For any doubt, contact us before placing the order.",
+    answer: "We deliver across India. At checkout, enter your pincode to confirm serviceability. Some remote areas may have longer delivery times. For any doubt, contact us before placing the order.",
   },
   {
     id: "9",

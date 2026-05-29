@@ -170,10 +170,6 @@ const OrderCompleted = () => {
               <div className="border-t border-gray-200 pt-6">
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Shipping</span>
-                    <span className="font-semibold">₹{orderData.shipping.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
                     <span className="text-gray-600">Taxes</span>
                     <span className="font-semibold">₹{orderData.taxes.toFixed(2)}</span>
                   </div>
@@ -199,7 +195,7 @@ const OrderCompleted = () => {
                   </svg>
                 </div>
                 <h4 className="font-bold text-gray-900 mb-2">Free Shipping</h4>
-                <p className="text-sm text-gray-600">Free shipping for order above ₹2000</p>
+                <p className="text-sm text-gray-600">Free shipping on all orders</p>
               </div>
 
               <div className="bg-white rounded-xl p-6 text-center shadow-lg">

@@ -80,9 +80,8 @@ export default function CartPage() {
 
   const discountAmount = Math.round((subtotal * discountPercent) / 100);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const shipping = subtotal >= 2000 ? 0 : 79;
   const taxes = 0;
-  const total = subtotal - discountAmount + shipping + taxes;
+  const total = subtotal - discountAmount + taxes;
 
   return (
     <>
@@ -231,10 +230,6 @@ export default function CartPage() {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Sub Total</span>
                     <span className="text-gray-800">₹{subtotal}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Shipping</span>
-                    <span className="text-gray-800">₹{shipping}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Taxes</span>

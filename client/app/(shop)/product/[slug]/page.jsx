@@ -1184,7 +1184,7 @@ export default function ProductPage() {
         <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2">
           <div className="flex items-center justify-center gap-2 text-xs font-medium">
             <span>🚚</span>
-            <span>FREE Delivery on Orders Above ₹2000!</span>
+            <span>FREE Delivery on All Orders!</span>
           </div>
         </div>
       </div>

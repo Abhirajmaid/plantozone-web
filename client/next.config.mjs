@@ -1,27 +1,48 @@
 /** @type {import('next').NextConfig} */
+const strapiBackend =
+    process.env.NEXT_PUBLIC_STRAPI_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    (process.env.NODE_ENV === 'development'
+        ? 'http://localhost:1337'
+        : 'https://plantozone-web-production.up.railway.app');
+
 const nextConfig = {
-    // reactStrictMode: false,
+    async rewrites() {
+        return [
+            {
+                source: '/strapi-api/:path*',
+                destination: `${strapiBackend}/:path*`,
+            },
+        ];
+    },
     images: {
-        domains: ['source.unsplash.com', 'images.unsplash.com', 'plus.unsplash.com', 'res.cloudinary.com', 'localhost'],
+        domains: [
+            'source.unsplash.com',
+            'images.unsplash.com',
+            'plus.unsplash.com',
+            'res.cloudinary.com',
+            'localhost',
+            'plantozone-web-production.up.railway.app',
+        ],
         remotePatterns: [
             {
                 protocol: 'https',
                 hostname: 'res.cloudinary.com',
-                pathname: '**',
+                pathname: '/**',
             },
             {
                 protocol: 'https',
                 hostname: 'plantozone-web-production.up.railway.app',
-                pathname: '/uploads/**',
+                pathname: '/**',
             },
             {
                 protocol: 'http',
                 hostname: 'localhost',
                 port: '1337',
-                pathname: '/uploads/**',
+                pathname: '/**',
             },
         ],
-    }
+    },
 };
 
 export default nextConfig;

@@ -1,12 +1,6 @@
-import axios from "axios";
-import { STRAPI_BASE_URL } from "../strapiBaseUrl";
+import { createStrapiAxios } from "../strapiAxios";
 
-const axiosClient = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
-    headers: {
-        "Content-Type": 'application/json'
-    }
-})
+const axiosClient = createStrapiAxios();
 
 
 const registerUser = (data) => axiosClient.post('/auth/local/register', {

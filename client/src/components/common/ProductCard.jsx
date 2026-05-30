@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { addToWishlist } from "@/src/lib/utils/wishlistUtils";
 import { Dialog, DialogContent } from "../ui/dialog";
-import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
+import { resolveMediaPath } from "@/src/lib/strapiMedia";
 
 const SHAPES = ["Hexagonal", "Round"];
 
@@ -43,11 +43,10 @@ function isOfferActive(attrs) {
 const DEFAULT_IMAGE = "/images/plant.png";
 
 function toAbsoluteMediaUrl(url) {
-  if (!url || String(url).trim() === "") return "";
-  return url.startsWith("http") ? url : `${STRAPI_BASE_URL}${url}`;
+  return resolveMediaPath(url);
 }
 
-const ProductCard = ({ data, onAddToCart }) => {
+const ProductCard = ({ data, onAddToCart, variant = "default" }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [showZoomModal, setShowZoomModal] = useState(false);
   const [popupAlignment, setPopupAlignment] = useState("right"); // 'right' or 'left'
@@ -179,26 +178,14 @@ const ProductCard = ({ data, onAddToCart }) => {
   const displayPrice = getEffectivePrice(firstBase);
   const showStrikethrough = offerActive && discountPercent > 0 && firstBase > 0;
 
-  // Position popup absolutely near the Add to Cart button
+  /* Default: shop grids. topSeller: taller cover (shorter than category cards). */
+  const imageAreaClass =
+    variant === "topSeller"
+      ? "aspect-[4/5] min-h-[300px] sm:min-h-[320px] md:min-h-[360px] lg:min-h-[400px]"
+      : "h-[400px] sm:h-[400px] md:h-[300px] lg:h-[320px] xl:h-[340px]";
+
   return (
-    <div className="w-full bg-white transition-shadow duration-300 overflow-visible relative">
-      {/* Discount Tags: 20% off (always) + extra offer when discount % is set in CMS */}
-      <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
-        <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
-          20% off
-        </div>
-        {(() => {
-          const p = parseFloat(data?.attributes?.discountPercent);
-          if (p > 0 && !isNaN(p)) {
-            return (
-              <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
-                Extra {Math.round(p)}% off
-              </div>
-            );
-          }
-          return null;
-        })()}
-      </div>
+    <div className="w-full bg-white transition-shadow duration-300 overflow-visible relative rounded-xl">
       {/* Popup: dynamic sizes from CMS, shapes Hexagonal/Round */}
       {showPopup && (
         <div
@@ -266,21 +253,37 @@ const ProductCard = ({ data, onAddToCart }) => {
           </div>
         </div>
       )}
-      {/* Image Section - Full Width */}
-      <div className="relative group">
-        <Link href={`/product/${data?.id}`}>
+      {/* Image — full bleed, cover */}
+      <div
+        className={`relative group w-full ${imageAreaClass} rounded-xl overflow-hidden bg-neutral-200`}
+      >
+        <Link
+          href={`/product/${data?.id}`}
+          className="absolute inset-0 block"
+          aria-label={data?.attributes?.title || "View product"}
+        >
           <Image
-            width={500}
-            height={400}
             src={displaySrc}
             alt={data?.attributes?.title || "plantozone"}
-            className="w-full h-[300px] sm:h-[340px] md:h-[380px] rounded-xl object-contain object-center bg-gray-50"
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+            className="object-cover object-center"
             unoptimized={isExternalImage}
             onError={() => setImgError(true)}
           />
         </Link>
 
-        {/* Hover Buttons - pointer-events-none on container so image link works; auto on buttons so they are clickable */}
+        <div className="absolute top-3 left-3 z-10 flex flex-col gap-1 pointer-events-none">
+          <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-sm">
+            20% off
+          </div>
+          {offerActive && discountPercent > 0 && (
+            <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-sm">
+              Extra {Math.round(discountPercent)}% off
+            </div>
+          )}
+        </div>
+
         <div className="absolute top-3 right-3 z-20 flex flex-col space-y-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none [&_button]:pointer-events-auto">
           {/* Wishlist Button */}
           <button

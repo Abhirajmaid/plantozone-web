@@ -9,6 +9,7 @@ import {
   getCartItems,
   removeFromCart,
   updateQuantity,
+  clearCart,
 } from "@/src/lib/utils/cartUtils";
 import { Section } from "@/src/components/layout/Section";
 import { useRouter } from "next/navigation";
@@ -42,7 +43,7 @@ export default function CartPage() {
   };
 
   const handleClearCart = () => {
-    localStorage.removeItem("plantozone_cart");
+    clearCart();
     setCartItems([]);
   };
 

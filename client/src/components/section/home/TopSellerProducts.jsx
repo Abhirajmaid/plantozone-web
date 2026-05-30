@@ -12,7 +12,7 @@ import {
   getCartItems,
 } from "@/src/lib/utils/cartUtils";
 import plantsAction from "@/src/lib/action/plants.action";
-import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
+import { resolveMediaPath } from "@/src/lib/strapiMedia";
 
 const NO_PREVIEW_IMG = "/images/plant.png";
 
@@ -52,9 +52,7 @@ const TopSellerProducts = () => {
         let imageUrl = NO_PREVIEW_IMG;
         const strapiImageUrl = attrs?.images?.data?.[0]?.attributes?.url;
         if (strapiImageUrl) {
-          imageUrl = strapiImageUrl.startsWith("http")
-            ? strapiImageUrl
-            : `${STRAPI_BASE_URL}${strapiImageUrl}`;
+          imageUrl = resolveMediaPath(strapiImageUrl) || NO_PREVIEW_IMG;
         }
 
         // Return plant data in expected format
@@ -180,6 +178,7 @@ const TopSellerProducts = () => {
                 <SwiperSlide key={product.id}>
                   <div className="px-1">
                     <ProductCard
+                      variant="topSeller"
                       data={product}
                       onAddToCart={(opts) => handleAddToCart(product, opts)}
                     />

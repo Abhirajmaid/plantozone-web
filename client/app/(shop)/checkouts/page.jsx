@@ -13,7 +13,8 @@ import {
   isValidPincodeFormat,
   getServiceablePincodesList,
 } from "@/src/lib/utils/pincodeValidation";
-import { STRAPI_BASE_URL as STRAPI_ORIGIN } from "@/src/lib/strapiBaseUrl";
+import { saveGuestEmail, getGuestEmail } from "@/src/lib/utils/guestOrder";
+import { saveLastOrder } from "@/src/lib/utils/lastOrder";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -47,6 +48,10 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     setCartItems(getCartItems());
+    const savedEmail = getGuestEmail();
+    if (savedEmail) {
+      setUserDetails((prev) => ({ ...prev, email: prev.email || savedEmail }));
+    }
   }, []);
 
   // Calculate subtotal
@@ -175,7 +180,7 @@ export default function CheckoutPage() {
 
     // 1. Create order on backend
     const orderRes = await fetch(
-      `${STRAPI_ORIGIN}/api/create-razorpay-order`,
+      `${getStrapiBaseUrl()}/api/create-razorpay-order`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -201,39 +206,34 @@ export default function CheckoutPage() {
       handler: async function (response) {
         // Save order in your DB as before
         try {
-          const orderRes = await fetch(
-            `${STRAPI_ORIGIN}/api/order-details`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                data: {
-                  orderId: response.razorpay_order_id,
-                  paymentId: response.razorpay_payment_id,
-                  paymentSignature: response.razorpay_signature,
-                  userName: userDetails.name,
-                  userEmail: userDetails.email,
-                  userPhone: userDetails.phone,
-                  address: `${userDetails.address}${
-                    userDetails.address2 ? ", " + userDetails.address2 : ""
-                  }`,
-                  address2: userDetails.address2 || "",
-                  pincode: userDetails.pincode,
-                  city: userDetails.city,
-                  state: userDetails.state,
-                  items: cartItems,
-                  subtotal: subtotal,
-                  discountCode: discount.code,
-                  discountPercent: discount.percent,
-                  discountAmount: discountAmount,
-                  total: total,
-                  status: "paid",
-                },
-              }),
-            }
-          );
+          const orderPayload = {
+            orderId: response.razorpay_order_id,
+            paymentId: response.razorpay_payment_id,
+            userName: `${userDetails.name} ${userDetails.lastName}`.trim(),
+            userEmail: userDetails.email.trim().toLowerCase(),
+            userPhone: userDetails.phone,
+            address: `${userDetails.address}${
+              userDetails.address2 ? ", " + userDetails.address2 : ""
+            }`,
+            pincode: userDetails.pincode,
+            city: userDetails.city,
+            state: userDetails.state,
+            items: cartItems,
+            total: total,
+            status: "paid",
+          };
+
+          const orderRes = await fetch("/api/orders/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ data: orderPayload }),
+          });
+
+          if (!orderRes.ok) {
+            console.warn("Order save API:", await orderRes.text());
+          }
+
+          saveGuestEmail(userDetails.email);
           // ... Shiprocket order as before
           await createShiprocketOrder({
             orderId: response.razorpay_order_id,
@@ -296,36 +296,40 @@ export default function CheckoutPage() {
             }
           }
 
+          const checkoutEmail = userDetails.email.trim().toLowerCase();
+          const lastOrderPayload = {
+            orderId: response.razorpay_order_id,
+            paymentId: response.razorpay_payment_id,
+            email: checkoutEmail,
+            userName: `${userDetails.name} ${userDetails.lastName}`.trim(),
+            userPhone: userDetails.phone,
+            paymentMethod: "Razorpay (Online)",
+            address: `${userDetails.address}${
+              userDetails.address2 ? ", " + userDetails.address2 : ""
+            }`,
+            city: userDetails.city,
+            state: userDetails.state,
+            pincode: userDetails.pincode,
+            items: cartItems,
+            subtotal,
+            discountCode: discount.code,
+            discountPercent: discount.percent,
+            discountAmount,
+            total,
+            placedAt: new Date().toISOString(),
+          };
+
           if (typeof window !== "undefined") {
-            sessionStorage.setItem(
-              "lastOrder",
-              JSON.stringify({
-                orderId: response.razorpay_order_id,
-                paymentId: response.razorpay_payment_id,
-                email: userDetails.email,
-                userName: `${userDetails.name} ${userDetails.lastName}`.trim(),
-                userPhone: userDetails.phone,
-                paymentMethod: "Razorpay (Online)",
-                address: `${userDetails.address}${
-                  userDetails.address2 ? ", " + userDetails.address2 : ""
-                }`,
-                city: userDetails.city,
-                state: userDetails.state,
-                pincode: userDetails.pincode,
-                items: cartItems,
-                subtotal,
-                discountCode: discount.code,
-                discountPercent: discount.percent,
-                discountAmount,
-                total,
-                placedAt: new Date().toISOString(),
-              })
-            );
+            saveGuestEmail(userDetails.email);
+            saveLastOrder(lastOrderPayload);
             clearCart();
           }
 
-          // Redirect to order completed page
-          router.push("/order-completed");
+          const completedQuery = new URLSearchParams({
+            orderId: response.razorpay_order_id,
+            email: checkoutEmail,
+          });
+          router.push(`/order-completed?${completedQuery.toString()}`);
         } catch (err) {
           alert(
             "Payment succeeded but failed to save order. Please contact support."
@@ -742,6 +746,9 @@ export default function CheckoutPage() {
                     required
                     placeholder="Enter Email Address"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Order confirmation and &quot;My Orders&quot; use this email — no sign-in needed.
+                  </p>
                 </div>
 
                 {formError && (

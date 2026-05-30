@@ -5,7 +5,7 @@ import { SectionTitle } from "@/src/components";
 import { useEffect, useState } from "react";
 import blogsAction from "@/src/lib/action/blogs.action";
 import Link from "next/link";
-import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
+import { resolveMediaPath } from "@/src/lib/strapiMedia";
 
 const BlogSection = () => {
   const [blogs, setBlogs] = useState([]);
@@ -78,12 +78,9 @@ const BlogSection = () => {
               // Handle image URL - check if it's already a full URL
               let imageUrl = "/images/plant.png";
               if (attributes?.image?.data?.attributes?.url) {
-                const url = attributes.image.data.attributes.url;
-                if (url.startsWith('http://') || url.startsWith('https://')) {
-                  imageUrl = url;
-                } else {
-                  imageUrl = `${STRAPI_BASE_URL}${url}`;
-                }
+                imageUrl =
+                  resolveMediaPath(attributes.image.data.attributes.url) ||
+                  "/images/plant.png";
               }
               const authorName = attributes?.author?.data?.attributes?.name || "Jenny Alexander";
               const category = attributes?.category || "Indoor Plant";

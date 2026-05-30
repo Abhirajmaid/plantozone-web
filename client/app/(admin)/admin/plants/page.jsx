@@ -1,5 +1,5 @@
 "use client";
-import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
+import { resolveMediaPath } from "@/src/lib/strapiMedia";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAdminAuth } from "@/src/hooks/useAdminAuth";
@@ -144,7 +144,7 @@ export default function PlantsPage() {
     if (!image) return "/images/plant.png";
     const url = image.attributes?.url;
     if (!url) return "/images/plant.png";
-    return url.startsWith("http") ? url : `${STRAPI_BASE_URL}${url}`;
+    return resolveMediaPath(url);
   };
 
   const formatPriceWithSizes = (attrs) => {

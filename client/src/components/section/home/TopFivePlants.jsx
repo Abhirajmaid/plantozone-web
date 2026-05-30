@@ -15,7 +15,7 @@ import plantsAction from "@/src/lib/action/plants.action";
 import { addToWishlist } from "@/src/lib/utils/wishlistUtils";
 import { Dialog, DialogContent } from "../../ui/dialog";
 import { SectionTitle } from "../..";
-import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
+import { resolveMediaPath } from "@/src/lib/strapiMedia";
 
 const FALLBACK_IMG = "/images/plant.png";
 
@@ -41,7 +41,7 @@ const TopFivePlants = () => {
           let img = FALLBACK_IMG;
           const url = attrs?.images?.data?.[0]?.attributes?.url;
           if (url)
-            img = url.startsWith("http") ? url : `${STRAPI_BASE_URL}${url}`;
+            img = resolveMediaPath(url) || FALLBACK_IMG;
           return {
             id: p.id,
             name: attrs.title || "Plant",
@@ -447,7 +447,7 @@ const TopFivePlants = () => {
                         {/* Image: same height as Top Sellers ProductCard on mobile (h-[220px]) */}
                         <div
                           onClick={() => handleMobileCardTap(plant, idx)}
-                          className="relative w-full h-[300px] sm:h-[340px] bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden rounded-t-xl"
+                          className="relative w-full h-[400px] sm:h-[400px] md:h-[300px] bg-neutral-200 overflow-hidden rounded-t-xl"
                         >
                           <Image
                             src={plant.image}

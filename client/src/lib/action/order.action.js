@@ -1,11 +1,9 @@
-import axios from "axios";
-import { STRAPI_BASE_URL } from "../strapiBaseUrl";
+import { createStrapiAxios } from "../strapiAxios";
 
 const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || "";
 
 const getClient = () =>
-  axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+  createStrapiAxios({
     headers: {
       "Content-Type": "application/json",
       ...(API_TOKEN && { Authorization: `Bearer ${API_TOKEN}` }),

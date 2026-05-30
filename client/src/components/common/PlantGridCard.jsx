@@ -69,34 +69,36 @@ const PlantGridCard = ({
     }
   };
 
-  return (
-    <div className="w-full transition-shadow duration-300 overflow-hidden relative">
-      {/* Discount Tags: 20% off (always) + extra when discount % set */}
-      <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
-        <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
-          {discountLabel}
-        </div>
-        {showExtra && (
-          <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
-            Extra {Math.round(p)}% off
-          </div>
-        )}
-      </div>
+  const imageHeights =
+    "h-[400px] sm:h-[400px] md:h-[300px] lg:h-[320px] xl:h-[340px]";
 
-      {/* Image Section - Full Width: clicking image opens product details */}
-      <div className="relative group">
-        <Link href={href} className="block cursor-pointer">
+  return (
+    <div className="w-full transition-shadow duration-300 overflow-hidden relative rounded-xl bg-white">
+      <div
+        className={`relative group w-full ${imageHeights} rounded-xl overflow-hidden bg-neutral-200`}
+      >
+        <Link href={href} className="absolute inset-0 block cursor-pointer">
           <Image
-            width={500}
-            height={400}
             src={imageUrl}
             alt={title}
-            className="w-full h-[300px] sm:h-[340px] md:h-[380px] rounded-xl object-contain object-center bg-gray-50"
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover object-center"
             unoptimized={isExternalImage}
           />
         </Link>
-        
-        {/* Hover Buttons - pointer-events-none on container so image link works; auto on buttons so they are clickable */}
+
+        <div className="absolute top-3 left-3 z-10 flex flex-col gap-1 pointer-events-none">
+          <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-sm">
+            {discountLabel}
+          </div>
+          {showExtra && (
+            <div className="bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-sm">
+              Extra {Math.round(p)}% off
+            </div>
+          )}
+        </div>
+
         <div className="absolute top-3 right-3 z-20 flex flex-col space-y-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none [&_button]:pointer-events-auto">
           {/* Wishlist Button */}
           <button

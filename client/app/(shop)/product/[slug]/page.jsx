@@ -16,6 +16,7 @@ import { Section } from "@/src/components/layout/Section";
 import { Container } from "@/src/components/layout/Container";
 import { Diver, TestimonialSwiper, ShopServiceSection, SectionTitle, ProductCard, NewsletterSection } from "@/src/components";
 import ProductReviewsSection from "@/src/components/section/product/ProductReviewsSection";
+import CustomerMediaGallerySection from "@/src/components/section/product/CustomerMediaGallerySection";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -265,7 +266,7 @@ export default function ProductPage() {
       toast.error("Please fill in all required fields and select a rating", {
         position: "top-right"
       });
-      return;
+      throw new Error("validation");
     }
 
     const reviewData = {
@@ -419,15 +420,15 @@ export default function ProductPage() {
                 </div>
               </div>
             )}
-            {/* Main Product Image */}
-            <div className="aspect-square w-full bg-white rounded-xl shadow-lg mb-4 overflow-hidden relative">
+            {/* Main Product Image — tall card, image covers full area */}
+            <div className="relative w-full h-[440px] sm:h-[500px] md:h-[560px] lg:h-[620px] bg-gray-100 rounded-xl shadow-lg mb-4 overflow-hidden">
               <img
                 src={getImageUrl(
                   product.attributes.images?.data?.[selectedImageIndex]?.attributes?.url ||
                   product.attributes.images?.data?.[0]?.attributes?.url
                 ) || "/images/plant.png"}
                 alt={product.attributes.title}
-                className="w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover object-center"
               />
             </div>
             
@@ -445,7 +446,7 @@ export default function ProductPage() {
                     <img
                       src={getImageUrl(image.attributes?.url)}
                       alt={`${product.attributes.title} ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center"
                     />
                   </div>
                 ))}
@@ -672,14 +673,6 @@ export default function ProductPage() {
           </div>
         </div>
 
-        <ProductReviewsSection
-          reviewForm={reviewForm}
-          reviewRating={reviewRating}
-          onInputChange={handleReviewInputChange}
-          onStarClick={handleStarClick}
-          onSubmit={handleReviewSubmit}
-        />
-
         {/* Product Information Tabs */}
         <div className="mb-12">
           {/* Tab Navigation */}
@@ -802,6 +795,20 @@ export default function ProductPage() {
           </div>
         </div>
 
+        <ProductReviewsSection
+          reviewForm={reviewForm}
+          reviewRating={reviewRating}
+          onInputChange={handleReviewInputChange}
+          onStarClick={handleStarClick}
+          onSubmit={handleReviewSubmit}
+        />
+
+      </Container>
+
+      {/* Full-width customer media — same layout as hero carousel */}
+      <CustomerMediaGallerySection />
+
+      <Container className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-[100px] py-4 sm:py-6 lg:py-8">
         {/* Related Products Section */}
         <div className="mb-16">
           <SectionTitle 
@@ -899,7 +906,6 @@ export default function ProductPage() {
         <div className="mb-16">
           <ShopServiceSection />
         </div>
-
       </Container>
 
       {/* Newsletter Section */}

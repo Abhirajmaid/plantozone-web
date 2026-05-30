@@ -151,6 +151,14 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li>
                 <Link
+                  href="/orders"
+                  className="text-gray-100 hover:text-white transition-colors"
+                >
+                  My Orders
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/account"
                   className="text-gray-100 hover:text-white transition-colors"
                 >

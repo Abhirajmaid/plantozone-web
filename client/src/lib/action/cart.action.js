@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { STRAPI_BASE_URL } from '../strapiBaseUrl';
+import { strapiApiBase } from '../strapiAxios';
 
-const baseUrl = `${STRAPI_BASE_URL}/api`;
+const baseUrl = strapiApiBase();
 
 // Transform Strapi response to our cart item format
 const transformCartItem = (item) => ({

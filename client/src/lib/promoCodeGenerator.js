@@ -12,9 +12,46 @@ export function generatePromoCode(prefix = "PLANT", length = 5) {
   return `${String(prefix).toUpperCase().replace(/[^A-Z0-9]/g, "")}${suffix}`;
 }
 
+import { defaultValidUntilDateTime } from "./promoConstants";
+
 export const GENERATOR_PRESETS = [
-  { label: "First order (25%)", code: "FIRST125", percent: 25, firstOrderOnly: true, showInBanner: true },
-  { label: "Seasonal (30%)", code: "OXY30", percent: 30, firstOrderOnly: false, showInBanner: false },
-  { label: "Welcome (15%)", prefix: "WELCOME", percent: 15, firstOrderOnly: true, showInBanner: false },
-  { label: "Flash sale (20%)", prefix: "FLASH", percent: 20, firstOrderOnly: false, showInBanner: false },
+  {
+    label: "First order (25%)",
+    code: "FIRST125",
+    percent: 25,
+    firstOrderOnly: true,
+    showInBanner: true,
+    isDefault: true,
+  },
+  {
+    label: "Seasonal (30%)",
+    code: "OXY30",
+    percent: 30,
+    firstOrderOnly: false,
+    showInBanner: false,
+    validUntilDays: 60,
+  },
+  {
+    label: "Welcome (15%)",
+    prefix: "WELCOME",
+    percent: 15,
+    firstOrderOnly: true,
+    showInBanner: false,
+    validUntilDays: 30,
+  },
+  {
+    label: "Flash sale (20%)",
+    prefix: "FLASH",
+    percent: 20,
+    firstOrderOnly: false,
+    showInBanner: false,
+    validUntilDays: 7,
+  },
 ];
+
+export function presetToFormFields(preset) {
+  const days = preset.validUntilDays ?? 30;
+  return {
+    validUntil: preset.isDefault ? "" : defaultValidUntilDateTime(days),
+  };
+}

@@ -2,11 +2,18 @@ const CART_KEY = 'cart';
 const CART_EXPIRY_KEY = 'cart_expiry';
 const CART_EXPIRY_DAYS = 30;
 
+const notifyCartChange = () => {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("cart-updated"));
+  }
+};
+
 const setCartWithExpiry = (cart) => {
   if (typeof window !== 'undefined') {
     sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
     const expiry = Date.now() + CART_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
     sessionStorage.setItem(CART_EXPIRY_KEY, expiry.toString());
+    notifyCartChange();
   }
 };
 
@@ -68,8 +75,20 @@ const clearCart = () => {
   if (typeof window !== "undefined") {
     sessionStorage.removeItem(CART_KEY);
     sessionStorage.removeItem(CART_EXPIRY_KEY);
-    window.dispatchEvent(new Event("cart-updated"));
+    notifyCartChange();
   }
 };
 
-export { getCartItems, addToCart, removeFromCart, updateQuantity, clearCart };
+const getCartItemCount = () => {
+  const cart = getCartItems();
+  return cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+};
+
+export {
+  getCartItems,
+  getCartItemCount,
+  addToCart,
+  removeFromCart,
+  updateQuantity,
+  clearCart,
+};

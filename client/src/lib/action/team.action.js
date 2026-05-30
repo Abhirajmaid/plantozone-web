@@ -1,4 +1,4 @@
-import { STRAPI_BASE_URL } from "../strapiBaseUrl";
+import { getStrapiBaseUrl } from "../strapiBaseUrl";
 
 const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || "";
 
@@ -9,7 +9,7 @@ const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || "";
  */
 async function getTeamMembers() {
   try {
-    const url = `${STRAPI_BASE_URL}/api/team-members?populate=image&sort=order:asc&publicationState=live`;
+    const url = `${getStrapiBaseUrl()}/api/team-members?populate=image&sort=order:asc&publicationState=live`;
     const headers = {
       "Content-Type": "application/json",
       ...(API_TOKEN && { Authorization: `Bearer ${API_TOKEN}` }),

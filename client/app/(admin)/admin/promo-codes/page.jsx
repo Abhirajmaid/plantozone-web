@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAdminAuth } from "@/src/hooks/useAdminAuth";
-import adminAction from "@/src/lib/action/admin.action";
+import promoAdminAction from "@/src/lib/action/promoAdmin.action";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Card } from "@/src/components/ui/card";
@@ -23,7 +23,18 @@ import {
 } from "@/src/components/ui/dialog";
 import { toast } from "react-toastify";
 import { Plus, Edit, Trash2, Search, Tag, Percent, Sparkles, Wand2 } from "lucide-react";
-import { generatePromoCode, GENERATOR_PRESETS } from "@/src/lib/promoCodeGenerator";
+import {
+  generatePromoCode,
+  GENERATOR_PRESETS,
+  presetToFormFields,
+} from "@/src/lib/promoCodeGenerator";
+import {
+  DEFAULT_BANNER_CODE,
+  defaultValidUntilDateTime,
+  formatPromoExpiry,
+  isDefaultPromoCode,
+} from "@/src/lib/promoConstants";
+import { Checkbox } from "@/src/components/ui/checkbox";
 
 const emptyForm = {
   code: "",
@@ -52,7 +63,7 @@ export default function PromoCodesPage() {
     try {
       const token = getToken();
       if (!token) return;
-      const res = await adminAction.getPromoCodes(token, {
+      const res = await promoAdminAction.getPromoCodes(token, {
         search: searchTerm || undefined,
         pageSize: 100,
       });
@@ -73,7 +84,10 @@ export default function PromoCodesPage() {
 
   const openCreate = () => {
     setEditing(null);
-    setFormData(emptyForm);
+    setFormData({
+      ...emptyForm,
+      validUntil: defaultValidUntilDateTime(30),
+    });
     setIsDialogOpen(true);
   };
 
@@ -102,8 +116,34 @@ export default function PromoCodesPage() {
 
     const code = formData.code.trim().toUpperCase();
     const percent = Number(formData.discountPercent);
+    const isDefault = isDefaultPromoCode(code);
+
     if (!code || !percent || percent < 1 || percent > 100) {
       toast.error("Code and discount % (1–100) are required");
+      return;
+    }
+
+    if (!isDefault && !editing && !formData.validUntil) {
+      toast.error("Valid until (expiry) is required for new promo codes");
+      return;
+    }
+
+    if (
+      !isDefault &&
+      formData.showInBanner &&
+      !formData.validUntil
+    ) {
+      toast.error("Set expiry date before enabling top banner");
+      return;
+    }
+
+    if (
+      !isDefault &&
+      formData.validUntil &&
+      new Date(formData.validUntil).getTime() <= Date.now() &&
+      !editing
+    ) {
+      toast.error("Expiry must be in the future");
       return;
     }
 
@@ -124,10 +164,10 @@ export default function PromoCodesPage() {
 
     try {
       if (editing) {
-        await adminAction.updatePromoCode(editing.id, payload, token);
+        await promoAdminAction.updatePromoCode(editing.id, payload, token);
         toast.success("Promo code updated");
       } else {
-        await adminAction.createPromoCode(
+        await promoAdminAction.createPromoCode(
           { ...payload, usedCount: 0 },
           token
         );
@@ -146,7 +186,7 @@ export default function PromoCodesPage() {
     if (!confirm("Delete this promo code?")) return;
     try {
       const token = getToken();
-      await adminAction.deletePromoCode(id, token);
+      await promoAdminAction.deletePromoCode(id, token);
       toast.success("Promo code deleted");
       fetchPromos();
     } catch {
@@ -154,7 +194,58 @@ export default function PromoCodesPage() {
     }
   };
 
-  const activeCount = promos.filter((p) => p.attributes?.isActive !== false).length;
+  const sortedPromos = [...promos].sort((a, b) => {
+    const ac = (a.attributes?.code || "").toUpperCase();
+    const bc = (b.attributes?.code || "").toUpperCase();
+    if (ac === DEFAULT_BANNER_CODE) return -1;
+    if (bc === DEFAULT_BANNER_CODE) return 1;
+    return ac.localeCompare(bc);
+  });
+
+  const isExpired = (attrs) =>
+    attrs?.validUntil &&
+    Date.now() > new Date(attrs.validUntil).getTime();
+
+  const activeCount = promos.filter(
+    (p) => p.attributes?.isActive !== false && !isExpired(p.attributes)
+  ).length;
+
+  const handleBannerToggle = async (promo, checked) => {
+    const a = promo.attributes || {};
+    const code = (a.code || "").toUpperCase();
+
+    if (checked && !isDefaultPromoCode(code) && isExpired(a)) {
+      toast.error("This code has expired. Extend the date or create a new code.");
+      openEdit(promo);
+      return;
+    }
+
+    const updatePayload = { showInBanner: checked };
+
+    if (checked && !isDefaultPromoCode(code) && !a.validUntil) {
+      const d = new Date();
+      d.setDate(d.getDate() + 30);
+      d.setHours(23, 59, 0, 0);
+      updatePayload.validUntil = d.toISOString();
+    }
+
+    try {
+      const token = getToken();
+      await promoAdminAction.updatePromoCode(promo.id, updatePayload, token);
+      toast.success(
+        checked
+          ? updatePayload.validUntil
+            ? "Shown in top banner (30-day expiry set)"
+            : "Shown in top banner"
+          : "Removed from top banner"
+      );
+      fetchPromos();
+    } catch (err) {
+      toast.error(
+        err.response?.data?.error?.message || "Failed to update banner setting"
+      );
+    }
+  };
 
   const handleGenerateCode = (prefix = "PLANT") => {
     const code = generatePromoCode(prefix);
@@ -175,6 +266,7 @@ export default function PromoCodesPage() {
       firstOrderOnly: !!preset.firstOrderOnly,
       showInBanner: !!preset.showInBanner,
       isActive: true,
+      ...presetToFormFields(preset),
     });
     setEditing(null);
     setIsDialogOpen(true);
@@ -186,7 +278,8 @@ export default function PromoCodesPage() {
     const code =
       preset.code || generatePromoCode(preset.prefix || "PLANT");
     try {
-      await adminAction.createPromoCode(
+      const { validUntil } = presetToFormFields(preset);
+      await promoAdminAction.createPromoCode(
         {
           code,
           discountPercent: preset.percent,
@@ -194,6 +287,7 @@ export default function PromoCodesPage() {
           isActive: true,
           firstOrderOnly: !!preset.firstOrderOnly,
           showInBanner: !!preset.showInBanner,
+          validUntil: validUntil || null,
           usedCount: 0,
         },
         token
@@ -213,7 +307,8 @@ export default function PromoCodesPage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Promo Codes</h1>
           <p className="text-gray-500 mt-2">
-            Manage checkout discount codes (e.g. FIRST125)
+            <strong>{DEFAULT_BANNER_CODE}</strong> is the default top-bar promo.
+            Other codes auto-disable and leave the banner when their expiry time passes.
           </p>
         </div>
         <Button onClick={openCreate} className="bg-green-600 hover:bg-green-700">
@@ -314,46 +409,79 @@ export default function PromoCodesPage() {
               <TableHead>Discount</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Uses</TableHead>
-              <TableHead>Banner</TableHead>
+              <TableHead>Expires</TableHead>
+              <TableHead className="text-center">Top banner</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
+                <TableCell colSpan={7} className="text-center py-8">
                   Loading…
                 </TableCell>
               </TableRow>
             ) : promos.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                   No promo codes. Add FIRST125 (25% off, first order) to get started.
                 </TableCell>
               </TableRow>
             ) : (
-              promos.map((promo) => {
+              sortedPromos.map((promo) => {
                 const a = promo.attributes || {};
+                const expired = isExpired(a);
+                const isDefault = isDefaultPromoCode(a.code);
+                const statusActive = a.isActive !== false && !expired;
                 return (
                   <TableRow key={promo.id}>
-                    <TableCell className="font-mono font-bold">{a.code}</TableCell>
+                    <TableCell className="font-mono font-bold">
+                      <span className="flex flex-wrap items-center gap-2">
+                        {a.code}
+                        {isDefault && (
+                          <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-semibold">
+                            Default
+                          </span>
+                        )}
+                      </span>
+                    </TableCell>
                     <TableCell>{a.discountPercent}%</TableCell>
                     <TableCell>
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium ${
-                          a.isActive !== false
+                          statusActive
                             ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-600"
+                            : expired
+                              ? "bg-red-100 text-red-800"
+                              : "bg-gray-100 text-gray-600"
                         }`}
                       >
-                        {a.isActive !== false ? "Active" : "Inactive"}
+                        {expired
+                          ? "Expired"
+                          : a.isActive !== false
+                            ? "Active"
+                            : "Inactive"}
                       </span>
                     </TableCell>
                     <TableCell className="text-sm text-gray-600">
                       {a.usedCount ?? 0}
                       {a.maxUses ? ` / ${a.maxUses}` : ""}
                     </TableCell>
-                    <TableCell>{a.showInBanner ? "Yes" : "—"}</TableCell>
+                    <TableCell className="text-sm text-gray-600 max-w-[140px]">
+                      {isDefault && !a.validUntil
+                        ? "No expiry"
+                        : formatPromoExpiry(a.validUntil)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Checkbox
+                        checked={!!a.showInBanner}
+                        disabled={expired && !isDefault}
+                        onCheckedChange={(checked) =>
+                          handleBannerToggle(promo, checked === true)
+                        }
+                        aria-label={`Show ${a.code} in top banner`}
+                      />
+                    </TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button
                         variant="ghost"
@@ -475,14 +603,29 @@ export default function PromoCodesPage() {
                 />
               </div>
               <div>
-                <Label>Valid until</Label>
+                <Label>
+                  Valid until{" "}
+                  {!editing && !isDefaultPromoCode(formData.code) ? "*" : ""}
+                </Label>
                 <Input
                   type="datetime-local"
                   value={formData.validUntil}
                   onChange={(e) =>
                     setFormData({ ...formData, validUntil: e.target.value })
                   }
+                  required={
+                    !editing && !isDefaultPromoCode(formData.code)
+                  }
                 />
+                {isDefaultPromoCode(formData.code) ? (
+                  <p className="text-xs text-amber-700 mt-1">
+                    Default code — expiry optional; stays on banner unless you turn it off.
+                  </p>
+                ) : (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Required. Code auto-disables and leaves the top bar after this time.
+                  </p>
+                )}
               </div>
             </div>
             <label className="flex items-center gap-2 text-sm">
@@ -505,15 +648,19 @@ export default function PromoCodesPage() {
               />
               First order only
             </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
+            <label className="flex items-center gap-3 text-sm cursor-pointer">
+              <Checkbox
                 checked={formData.showInBanner}
-                onChange={(e) =>
-                  setFormData({ ...formData, showInBanner: e.target.checked })
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, showInBanner: checked === true })
                 }
               />
-              Show in top site banner
+              <span>
+                Show in top site banner
+                {isDefaultPromoCode(formData.code) && (
+                  <span className="text-amber-700"> (recommended for default)</span>
+                )}
+              </span>
             </label>
             <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
               {editing ? "Update" : "Create"}

@@ -1,58 +1,96 @@
- "use client";
- import React, { useState } from "react";
- import { Container } from "@/src/components/layout/Container";
- import { Section } from "@/src/components/layout/Section";
- import { NewsletterSection, ShopServiceSection } from "@/src/components";
- import SignInForm from "@/src/components/common/SignInForm";
- import SignUpForm from "@/src/components/common/SignUpForm";
- import Link from "next/link";
+"use client";
+import React, { useEffect, useState } from "react";
+import { Container } from "@/src/components/layout/Container";
+import { Section } from "@/src/components/layout/Section";
+import { NewsletterSection, ShopServiceSection } from "@/src/components";
+import SignInForm from "@/src/components/common/SignInForm";
+import SignUpForm from "@/src/components/common/SignUpForm";
+import Link from "next/link";
+import { Mail } from "lucide-react";
+import { resolveOrdersEmail } from "@/src/lib/utils/guestOrder";
 
- export default function AccountPage() {
-   const [showSignIn, setShowSignIn] = useState(true);
+export default function AccountPage() {
+  const [showSignIn, setShowSignIn] = useState(true);
+  const [savedEmail, setSavedEmail] = useState("");
 
-   return (
-     <div className="min-h-screen bg-gray-50 pt-20">
-       <div className="relative py-20 md:py-24 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/breadcrumbbg.png')" }}>
-         <div className="absolute inset-0 bg-white/70"></div>
-         <Container>
-           <div className="relative z-10 flex flex-col items-center text-center">
-             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">My Account</h1>
-             <div className="flex items-center gap-2 text-gray-600">
-               <Link href="/" className="hover:text-green-600 transition-colors">Home</Link>
-               <span>/</span>
-               <span className="text-gray-800 font-medium">My Account</span>
-             </div>
-           </div>
-         </Container>
-       </div>
+  useEffect(() => {
+    setSavedEmail(resolveOrdersEmail());
+  }, []);
 
-       <Section className="bg-gray-50 py-16">
-         <Container>
-           <div className="max-w-3xl mx-auto">
-             <div className="bg-white rounded-2xl shadow-lg p-8">
-               <div className="flex justify-between items-center mb-6">
-                 <h2 className="text-2xl font-bold text-gray-900">{showSignIn ? "Sign In" : "Create Account"}</h2>
-                 <button
-                   onClick={() => setShowSignIn(!showSignIn)}
-                   className="text-sm text-green-600 underline"
-                 >
-                   {showSignIn ? "Create an account" : "Already have an account? Sign in"}
-                 </button>
-               </div>
+  return (
+    <div className="min-h-screen bg-gray-50 pt-20">
+      <div
+        className="relative py-20 md:py-24 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/breadcrumbbg.png')" }}
+      >
+        <div className="absolute inset-0 bg-white/70" />
+        <Container>
+          <div className="relative z-10 flex flex-col items-center text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+              My Account
+            </h1>
+            <div className="flex items-center gap-2 text-gray-600">
+              <Link href="/" className="hover:text-green-600 transition-colors">
+                Home
+              </Link>
+              <span>/</span>
+              <span className="text-gray-800 font-medium">My Account</span>
+            </div>
+          </div>
+        </Container>
+      </div>
 
-               {showSignIn ? (
-                 <SignInForm onSwitchToSignUp={() => setShowSignIn(false)} />
-               ) : (
-                 <SignUpForm onSwitchToSignIn={() => setShowSignIn(true)} />
-               )}
-             </div>
-           </div>
-         </Container>
-       </Section>
+      <Section className="bg-gray-50 py-16">
+        <Container>
+          <div className="max-w-3xl mx-auto space-y-8">
+            {/* Guest orders — no login required */}
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">My Orders</h2>
+              <p className="text-gray-600 text-sm mb-4">
+                Your completed orders appear here automatically after checkout.
+              </p>
+              {savedEmail && (
+                <p className="text-sm text-gray-600 mb-4 flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  Last used: <span className="font-medium">{savedEmail}</span>
+                </p>
+              )}
+              <Link
+                href="/orders"
+                className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+              >
+                View my orders
+              </Link>
+            </div>
 
-       <ShopServiceSection />
-       <NewsletterSection />
-     </div>
-   );
- }
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {showSignIn ? "Sign In" : "Create Account"}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setShowSignIn(!showSignIn)}
+                  className="text-sm text-green-600 underline"
+                >
+                  {showSignIn ? "Create an account" : "Already have an account?"}
+                </button>
+              </div>
+              <p className="text-sm text-gray-500 mb-6">
+                Signing in saves your profile. Orders are always tied to your checkout email.
+              </p>
+              {showSignIn ? (
+                <SignInForm onSwitchToSignUp={() => setShowSignIn(false)} />
+              ) : (
+                <SignUpForm onSwitchToSignIn={() => setShowSignIn(true)} />
+              )}
+            </div>
+          </div>
+        </Container>
+      </Section>
 
+      <ShopServiceSection />
+      <NewsletterSection />
+    </div>
+  );
+}

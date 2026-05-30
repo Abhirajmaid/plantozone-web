@@ -1,18 +1,36 @@
-import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
+import { strapiServerFetch } from "./strapiServer";
+import { DEFAULT_BANNER_CODE } from "@/src/lib/promoConstants";
+import {
+  expireStalePromoCodes,
+  isBannerEligible,
+  isPromoExpired,
+} from "./promoExpiry";
 
-const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || "";
-
-async function strapiFetch(path) {
-  const res = await fetch(`${STRAPI_BASE_URL}/api${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(API_TOKEN && { Authorization: `Bearer ${API_TOKEN}` }),
-    },
-    cache: "no-store",
-  });
-  const data = await res.json().catch(() => ({}));
-  return { ok: res.ok, data };
-}
+/** Built-in promos when DB is empty or Strapi is unreachable */
+const FALLBACK_PROMOS = {
+  FIRST125: {
+    code: "FIRST125",
+    discountPercent: 25,
+    description: "25% off your first order",
+    isActive: true,
+    firstOrderOnly: true,
+    showInBanner: true,
+    minOrderAmount: 0,
+    maxUses: null,
+    usedCount: 0,
+  },
+  OXY30: {
+    code: "OXY30",
+    discountPercent: 30,
+    description: "30% off",
+    isActive: true,
+    firstOrderOnly: false,
+    showInBanner: false,
+    minOrderAmount: 0,
+    maxUses: null,
+    usedCount: 0,
+  },
+};
 
 export async function findPromoByCode(code) {
   const normalized = String(code || "")
@@ -20,15 +38,27 @@ export async function findPromoByCode(code) {
     .toUpperCase();
   if (!normalized) return null;
 
-  const params = new URLSearchParams({
-    "filters[code][$eq]": normalized,
-    "pagination[pageSize]": "1",
-  });
+  try {
+    const params = new URLSearchParams({
+      "filters[code][$eq]": normalized,
+      "pagination[pageSize]": "1",
+    });
 
-  const { ok, data } = await strapiFetch(`/promo-codes?${params}`);
-  if (!ok) return null;
-  const list = data.data || [];
-  return list[0] || null;
+    const { ok, data } = await strapiServerFetch(`/promo-codes?${params}`);
+
+    if (ok) {
+      const list = data?.data || [];
+      if (list[0]) return list[0];
+    }
+  } catch (err) {
+    console.error("findPromoByCode:", err.message);
+  }
+
+  if (FALLBACK_PROMOS[normalized]) {
+    return { id: null, attributes: FALLBACK_PROMOS[normalized] };
+  }
+
+  return null;
 }
 
 export async function countPaidOrdersForEmail(email) {
@@ -40,7 +70,7 @@ export async function countPaidOrdersForEmail(email) {
     publicationState: "preview",
   });
 
-  const { ok, data } = await strapiFetch(`/order-details?${params}`);
+  const { ok, data } = await strapiServerFetch(`/order-details?${params}`);
   if (!ok) return 0;
   return data.meta?.pagination?.total ?? 0;
 }
@@ -59,8 +89,16 @@ export function validatePromoRecord(promo, { subtotal = 0, email } = {}) {
   if (attrs.validFrom && now < new Date(attrs.validFrom).getTime()) {
     return { valid: false, error: "This promo code is not valid yet." };
   }
-  if (attrs.validUntil && now > new Date(attrs.validUntil).getTime()) {
+  if (isPromoExpired(attrs, now)) {
     return { valid: false, error: "This promo code has expired." };
+  }
+
+  const code = String(attrs.code || "").toUpperCase();
+  if (code !== DEFAULT_BANNER_CODE && !attrs.validUntil) {
+    return {
+      valid: false,
+      error: "This promo code is not valid (missing expiry).",
+    };
   }
 
   const min = Number(attrs.minOrderAmount || 0);
@@ -88,7 +126,18 @@ export function validatePromoRecord(promo, { subtotal = 0, email } = {}) {
 }
 
 export async function validatePromoCode(code, { subtotal, email }) {
-  const promo = await findPromoByCode(code);
+  await expireStalePromoCodes();
+
+  const normalized = String(code || "")
+    .trim()
+    .toUpperCase();
+
+  let promo = await findPromoByCode(normalized);
+
+  if (!promo && FALLBACK_PROMOS[normalized]) {
+    promo = { id: null, attributes: FALLBACK_PROMOS[normalized] };
+  }
+
   if (!promo) {
     return { valid: false, error: "Invalid promo code. Please try again." };
   }
@@ -97,12 +146,16 @@ export async function validatePromoCode(code, { subtotal, email }) {
   if (!result.valid) return result;
 
   if (result.firstOrderOnly && email) {
-    const orderCount = await countPaidOrdersForEmail(email);
-    if (orderCount > 0) {
-      return {
-        valid: false,
-        error: "This code is valid for first orders only.",
-      };
+    try {
+      const orderCount = await countPaidOrdersForEmail(email);
+      if (orderCount > 0) {
+        return {
+          valid: false,
+          error: "This code is valid for first orders only.",
+        };
+      }
+    } catch {
+      /* allow first-order code if order lookup fails */
     }
   }
 
@@ -114,12 +167,8 @@ export async function incrementPromoUsage(code) {
   if (!promo?.id) return;
 
   const used = Number(promo.attributes?.usedCount || 0);
-  await fetch(`${STRAPI_BASE_URL}/api/promo-codes/${promo.id}`, {
+  await strapiServerFetch(`/promo-codes/${promo.id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      ...(API_TOKEN && { Authorization: `Bearer ${API_TOKEN}` }),
-    },
     body: JSON.stringify({
       data: { usedCount: used + 1 },
     }),
@@ -127,21 +176,52 @@ export async function incrementPromoUsage(code) {
 }
 
 export async function getBannerPromo() {
+  await expireStalePromoCodes();
+
+  const fb = FALLBACK_PROMOS[DEFAULT_BANNER_CODE];
+
   const params = new URLSearchParams({
     "filters[isActive][$eq]": "true",
     "filters[showInBanner][$eq]": "true",
-    sort: "updatedAt:desc",
-    "pagination[pageSize]": "1",
+    "pagination[pageSize]": "50",
   });
 
-  const { ok, data } = await strapiFetch(`/promo-codes?${params}`);
-  if (!ok) return null;
-  const promo = (data.data || [])[0];
-  if (!promo) return null;
+  const { ok, data } = await strapiServerFetch(`/promo-codes?${params}`);
+
+  if (!ok) {
+    return {
+      code: fb.code,
+      discountPercent: fb.discountPercent,
+      description: fb.description,
+      isDefault: true,
+    };
+  }
+
+  const eligible = (data.data || []).filter((p) =>
+    isBannerEligible(p.attributes)
+  );
+
+  const defaultPromo = eligible.find(
+    (p) =>
+      String(p.attributes?.code || "").toUpperCase() === DEFAULT_BANNER_CODE
+  );
+  const promo = defaultPromo || eligible[0];
+
+  if (!promo) {
+    return {
+      code: fb.code,
+      discountPercent: fb.discountPercent,
+      description: fb.description,
+      isDefault: true,
+    };
+  }
+
   const attrs = promo.attributes;
   return {
     code: attrs.code,
     discountPercent: Number(attrs.discountPercent),
     description: attrs.description,
+    isDefault:
+      String(attrs.code || "").toUpperCase() === DEFAULT_BANNER_CODE,
   };
 }

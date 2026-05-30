@@ -11,7 +11,6 @@ import {
   UserIcon,
   MenuIcon,
   XIcon,
-  PackageIcon,
   LogOutIcon,
   UserCircleIcon,
 } from "lucide-react";
@@ -29,19 +28,7 @@ import { Input } from "@/src/components/ui/input";
 import SignInForm from "../common/SignInForm";
 import SignUpForm from "../common/SignUpForm";
 import { Icon } from "@iconify/react";
-
-// --- Cart count utility ---
-function getCartCount() {
-  if (typeof window !== "undefined") {
-    try {
-      const cart = JSON.parse(sessionStorage.getItem("cart") || "[]");
-      return cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-    } catch {
-      return 0;
-    }
-  }
-  return 0;
-}
+import { getCartItemCount } from "@/src/lib/utils/cartUtils";
 
 export default function CustomNavbar() {
   const pathname = usePathname();
@@ -165,15 +152,21 @@ export default function CustomNavbar() {
   }, []);
 
   useEffect(() => {
-    const refreshCartCount = () => setCartCount(getCartCount());
+    const refreshCartCount = () => setCartCount(getCartItemCount());
     refreshCartCount();
     window.addEventListener("storage", refreshCartCount);
     window.addEventListener("cart-updated", refreshCartCount);
+    window.addEventListener("focus", refreshCartCount);
     return () => {
       window.removeEventListener("storage", refreshCartCount);
       window.removeEventListener("cart-updated", refreshCartCount);
+      window.removeEventListener("focus", refreshCartCount);
     };
   }, []);
+
+  useEffect(() => {
+    setCartCount(getCartItemCount());
+  }, [pathname]);
 
   useEffect(() => {
     fetch("/api/promo-banner")
@@ -280,6 +273,11 @@ export default function CustomNavbar() {
                   )}
                 </Link>
               </Button>
+              <Button variant="ghost" size="icon" asChild title="Account">
+                <Link href="/account">
+                  <UserIcon className="h-6 w-6 text-gray-700" />
+                </Link>
+              </Button>
               <PrimaryButton href="/contact-us" withArrow={false}>
                 Contact Us
               </PrimaryButton>
@@ -355,38 +353,34 @@ export default function CustomNavbar() {
                     {link.label}
                   </Link>
                 ))}
+              <div className="w-full border-t pt-4 mt-4 space-y-3">
+                <Link
+                  href="/orders"
+                  className="flex items-center justify-center gap-2 text-lg hover:text-[#0b9c09] transition-colors capitalize"
+                  onClick={toggleMenu}
+                >
+                  My Orders
+                </Link>
+                <Link
+                  href="/account"
+                  className="flex items-center justify-center gap-2 text-lg hover:text-[#0b9c09] transition-colors capitalize"
+                  onClick={toggleMenu}
+                >
+                  <UserCircleIcon className="h-5 w-5" />
+                  Account
+                </Link>
+              </div>
               {isSignedIn && (
-                <>
-                  {/* Account Related Links */}
-                  <div className="w-full border-t pt-4 mt-4">
-                    <Link
-                      href="/orders"
-                      className="flex items-center justify-center gap-2 text-lg hover:text-[#0b9c09] transition-colors capitalize"
-                      onClick={toggleMenu}
-                    >
-                      <PackageIcon className="h-5 w-5" />
-                      Orders
-                    </Link>
-                  </div>
-                  <Link
-                    href="/account"
-                    className="flex items-center justify-center gap-2 text-lg hover:text-[#0b9c09] transition-colors capitalize"
-                    onClick={toggleMenu}
-                  >
-                    <UserCircleIcon className="h-5 w-5" />
-                    Account
-                  </Link>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      toggleMenu();
-                    }}
-                    className="flex items-center justify-center gap-2 text-lg text-red-600 hover:text-red-700 transition-colors capitalize mt-4"
-                  >
-                    <LogOutIcon className="h-5 w-5" />
-                    Logout
-                  </button>
-                </>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    toggleMenu();
+                  }}
+                  className="flex items-center justify-center gap-2 text-lg text-red-600 hover:text-red-700 transition-colors capitalize mt-4"
+                >
+                  <LogOutIcon className="h-5 w-5" />
+                  Logout
+                </button>
               )}
             </div>
           </div>

@@ -1,15 +1,15 @@
 import axios from "axios";
-import { STRAPI_BASE_URL } from "../strapiBaseUrl";
+import { getStrapiBaseUrl } from "../strapiBaseUrl";
 
 const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || '';
 
 // Create axios instance with token (user token or API token)
 const axiosClient = (token) => {
-  // Use API token if available, otherwise use user token
-  const authToken = API_TOKEN || token;
+  // Prefer admin JWT; fall back to API token (needed for promo-code before permissions sync)
+  const authToken = token || API_TOKEN;
   
   return axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": 'application/json',
       ...(authToken && { Authorization: `Bearer ${authToken}` })
@@ -20,7 +20,7 @@ const axiosClient = (token) => {
 // Admin Authentication
 const adminLogin = (data) => {
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: { "Content-Type": 'application/json' }
   });
   return client.post('/auth/local', {
@@ -39,7 +39,7 @@ const getPlants = (token, params = {}) => {
   // Prefer user token first (for authenticated admin), fallback to API token
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": 'application/json',
       ...(authToken && { Authorization: `Bearer ${authToken}` })
@@ -63,7 +63,7 @@ const getPlantById = (id, token) => {
   // Prefer user token first, fallback to API token
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": 'application/json',
       ...(authToken && { Authorization: `Bearer ${authToken}` })
@@ -76,7 +76,7 @@ const uploadImages = (files, token) => {
   const form = new FormData();
   Array.from(files).forEach((f) => form.append("files", f));
   const authToken = token || API_TOKEN;
-  return axios.post(`${STRAPI_BASE_URL}/api/upload`, form, {
+  return axios.post(`${getStrapiBaseUrl()}/api/upload`, form, {
     headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
   });
 };
@@ -101,7 +101,7 @@ const getCategories = (token, params = {}) => {
   // Prefer user token first, fallback to API token
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": 'application/json',
       ...(authToken && { Authorization: `Bearer ${authToken}` })
@@ -125,7 +125,7 @@ const getCategoryById = (id, token) => {
   // Prefer user token first, fallback to API token
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": 'application/json',
       ...(authToken && { Authorization: `Bearer ${authToken}` })
@@ -165,7 +165,7 @@ const deleteCategory = (id, token) => {
 const getOrders = (token, params = {}) => {
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": "application/json",
       ...(authToken && { Authorization: `Bearer ${authToken}` }),
@@ -189,7 +189,7 @@ const getOrders = (token, params = {}) => {
 const getOrderById = (id, token) => {
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": "application/json",
       ...(authToken && { Authorization: `Bearer ${authToken}` }),
@@ -202,7 +202,7 @@ const getOrderById = (id, token) => {
 const getBlogs = (token, params = {}) => {
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": "application/json",
       ...(authToken && { Authorization: `Bearer ${authToken}` }),
@@ -224,7 +224,7 @@ const getBlogs = (token, params = {}) => {
 const getBlogById = (id, token) => {
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": "application/json",
       ...(authToken && { Authorization: `Bearer ${authToken}` }),
@@ -252,7 +252,7 @@ const deleteBlog = (id, token) => {
 const getTeamMembers = (token, params = {}) => {
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": "application/json",
       ...(authToken && { Authorization: `Bearer ${authToken}` }),
@@ -274,7 +274,7 @@ const getTeamMembers = (token, params = {}) => {
 const getTeamMemberById = (id, token) => {
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": "application/json",
       ...(authToken && { Authorization: `Bearer ${authToken}` }),
@@ -302,7 +302,7 @@ const deleteTeamMember = (id, token) => {
 const getCustomerMedia = (token, params = {}) => {
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": "application/json",
       ...(authToken && { Authorization: `Bearer ${authToken}` }),
@@ -324,7 +324,7 @@ const getCustomerMedia = (token, params = {}) => {
 const getCustomerMediaById = (id, token) => {
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": "application/json",
       ...(authToken && { Authorization: `Bearer ${authToken}` }),
@@ -357,7 +357,7 @@ const updateOrderStatus = (id, status, token) => {
 const getPromoCodes = (token, params = {}) => {
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": "application/json",
       ...(authToken && { Authorization: `Bearer ${authToken}` }),
@@ -397,7 +397,7 @@ const deletePromoCode = (id, token) => {
 const getDashboardStats = (token) => {
   const authToken = token || API_TOKEN;
   const client = axios.create({
-    baseURL: `${STRAPI_BASE_URL}/api`,
+    baseURL: `${getStrapiBaseUrl()}/api`,
     headers: {
       "Content-Type": "application/json",
       ...(authToken && { Authorization: `Bearer ${authToken}` }),

@@ -21,5 +21,18 @@ module.exports = {
    * This gives you an opportunity to set up your data model,
    * run jobs, or perform some special logic.
    */
-  bootstrap(/*{ strapi }*/) { },
+  async bootstrap({ strapi }) {
+    try {
+      const {
+        setupPromoPermissions,
+        seedDefaultPromoCodes,
+        setupOrderPermissions,
+      } = require("./utils/setup-promo");
+      await setupPromoPermissions(strapi);
+      await seedDefaultPromoCodes(strapi);
+      await setupOrderPermissions(strapi);
+    } catch (err) {
+      strapi.log.error("[promo] Bootstrap failed:", err);
+    }
+  },
 };

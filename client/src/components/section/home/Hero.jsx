@@ -16,7 +16,7 @@ import plantsAction from "@/src/lib/action/plants.action";
 import adminAction from "@/src/lib/action/admin.action";
 import { addToWishlist } from "@/src/lib/utils/wishlistUtils";
 import { Dialog, DialogContent } from "../../ui/dialog";
-import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
+import { resolveMediaPath } from "@/src/lib/strapiMedia";
 
 const NO_PREVIEW_IMG = "/images/plant.png";
 
@@ -45,8 +45,8 @@ const Hero = () => {
         const attrs = item.attributes || {};
         const imageData = attrs.image?.data?.[0];
         const imageUrl = imageData?.attributes?.url;
-        const fullUrl = imageUrl 
-          ? (imageUrl.startsWith("http") ? imageUrl : `${STRAPI_BASE_URL}${imageUrl}`)
+        const fullUrl = imageUrl
+          ? resolveMediaPath(imageUrl) || "/images/plant.png"
           : "/images/plant.png";
         
         // Determine type based on mime type or file extension
@@ -83,9 +83,7 @@ const Hero = () => {
         let imageUrl = NO_PREVIEW_IMG;
         const strapiImageUrl = attrs?.images?.data?.[0]?.attributes?.url;
         if (strapiImageUrl) {
-          imageUrl = strapiImageUrl.startsWith("http")
-            ? strapiImageUrl
-            : `${STRAPI_BASE_URL}${strapiImageUrl}`;
+          imageUrl = resolveMediaPath(strapiImageUrl) || NO_PREVIEW_IMG;
         }
 
         return {

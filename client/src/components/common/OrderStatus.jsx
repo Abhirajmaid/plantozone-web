@@ -69,7 +69,11 @@ const OrderStatus = ({ orderData }) => {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-4">Order Status</h2>
-      <p className="text-gray-600 mb-8">Order ID : {orderData?.orderId || "#SDGT1254FD"}</p>
+      {orderData?.orderId && (
+        <p className="text-gray-600 mb-8">
+          Order ID : #{String(orderData.orderId).replace(/^#/, "")}
+        </p>
+      )}
 
       {/* Progress Steps */}
       <div className="relative">

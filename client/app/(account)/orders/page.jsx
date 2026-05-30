@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Container } from "@/src/components/layout/Container";
 import { Section } from "@/src/components/layout/Section";
 import { NewsletterSection, ShopServiceSection } from "@/src/components";
-import orderAction from "@/src/lib/action/order.action";
-import { STRAPI_BASE_URL } from "@/src/lib/strapiBaseUrl";
+import { resolveMediaPath } from "@/src/lib/strapiMedia";
+import { resolveOrdersEmail } from "@/src/lib/utils/guestOrder";
 import { Icon } from "@iconify/react";
 import { Loader2, Package, ChevronDown, ChevronUp } from "lucide-react";
 
@@ -36,9 +35,7 @@ function formatDate(dateStr) {
 function getItemImage(item) {
   const src = item?.image || item?.img;
   if (!src) return "/images/plant.png";
-  if (typeof src === "string" && src.startsWith("http")) return src;
-  if (typeof src === "string") return `${STRAPI_BASE_URL}${src}`;
-  return "/images/plant.png";
+  return resolveMediaPath(src) || "/images/plant.png";
 }
 
 function getItemName(item) {
@@ -121,23 +118,16 @@ function OrderCard({ order, userEmail }) {
             <div>
               <p className="text-gray-500 mb-1">Contact</p>
               <p className="text-gray-800">{attrs.userPhone || "—"}</p>
-              {attrs.paymentId && (
-                <p className="text-gray-500 mt-2 text-xs">
-                  Payment ref: {attrs.paymentId}
-                </p>
-              )}
+              <p className="text-gray-600 mt-1">{attrs.userEmail}</p>
             </div>
           </div>
 
-          <p className="text-sm font-semibold text-gray-900 mb-3">Items</p>
-          <ul className="space-y-3 mb-6">
-            {items.length === 0 ? (
-              <li className="text-sm text-gray-500">No item details available</li>
-            ) : (
-              items.map((item, idx) => (
+          {items.length > 0 && (
+            <ul className="space-y-3 mb-6">
+              {items.map((item, idx) => (
                 <li
                   key={idx}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-gray-50"
+                  className="flex items-center gap-4 p-3 rounded-xl bg-gray-50"
                 >
                   <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-white shrink-0">
                     <Image
@@ -145,36 +135,35 @@ function OrderCard({ order, userEmail }) {
                       alt={getItemName(item)}
                       fill
                       className="object-cover"
-                      unoptimized={getItemImage(item).startsWith("http")}
+                      unoptimized
                     />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 truncate">
                       {getItemName(item)}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm text-gray-500">
                       Qty: {item.quantity || 1}
                       {item.size ? ` · ${item.size}` : ""}
-                      {item.shape ? ` · ${item.shape}` : ""}
                     </p>
                   </div>
-                  <p className="text-sm font-semibold text-gray-900 shrink-0">
+                  <p className="font-semibold text-gray-900 shrink-0">
                     ₹
                     {(
-                      Number(item.price || 0) * (item.quantity || 1)
+                      (item.price || 0) * (item.quantity || 1)
                     ).toLocaleString("en-IN")}
                   </p>
                 </li>
-              ))
-            )}
-          </ul>
+              ))}
+            </ul>
+          )}
 
           <div className="flex flex-wrap gap-3">
             <Link
               href={trackHref}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              <Icon icon="lucide:map-pin" className="w-4 h-4" />
+              <Icon icon="mdi:truck-delivery" className="w-4 h-4" />
               Track order
             </Link>
             <Link
@@ -191,48 +180,57 @@ function OrderCard({ order, userEmail }) {
 }
 
 export default function OrdersPage() {
-  const router = useRouter();
-  const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hasCustomerEmail, setHasCustomerEmail] = useState(false);
+
+  const loadOrders = useCallback(async () => {
+    const email = resolveOrdersEmail();
+    if (!email) {
+      setHasCustomerEmail(false);
+      setOrders([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    setHasCustomerEmail(true);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/my-orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Could not load your orders.");
+        setOrders([]);
+        return;
+      }
+      setOrders(json.data || []);
+    } catch (err) {
+      console.error("Failed to load orders:", err);
+      setError("Could not load your orders. Please try again later.");
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const rawUser = sessionStorage.getItem("user");
-    const rawJwt = sessionStorage.getItem("jwt");
-
-    if (!rawUser || !rawJwt) {
-      router.push("/account");
-      return;
-    }
-
-    let parsedUser;
-    try {
-      parsedUser = JSON.parse(rawUser);
-      setUser(parsedUser);
-    } catch {
-      router.push("/account");
-      return;
-    }
-
-    if (!parsedUser?.email) {
-      setError("Your account has no email on file.");
-      setLoading(false);
-      return;
-    }
-
-    orderAction
-      .getOrdersByEmail(parsedUser.email)
-      .then((res) => {
-        setOrders(res.data?.data || []);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error("Failed to load orders:", err);
-        setError("Could not load your orders. Please try again later.");
-      })
-      .finally(() => setLoading(false));
-  }, [router]);
+    loadOrders();
+    const onRefresh = () => loadOrders();
+    window.addEventListener("focus", onRefresh);
+    window.addEventListener("orders-updated", onRefresh);
+    return () => {
+      window.removeEventListener("focus", onRefresh);
+      window.removeEventListener("orders-updated", onRefresh);
+    };
+  }, [loadOrders]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
@@ -251,13 +249,6 @@ export default function OrdersPage() {
                 Home
               </Link>
               <span>/</span>
-              <Link
-                href="/profile"
-                className="hover:text-green-600 transition-colors"
-              >
-                Profile
-              </Link>
-              <span>/</span>
               <span className="text-gray-800 font-medium">Orders</span>
             </div>
           </div>
@@ -267,13 +258,6 @@ export default function OrdersPage() {
       <Section className="bg-gray-50 py-12 md:py-16">
         <Container>
           <div className="max-w-3xl mx-auto">
-            {user && (
-              <p className="text-sm text-gray-600 mb-6 text-center md:text-left">
-                Showing orders for{" "}
-                <span className="font-medium text-gray-900">{user.email}</span>
-              </p>
-            )}
-
             {loading && (
               <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
@@ -282,33 +266,48 @@ export default function OrdersPage() {
             )}
 
             {!loading && error && (
-              <div className="bg-white rounded-2xl shadow-md p-8 text-center">
+              <div className="text-center py-12 bg-white rounded-2xl border border-red-100">
                 <p className="text-red-600 mb-4">{error}</p>
                 <button
                   type="button"
-                  onClick={() => window.location.reload()}
-                  className="px-4 py-2 bg-primary text-white rounded-lg text-sm"
+                  onClick={() => loadOrders()}
+                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                 >
-                  Retry
+                  Try again
                 </button>
               </div>
             )}
 
-            {!loading && !error && orders.length === 0 && (
-              <div className="bg-white rounded-2xl shadow-md p-10 md:p-12 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Package className="w-8 h-8 text-primary" />
-                </div>
-                <h2 className="text-xl font-bold text-gray-900 mb-2">
+            {!loading && !error && !hasCustomerEmail && (
+              <div className="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-md">
+                <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">
                   No orders yet
                 </h2>
-                <p className="text-gray-600 mb-6 max-w-sm mx-auto">
-                  When you place an order, it will show up here with status and
-                  item details.
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  Complete a purchase at checkout (with your email). Your orders will appear here automatically — no sign-in required.
                 </p>
                 <Link
                   href="/shop"
-                  className="inline-flex px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors"
+                  className="inline-flex px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90"
+                >
+                  Shop plants
+                </Link>
+              </div>
+            )}
+
+            {!loading && !error && hasCustomerEmail && orders.length === 0 && (
+              <div className="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-md">
+                <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                  No orders yet
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  You have not placed any orders yet. Start shopping to see them here.
+                </p>
+                <Link
+                  href="/shop"
+                  className="inline-flex px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90"
                 >
                   Start shopping
                 </Link>
@@ -321,7 +320,9 @@ export default function OrdersPage() {
                   <OrderCard
                     key={order.id}
                     order={order}
-                    userEmail={user?.email}
+                    userEmail={
+                      order.attributes?.userEmail || resolveOrdersEmail()
+                    }
                   />
                 ))}
               </div>

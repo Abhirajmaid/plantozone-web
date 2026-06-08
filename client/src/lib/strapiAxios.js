@@ -6,12 +6,17 @@ export function strapiApiBase() {
   return `${getStrapiBaseUrl()}/api`;
 }
 
-export function createStrapiAxios(headers = {}) {
+export function createStrapiAxios(config = {}) {
+  const extra =
+    config.headers && typeof config.headers === "object"
+      ? config.headers
+      : config;
+
   return axios.create({
     baseURL: strapiApiBase(),
     headers: {
       "Content-Type": "application/json",
-      ...headers,
+      ...extra,
     },
   });
 }

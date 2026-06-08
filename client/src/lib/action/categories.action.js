@@ -3,11 +3,8 @@ import { createStrapiAxios } from "../strapiAxios";
 const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || '';
 
 const axiosClient = createStrapiAxios({
-    headers: {
-        "Content-Type": 'application/json',
-        ...(API_TOKEN && { Authorization: `Bearer ${API_TOKEN}` })
-    }
-})
+  ...(API_TOKEN && { Authorization: `Bearer ${API_TOKEN}` }),
+});
 
 const getCategories = () =>
   axiosClient.get(

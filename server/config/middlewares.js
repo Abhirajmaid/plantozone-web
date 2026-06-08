@@ -45,6 +45,7 @@ module.exports = ({ env }) => [
     config: {
       origin: resolveCorsOrigins(env),
       credentials: true,
+      headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
     },
   },
   'strapi::poweredBy',

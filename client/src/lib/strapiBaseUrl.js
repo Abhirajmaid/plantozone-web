@@ -14,10 +14,11 @@ export const STRAPI_DIRECT_URL =
 
 /**
  * Base URL for API calls and media paths from the current runtime.
- * Browser + development → same-origin proxy `/strapi-api`
+ * Browser → same-origin proxy `/strapi-api` (avoids CORS in dev and production).
+ * Server → direct Strapi URL for SSR and API routes.
  */
 export function getStrapiBaseUrl() {
-  if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+  if (typeof window !== "undefined") {
     return "/strapi-api";
   }
   return STRAPI_DIRECT_URL;

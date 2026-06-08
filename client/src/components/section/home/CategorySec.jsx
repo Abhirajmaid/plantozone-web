@@ -145,8 +145,8 @@ const CategorySec = () => {
       <div className="w-full">
         {loading ? (
           <div className="px-4 lg:px-12">
-            <div className="hidden sm:grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-              {[1, 2, 3, 4, 5].map((i) => (
+            <div className="hidden sm:grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+              {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
                   className="aspect-[9/16] min-h-[360px] md:min-h-[440px] lg:min-h-[480px] rounded-2xl bg-gray-200 animate-pulse"
@@ -176,7 +176,7 @@ const CategorySec = () => {
         ) : (
           <div className="w-full overflow-hidden py-4 md:py-6">
             <div className="px-4 lg:px-12">
-              <div className="hidden sm:grid gap-4 md:gap-5 items-stretch sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+              <div className="hidden sm:grid gap-4 md:gap-5 items-stretch sm:grid-cols-2 md:grid-cols-4">
                 {categories.map((item, index) => (
                   <CategoryCard
                     key={item.id}

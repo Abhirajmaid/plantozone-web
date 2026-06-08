@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { strapiServerFetch } from "@/src/lib/server/strapiServer";
 import { getStrapiMediaUrl } from "@/src/lib/strapiMedia";
+import { getLocalCategoryImageUrl } from "@/src/lib/categoryImages";
 
 function categoryImageUrl(attrs) {
+  const local = getLocalCategoryImageUrl(attrs?.title);
+  if (local) return local;
+
   const fromCategory = getStrapiMediaUrl(attrs?.image, "");
   if (fromCategory) return fromCategory;
 
@@ -33,7 +37,11 @@ export async function GET() {
       return NextResponse.json({ data: [] }, { status: 200 });
     }
 
-    const list = (data.data || []).map((cat, index) => {
+    const hiddenSlugs = new Set(["rare-n-exotic-plants"]);
+
+    const list = (data.data || [])
+      .filter((cat) => !hiddenSlugs.has(cat.attributes?.slug))
+      .map((cat, index) => {
       const attrs = cat.attributes || {};
       const gradients = [
         "from-green-400 to-emerald-600",

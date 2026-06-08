@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/src
 import { toast } from "react-toastify";
 import { ArrowLeft, ImagePlus, X } from "lucide-react";
 
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337";
+const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.NEXT_PUBLIC_API_URL || "https://dashboard.plantozone.com";
 
 const toMediaUrl = (url) => (url?.startsWith("http") ? url : `${STRAPI_BASE_URL}${url || ""}`);
 

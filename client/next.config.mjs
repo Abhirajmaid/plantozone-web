@@ -4,7 +4,7 @@ const strapiBackend =
     process.env.NEXT_PUBLIC_API_URL ||
     (process.env.NODE_ENV === 'development'
         ? 'http://localhost:1337'
-        : 'https://plantozone-web-production.up.railway.app');
+        : 'https://dashboard.plantozone.com');
 
 const nextConfig = {
     async rewrites() {
@@ -22,12 +22,18 @@ const nextConfig = {
             'plus.unsplash.com',
             'res.cloudinary.com',
             'localhost',
+            'dashboard.plantozone.com',
             'plantozone-web-production.up.railway.app',
         ],
         remotePatterns: [
             {
                 protocol: 'https',
                 hostname: 'res.cloudinary.com',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'dashboard.plantozone.com',
                 pathname: '/**',
             },
             {

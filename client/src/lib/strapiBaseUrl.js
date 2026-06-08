@@ -2,7 +2,7 @@
  * Strapi base URL (no trailing slash).
  * In local dev, browser requests use /strapi-api (Next.js rewrite) to avoid CORS.
  */
-const RAILWAY_STRAPI_URL = "https://plantozone-web-production.up.railway.app";
+const DEFAULT_STRAPI_URL = "https://dashboard.plantozone.com";
 
 /** Direct Strapi URL (env). Used for Next.js rewrites and server-side fetch. */
 export const STRAPI_DIRECT_URL =
@@ -10,7 +10,7 @@ export const STRAPI_DIRECT_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   (process.env.NODE_ENV === "development"
     ? "http://localhost:1337"
-    : RAILWAY_STRAPI_URL);
+    : DEFAULT_STRAPI_URL);
 
 /**
  * Base URL for API calls and media paths from the current runtime.
